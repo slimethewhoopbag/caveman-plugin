@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Arrival — Khe-9 Basin</title>
+<style>
+/* ============================================================
+   ARRIVAL — a single-shot cinematic 2D parallax environment.
+   One continuous ~70s vertical pan: deep space → upper
+   atmosphere → cloud deck → needle peaks → the hidden city.
+   All art is hand-placed SVG; motion is many small independent
+   loops. No cuts, no shakes, no zooms.
+   ============================================================ */
+
+:root{
+  --ink:#0b0d1f;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:#05060f;font-family:Georgia,"Times New Roman",serif}
+#stage{position:fixed;inset:0;overflow:hidden;transform:translateZ(0)}
+
+/* ---------- sky (three cross-faded flat-band gradients) ---------- */
+.sky{position:absolute;inset:0;pointer-events:none}
+#sky-day{background:linear-gradient(#4fa9d8 0%,#6fc2e2 34%,#9bd6ea 55%,#c9b4e6 80%,#b79ade 100%)}
+#sky-strat{background:linear-gradient(#131a3f 0%,#2c3268 38%,#54549c 70%,#8079c0 100%)}
+#sky-space{background:linear-gradient(#04050d 0%,#0a0d22 62%,#141838 100%)}
+
+canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#stars{z-index:1}
+#particles{z-index:20}
+
+/* ---------- parallax layers ---------- */
+.layer{position:absolute;inset:0;will-change:transform;pointer-events:none}
+.piece{position:absolute;left:0;width:100%}
+.piece svg{display:block;width:100%;height:100%}
+
+#layer-nebula{z-index:2}
+#layer-sun{z-index:3}
+#layer-moon{z-index:4}
+#layer-fleet{z-index:5}
+#layer-cirrus{z-index:6}
+#layer-farmtn{z-index:7}
+#layer-cumulus{z-index:8}
+#layer-midmtn{z-index:9}
+#layer-city{z-index:10}
+#layer-valley{z-index:11}
+#layer-fg{z-index:13}
+
+/* ---------- nebula: two soft cosmic dust fields ---------- */
+.neb{position:absolute;border-radius:50%;filter:blur(28px)}
+.neb.a{top:8vh;left:12vw;width:46vw;height:34vh;
+  background:radial-gradient(closest-side,rgba(151,94,196,.30),rgba(151,94,196,0) 70%)}
+.neb.b{top:34vh;left:52vw;width:40vw;height:30vh;
+  background:radial-gradient(closest-side,rgba(76,120,201,.26),rgba(76,120,201,0) 70%)}
+.neb.c{top:2vh;left:60vw;width:26vw;height:20vh;
+  background:radial-gradient(closest-side,rgba(214,120,168,.16),rgba(214,120,168,0) 70%)}
+
+/* ---------- generic ambient motion ---------- */
+@keyframes driftR{from{transform:translate3d(-2.5vw,0,0)}to{transform:translate3d(2.5vw,0,0)}}
+@keyframes driftL{from{transform:translate3d(2vw,0,0)}to{transform:translate3d(-2vw,0,0)}}
+@keyframes bob{from{transform:translate3d(0,-.5vh,0)}to{transform:translate3d(0,.5vh,0)}}
+@keyframes swayA{from{transform:rotate(-1.4deg)}to{transform:rotate(1.6deg)}}
+@keyframes swayB{from{transform:rotate(1.2deg)}to{transform:rotate(-1.8deg)}}
+@keyframes shimmer{0%,100%{opacity:.55}50%{opacity:.9}}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:.85}}
+@keyframes blink{0%,92%,100%{opacity:0}94%,97%{opacity:1}}
+@keyframes blink2{0%,88%,100%{opacity:.1}90%,94%{opacity:1}}
+@keyframes thrustPuff{0%,95.4%,100%{opacity:0}96.2%,98%{opacity:.75}}
+@keyframes flow{to{stroke-dashoffset:-480}}
+@keyframes flowSlow{to{stroke-dashoffset:-260}}
+@keyframes ringSpin{to{stroke-dashoffset:-352}}
+@keyframes fleetIn{from{opacity:0;transform:translate3d(5vw,-1.5vh,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes shipDriftA{from{transform:translate3d(0,0,0) rotate(-.5deg)}to{transform:translate3d(-3vw,.8vh,0) rotate(.4deg)}}
+@keyframes shipDriftB{from{transform:translate3d(1.5vw,.6vh,0)}to{transform:translate3d(-1.5vw,-.4vh,0)}}
+@keyframes platformDescend{from{transform:translate3d(0,0,0)}to{transform:translate3d(-2vw,26vh,0)}}
+@keyframes dishTurn{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
+@keyframes panelTrack{from{transform:rotate(-6deg)}to{transform:rotate(7deg)}}
+@keyframes mistRoll{from{transform:translate3d(-4vw,0,0) scale(1)}50%{transform:translate3d(0,-.6vh,0) scale(1.06)}to{transform:translate3d(4vw,0,0) scale(1)}}
+
+.drift-r{animation:driftR 240s ease-in-out infinite alternate}
+.drift-r2{animation:driftR 170s ease-in-out infinite alternate-reverse}
+.drift-l{animation:driftL 200s ease-in-out infinite alternate}
+.drift-l2{animation:driftL 150s ease-in-out infinite alternate-reverse}
+
+/* ---------- mist (near the river / waterfall bases) ---------- */
+.mist{position:absolute;border-radius:50%;filter:blur(14px);
+  background:radial-gradient(closest-side,rgba(226,238,250,.42),rgba(226,238,250,0) 72%)}
+
+/* ---------- pass-through cloud veil ---------- */
+#cloudveil{position:absolute;inset:0;z-index:25;opacity:0;pointer-events:none}
+#cloudveil .cv{position:absolute;border-radius:50%;filter:blur(22px);
+  background:radial-gradient(closest-side,rgba(244,232,224,.95),rgba(244,232,224,0) 72%)}
+
+/* ---------- atmospheric haze over the basin ---------- */
+#haze{position:absolute;inset:0;z-index:12;opacity:0;pointer-events:none;
+  background:linear-gradient(rgba(150,200,235,0) 46%,rgba(163,206,238,.34) 74%,rgba(197,224,244,.5) 100%)}
+
+/* ---------- cinema chrome ---------- */
+#vignette{position:absolute;inset:0;z-index:30;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 46%,rgba(0,0,0,0) 58%,rgba(4,6,16,.42) 100%)}
+.bar{position:absolute;left:0;width:100%;height:5.5vh;background:#020308;z-index:31}
+#bar-t{top:0}#bar-b{bottom:0}
+
+#caption{position:absolute;left:6vw;bottom:9.5vh;z-index:32;max-width:44ch;
+  color:#dfe8f5;font-size:clamp(13px,1.45vw,19px);line-height:1.55;
+  letter-spacing:.14em;text-transform:uppercase;opacity:0;
+  text-shadow:0 1px 12px rgba(4,8,20,.8)}
+#caption small{display:block;letter-spacing:.3em;font-size:.72em;color:#8fb4d8;margin-bottom:.5em}
+
+#fader{position:absolute;inset:0;background:#020308;z-index:40;pointer-events:none;transition:opacity 2.8s ease}
+#replay{position:absolute;right:5vw;bottom:8.5vh;z-index:33;opacity:0;pointer-events:none;
+  transition:opacity 2s ease;background:none;border:1px solid rgba(190,215,240,.45);
+  color:#d5e4f4;font:inherit;font-size:13px;letter-spacing:.22em;text-transform:uppercase;
+  padding:.55em 1.2em;cursor:pointer;border-radius:2px}
+#replay.on{opacity:.85;pointer-events:auto}
+#replay:hover{background:rgba(190,215,240,.12)}
+
+.reduced .layer,.reduced svg *{animation:none!important}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <div class="sky" id="sky-day"></div>
+  <div class="sky" id="sky-strat"></div>
+  <div class="sky" id="sky-space"></div>
+
+  <canvas id="stars"></canvas>
+
+  <!-- =================== NEBULA / COSMIC DUST (f .045) =================== -->
+  <div class="layer" data-f="0.045" id="layer-nebula">
+    <div class="piece" style="top:0;height:130vh">
+      <div class="neb a drift-r"></div>
+      <div class="neb b drift-l"></div>
+      <div class="neb c drift-r2"></div>
+    </div>
+  </div>
+
+  <!-- =================== DISTANT SUN (f .03) =================== -->
+  <div class="layer" data-f="0.03" id="layer-sun">
+    <div class="piece" id="sunpiece" style="top:9vh;left:auto;right:10vw;width:9vw;height:9vw">
+      <svg viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="26" fill="#f9e6c4" opacity=".14"/>
+        <circle cx="100" cy="100" r="13" fill="#fbedd2" opacity=".5"/>
+        <circle cx="100" cy="100" r="7" fill="#fff3da"/>
+        <circle cx="100" cy="100" r="3.5" fill="#ffffff"/>
+        <path d="M100 78v-26M100 122v26M78 100H52M122 100h26" stroke="#f4e2c0" stroke-width="1.6" opacity=".65"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- =================== MOON (f .05) =================== -->
+  <div class="layer" data-f="0.05" id="layer-moon">
+    <div class="piece" style="top:24vh;left:66vw;width:9vw;height:9vw;min-width:70px;min-height:70px">
+      <svg viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="34" fill="#e3d3de"/>
+        <path d="M60 26a34 34 0 0 1 0 68 40 40 0 0 0 0-68z" fill="#c9b6cc"/>
+        <circle cx="47" cy="50" r="6" fill="#cdbccf"/>
+        <circle cx="66" cy="72" r="4.5" fill="#c4afc8"/>
+        <circle cx="55" cy="66" r="2.6" fill="#c9b6cc"/>
+        <circle cx="70" cy="44" r="3" fill="#d3c2d5"/>
+        <path d="M31 45a34 34 0 0 1 22-17" stroke="#f4ecf4" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- =================== EXPEDITION FLEET (f .18) =================== -->
+  <div class="layer" data-f="0.18" id="layer-fleet">
+    <div class="piece" style="top:22vh;height:95vh;animation:fleetIn 14s ease-out 5s both">
+      <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;min-width:1050px;height:100%">
+      <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <!-- long-period drift keeps the fleet coasting, never "flying" -->
+        </defs>
+
+        <!-- ===== SHIP A — "Vantage"-class survey carrier =====
+             long open truss spine, counter-rotating gravity ring,
+             suspended hab/cargo modules, aft drive block, radiator vanes -->
+        <g style="animation:shipDriftA 210s ease-in-out infinite alternate">
+          <g transform="translate(260,215)">
+            <!-- gravity ring (behind spine) -->
+            <ellipse cx="150" cy="0" rx="46" ry="88" fill="none" stroke="#2c3354" stroke-width="10"/>
+            <ellipse cx="150" cy="0" rx="46" ry="88" fill="none" stroke="#8fa2d6" stroke-width="3"
+              stroke-dasharray="22 22" style="animation:ringSpin 46s linear infinite"/>
+            <!-- spine truss -->
+            <rect x="-40" y="-7" width="560" height="14" fill="#333b60"/>
+            <path d="M-40 -7h560" stroke="#a5b8e6" stroke-width="1.6"/>
+            <path d="M0 -7v14M40 -7v14M80 -7v14M200 -7v14M240 -7v14M280 -7v14M320 -7v14M360 -7v14" stroke="#1f2542" stroke-width="3"/>
+            <!-- command head: asymmetric, one huge observation band -->
+            <path d="M-40 -7 L-118 -22 L-150 -4 L-146 20 L-96 30 L-40 14 Z" fill="#3d466e"/>
+            <path d="M-118 -22 L-150 -4 L-146 20 L-96 30" fill="none" stroke="#aabdea" stroke-width="1.6"/>
+            <path d="M-138 -2 L-104 -9 L-100 6 L-134 12 Z" fill="#bfeeff"/>
+            <path d="M-138 -2 L-104 -9" stroke="#eafcff" stroke-width="1.4"/>
+            <rect x="-92" y="-18" width="8" height="8" fill="#c97b6a"/>
+            <path d="M-128 -22 v-16 l14 -6" stroke="#8fa2d6" stroke-width="2" fill="none"/>
+            <circle cx="-114" cy="-44" r="2.4" fill="#ffd9d0" style="animation:blink 9s linear infinite"/>
+            <!-- radiator vanes (warm accent — visible engineering) -->
+            <path d="M230 -7 l10 -46 h12 l-4 46Z" fill="#b06a72"/>
+            <path d="M262 -7 l10 -38 h12 l-4 38Z" fill="#9d5a66"/>
+            <path d="M294 -7 l9 -30 h11 l-3 30Z" fill="#b06a72"/>
+            <!-- suspended modules under the spine -->
+            <path d="M96 7v18M120 7v18" stroke="#252b4a" stroke-width="3"/>
+            <rect x="82" y="25" width="52" height="30" rx="4" fill="#414a76"/>
+            <rect x="88" y="33" width="24" height="7" fill="#bfeeff" opacity=".85"/>
+            <path d="M82 25h52" stroke="#a5b8e6" stroke-width="1.3"/>
+            <path d="M176 7v14M204 7v14" stroke="#252b4a" stroke-width="3"/>
+            <rect x="164" y="21" width="52" height="38" rx="4" fill="#38406a"/>
+            <rect x="164" y="21" width="52" height="8" fill="#4a5480"/>
+            <circle cx="212" cy="53" r="2.2" fill="#9fe8b8" style="animation:blink2 7s linear infinite"/>
+            <path d="M300 7v20M330 7v20" stroke="#252b4a" stroke-width="3"/>
+            <rect x="288" y="27" width="54" height="26" rx="3" fill="#414a76"/>
+            <path d="M288 27h54" stroke="#a5b8e6" stroke-width="1.2"/>
+            <!-- sensor mast -->
+            <path d="M360 -7 v-34" stroke="#8fa2d6" stroke-width="2"/>
+            <circle cx="360" cy="-44" r="5" fill="none" stroke="#8fa2d6" stroke-width="2"/>
+            <circle cx="360" cy="-44" r="1.8" fill="#ffe9b8" style="animation:blink 12s linear infinite 3s"/>
+            <!-- aft drive block -->
+            <path d="M520 -7 L470 -24 L470 26 L520 14 Z" fill="#2c3354"/>
+            <rect x="516" y="-20" width="34" height="16" rx="3" fill="#3d466e"/>
+            <rect x="516" y="6" width="34" height="16" rx="3" fill="#3d466e"/>
+            <path d="M550 -16 h10 l6 4v4l-6 4h-10Z" fill="#1f2542"/>
+            <path d="M550 10 h10 l6 4v4l-6 4h-10Z" fill="#1f2542"/>
+            <!-- coasting: engines dark; tiny station-keep thruster fires rarely -->
+            <path d="M566 -10 l26 4-26 4z" fill="#9fe8ff" style="animation:thrustPuff 17s linear infinite"/>
+            <path d="M566 16 l22 3-22 3z" fill="#9fe8ff" style="animation:thrustPuff 23s linear infinite 8s"/>
+            <path d="M-150 4 l-14 2 14 2z" fill="#ffd9a8" style="animation:thrustPuff 29s linear infinite 13s"/>
+            <!-- nav lights -->
+            <circle cx="-148" cy="-2" r="2.2" fill="#ff8f8f" style="animation:blink 6s linear infinite"/>
+            <circle cx="548" cy="-2" r="2.2" fill="#d7ffe2" style="animation:blink 6s linear infinite 3s"/>
+          </g>
+
+          <!-- shuttle peeling away from the carrier, drifting down to the surface -->
+          <g opacity=".95">
+            <path id="shuttlePath" d="M560,260 C640,340 560,520 700,700 C760,790 900,860 1040,900" fill="none"/>
+            <g>
+              <animateMotion dur="95s" begin="18s" repeatCount="indefinite" rotate="auto">
+                <mpath href="#shuttlePath"/>
+              </animateMotion>
+              <path d="M0 0 L16 -4 L24 0 L16 4 Z" fill="#46507c"/>
+              <path d="M16 -4 L24 0" stroke="#aabdea" stroke-width="1"/>
+              <circle cx="2" cy="0" r="1.6" fill="#9fe8ff" style="animation:blink2 4s linear infinite"/>
+            </g>
+            <g>
+              <animateMotion dur="110s" begin="52s" repeatCount="indefinite" rotate="auto">
+                <mpath href="#shuttlePath"/>
+              </animateMotion>
+              <path d="M0 0 L13 -3 L19 0 L13 3 Z" fill="#3d466e"/>
+              <circle cx="2" cy="0" r="1.4" fill="#ffe9b8" style="animation:blink2 5s linear infinite 1s"/>
+            </g>
+          </g>
+
+          <!-- cargo platform on slow descent -->
+          <g style="animation:platformDescend 240s linear infinite" opacity=".9">
+            <g transform="translate(430,300)">
+              <rect x="-26" y="0" width="52" height="8" rx="2" fill="#38406a"/>
+              <path d="M-26 0h52" stroke="#a5b8e6" stroke-width="1.1"/>
+              <rect x="-16" y="-12" width="14" height="12" fill="#4a5480"/>
+              <rect x="2" y="-9" width="11" height="9" fill="#414a76"/>
+              <circle cx="-24" cy="4" r="1.6" fill="#ff8f8f" style="animation:blink 5s linear infinite 2s"/>
+              <path d="M-14 8 l-3 8M14 8 l3 8" stroke="#9fe8ff" stroke-width="1.4" opacity=".55"/>
+            </g>
+          </g>
+        </g>
+
+        <!-- ===== SHIP B — "Weir"-class sail freighter =====
+             asymmetric keel hull, exposed ribs, two raked energy sails -->
+        <g style="animation:shipDriftB 180s ease-in-out infinite alternate">
+          <g transform="translate(980,430)">
+            <!-- energy sails -->
+            <path d="M60 -12 L34 -128 L118 -96 L120 -14 Z" fill="rgba(140,226,255,.15)" stroke="#9fe0f8" stroke-width="1.6"/>
+            <path d="M170 -12 L158 -158 L236 -104 L226 -14 Z" fill="rgba(140,226,255,.12)" stroke="#9fe0f8" stroke-width="1.6" style="animation:shimmer 11s ease-in-out infinite"/>
+            <path d="M60 -12 L34 -128M170 -12 L158 -158" stroke="#5b6890" stroke-width="3"/>
+            <path d="M34 -128 L-8 -6M158 -158 L96 -8M236 -104 L268 -4" stroke="#5b6890" stroke-width="1" opacity=".8"/>
+            <!-- hull: long asymmetric keel -->
+            <path d="M-40 -6 L288 -14 L322 4 L272 26 L60 32 L-16 18 Z" fill="#3d466e"/>
+            <path d="M-40 -6 L288 -14 L322 4" fill="none" stroke="#aabdea" stroke-width="1.6"/>
+            <path d="M60 32 L272 26 L322 4" fill="none" stroke="#232948" stroke-width="3"/>
+            <!-- exposed ribs -->
+            <path d="M20 -7v32M62 -8v38M104 -9v38M146 -10v37M188 -11v36M230 -12v35" stroke="#2a3153" stroke-width="4"/>
+            <!-- wheelhouse + observation window -->
+            <path d="M244 -14 l8 -22 h30 l10 22Z" fill="#46507c"/>
+            <rect x="256" y="-30" width="24" height="7" fill="#bfeeff"/>
+            <!-- cargo saddle bags -->
+            <rect x="84" y="30" width="40" height="16" rx="3" fill="#31395e"/>
+            <rect x="140" y="30" width="40" height="14" rx="3" fill="#31395e"/>
+            <path d="M84 30h40M140 30h40" stroke="#7d8fc2" stroke-width="1"/>
+            <!-- keel fin -->
+            <path d="M36 32 L46 66 L66 34 Z" fill="#2c3354"/>
+            <circle cx="47" cy="60" r="2" fill="#ff8f8f" style="animation:blink 7s linear infinite 1.5s"/>
+            <!-- rare correction burn -->
+            <path d="M-42 6 l-20 3 20 3z" fill="#ffd9a8" style="animation:thrustPuff 21s linear infinite 5s"/>
+            <circle cx="318" cy="2" r="2.2" fill="#d7ffe2" style="animation:blink 8s linear infinite 4s"/>
+          </g>
+          <!-- maintenance drones leaving the freighter's bay -->
+          <path id="dronePathA" d="M1180,470 q90,-60 200,-40 q90,20 160,90" fill="none"/>
+          <g><animateMotion dur="60s" begin="30s" repeatCount="indefinite"><mpath href="#dronePathA"/></animateMotion>
+            <rect x="-3" y="-3" width="6" height="6" fill="#5b6890"/>
+            <circle r="1.4" fill="#9fe8ff" style="animation:blink2 3s linear infinite"/>
+          </g>
+          <g><animateMotion dur="74s" begin="47s" repeatCount="indefinite"><mpath href="#dronePathA"/></animateMotion>
+            <rect x="-2.5" y="-2.5" width="5" height="5" fill="#46507c"/>
+            <circle r="1.2" fill="#ffe9b8" style="animation:blink2 4s linear infinite 2s"/>
+          </g>
+        </g>
+
+        <!-- ===== distant escorts, half-lost in haze ===== -->
+        <g opacity=".55">
+          <g transform="translate(1300,150) scale(.42)" style="animation:shipDriftB 260s ease-in-out infinite alternate-reverse">
+            <rect x="0" y="-5" width="300" height="10" fill="#454e78"/>
+            <path d="M0 -5h300" stroke="#93a6d8" stroke-width="2"/>
+            <path d="M-40 0 L0 -14 L0 14 Z" fill="#4d578a"/>
+            <ellipse cx="120" cy="0" rx="26" ry="52" fill="none" stroke="#7d8fc2" stroke-width="4" stroke-dasharray="16 16" style="animation:ringSpin 60s linear infinite"/>
+            <rect x="230" y="-16" width="46" height="32" rx="4" fill="#38406a"/>
+            <circle cx="290" cy="0" r="4" fill="#d7ffe2" style="animation:blink 10s linear infinite 6s"/>
+          </g>
+          <g transform="translate(120,560) scale(.5)" style="animation:shipDriftA 280s ease-in-out infinite alternate-reverse">
+            <path d="M0 0 L260 -18 L300 6 L240 30 L40 26 Z" fill="#3a4166"/>
+            <path d="M0 0 L260 -18 L300 6" fill="none" stroke="#93a6d8" stroke-width="2"/>
+            <path d="M70 -6 L60 -70 L120 -50 L118 -8Z" fill="rgba(140,226,255,.12)" stroke="#9fe0f8" stroke-width="1.6"/>
+            <circle cx="296" cy="4" r="3.4" fill="#ff8f8f" style="animation:blink 9s linear infinite 2s"/>
+          </g>
+        </g>
+      </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== HIGH CIRRUS (f .35) =================== -->
+  <div class="layer" data-f="0.35" id="layer-cirrus">
+    <div class="piece" id="cirrusgroup" style="top:78vh;height:150vh;opacity:0">
+      <svg viewBox="0 0 1920 1000" preserveAspectRatio="xMidYMid slice">
+        <g class="drift-r" opacity=".62">
+          <ellipse cx="420" cy="120" rx="330" ry="16" fill="#e7ecf8"/>
+          <ellipse cx="560" cy="146" rx="210" ry="10" fill="#d8e0f2"/>
+        </g>
+        <g class="drift-l" opacity=".55">
+          <ellipse cx="1350" cy="240" rx="400" ry="18" fill="#e7ecf8"/>
+          <ellipse cx="1180" cy="270" rx="230" ry="10" fill="#d8e0f2"/>
+        </g>
+        <g class="drift-r2" opacity=".6">
+          <ellipse cx="820" cy="470" rx="380" ry="15" fill="#eef2fa"/>
+          <ellipse cx="1020" cy="495" rx="200" ry="9" fill="#d8e0f2"/>
+        </g>
+        <g class="drift-l2" opacity=".5">
+          <ellipse cx="360" cy="700" rx="300" ry="14" fill="#e7ecf8"/>
+          <ellipse cx="1560" cy="820" rx="330" ry="16" fill="#eef2fa"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- =================== FAR RANGE (f .7) =================== -->
+  <div class="layer" data-f="0.7" id="layer-farmtn">
+    <div class="piece" style="top:296vh;height:64vh">
+      <svg viewBox="0 0 1920 640" preserveAspectRatio="xMidYMax slice">
+        <!-- flat two-tone silhouettes, softened by distance -->
+        <path d="M0 640 L0 420 L140 250 L200 380 L300 120 L340 300 L420 200 L520 420 L640 260 L700 400 L830 170 L900 420 L1040 300 L1120 90 L1180 320 L1300 220 L1420 420 L1540 260 L1620 380 L1750 150 L1820 360 L1920 300 L1920 640 Z" fill="#5a659a"/>
+        <path d="M300 120 L340 300 L280 300Z M1120 90 L1180 320 L1080 320Z M1750 150 L1820 360 L1700 360Z" fill="#6d78ab"/>
+        <path d="M0 640 L0 520 L180 430 L360 500 L560 420 L760 520 L980 440 L1200 530 L1420 450 L1660 540 L1920 460 L1920 640 Z" fill="#4c5688"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- =================== CUMULUS DECK (f .62) =================== -->
+  <div class="layer" data-f="0.62" id="layer-cumulus">
+    <div class="piece" id="cumulusgroup" style="top:126vh;height:130vh;opacity:0">
+      <svg viewBox="0 0 1920 1100" preserveAspectRatio="xMidYMid slice">
+        <!-- flat 3-tone puffs: cream body, pink belly, warm crown -->
+        <g class="drift-r">
+          <ellipse cx="380" cy="180" rx="240" ry="74" fill="#f4e7d8"/>
+          <ellipse cx="270" cy="150" rx="120" ry="62" fill="#f4e7d8"/>
+          <ellipse cx="470" cy="140" rx="130" ry="66" fill="#faf1e4"/>
+          <ellipse cx="380" cy="222" rx="168" ry="30" fill="#eebfca"/>
+          <ellipse cx="430" cy="96" rx="80" ry="30" fill="#fff6ea"/>
+        </g>
+        <g class="drift-l2">
+          <ellipse cx="1420" cy="300" rx="300" ry="88" fill="#f4e7d8"/>
+          <ellipse cx="1290" cy="258" rx="150" ry="72" fill="#faf1e4"/>
+          <ellipse cx="1560" cy="256" rx="140" ry="64" fill="#f4e7d8"/>
+          <ellipse cx="1420" cy="352" rx="208" ry="34" fill="#eebfca"/>
+          <ellipse cx="1350" cy="204" rx="90" ry="30" fill="#fff6ea"/>
+        </g>
+        <g class="drift-r2">
+          <ellipse cx="880" cy="560" rx="270" ry="80" fill="#f2e2d4"/>
+          <ellipse cx="1010" cy="520" rx="130" ry="60" fill="#f9eede"/>
+          <ellipse cx="880" cy="602" rx="192" ry="30" fill="#e9b4c2"/>
+        </g>
+        <g class="drift-l">
+          <ellipse cx="260" cy="760" rx="230" ry="66" fill="#f2e2d4"/>
+          <ellipse cx="370" cy="726" rx="110" ry="52" fill="#f9eede"/>
+          <ellipse cx="260" cy="796" rx="160" ry="26" fill="#e9b4c2"/>
+          <ellipse cx="1660" cy="880" rx="260" ry="72" fill="#f4e7d8"/>
+          <ellipse cx="1560" cy="840" rx="120" ry="54" fill="#faf1e4"/>
+          <ellipse cx="1660" cy="920" rx="180" ry="28" fill="#eebfca"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- =================== FLANKING NEEDLE PEAKS (f .85) =================== -->
+  <div class="layer" data-f="0.85" id="layer-midmtn">
+    <div class="piece" style="top:342vh;height:106vh">
+      <svg viewBox="0 0 1920 1060" preserveAspectRatio="xMidYMax slice">
+        <defs>
+          <g id="flowerclump">
+            <circle cx="0" cy="0" r="7" fill="#c8549c"/>
+            <circle cx="10" cy="4" r="6" fill="#df6cb2"/>
+            <circle cx="-9" cy="5" r="5.5" fill="#b6438b"/>
+            <circle cx="4" cy="-8" r="5" fill="#df6cb2"/>
+          </g>
+        </defs>
+
+        <!-- small resident clouds drifting between the peaks (visible in the final frame) -->
+        <g opacity=".9">
+          <g class="drift-r2">
+            <ellipse cx="500" cy="150" rx="130" ry="30" fill="#f4e7d8"/>
+            <ellipse cx="560" cy="132" rx="66" ry="24" fill="#faf1e4"/>
+            <ellipse cx="500" cy="166" rx="92" ry="14" fill="#eebfca"/>
+          </g>
+          <g class="drift-l2">
+            <ellipse cx="1340" cy="110" rx="150" ry="32" fill="#f4e7d8"/>
+            <ellipse cx="1270" cy="92" rx="70" ry="24" fill="#faf1e4"/>
+            <ellipse cx="1340" cy="126" rx="104" ry="15" fill="#eebfca"/>
+          </g>
+          <g class="drift-r" opacity=".7">
+            <ellipse cx="940" cy="230" rx="110" ry="22" fill="#f2e2d4"/>
+            <ellipse cx="940" cy="242" rx="74" ry="11" fill="#e9b4c2"/>
+          </g>
+        </g>
+
+        <!-- LEFT needle massif -->
+        <g>
+          <path d="M-40 1060 L-40 420 L60 240 L110 380 L180 60 L230 260 L270 180 L330 460 L380 340 L470 700 L520 620 L560 1060 Z" fill="#39466f"/>
+          <!-- lit faces (light from upper right) -->
+          <path d="M180 60 L230 260 L196 300 L168 190 Z" fill="#7e8bbb"/>
+          <path d="M60 240 L110 380 L74 400 L52 310 Z" fill="#6d7aac"/>
+          <path d="M330 460 L380 340 L400 480 L356 560 Z" fill="#7e8bbb"/>
+          <!-- crisp graphic rim accents -->
+          <path d="M180 60 L230 260M330 460 L380 340" stroke="#a9b6e0" stroke-width="2.5" fill="none"/>
+          <!-- hanging vegetation -->
+          <path d="M120 520 q60 -30 130 10 q70 40 120 30 L420 640 q-80 30 -170 -10 Q160 590 96 600 Z" fill="#2d5c47"/>
+          <path d="M150 540 q50 -22 110 6 l-16 34 q-60 -18 -110 -2Z" fill="#3f7d55"/>
+          <path d="M40 760 q90 -40 180 0 q90 40 170 16 L400 900 q-110 40 -220 -6 Q80 850 20 866 Z" fill="#25503f"/>
+          <path d="M90 790 q70 -26 150 4 l-14 40 q-80 -22 -150 -4Z" fill="#38714e"/>
+          <use href="#flowerclump" transform="translate(200,560)"/>
+          <use href="#flowerclump" transform="translate(300,600) scale(.8)"/>
+          <use href="#flowerclump" transform="translate(140,810) scale(1.15)"/>
+          <use href="#flowerclump" transform="translate(280,850)"/>
+          <use href="#flowerclump" transform="translate(80,640) scale(.7)"/>
+          <!-- waterfall threading the cliff -->
+          <path d="M262 470 q-6 90 12 170 q14 66 4 150" fill="none" stroke="#dff3fd" stroke-width="4"
+                stroke-dasharray="16 20" stroke-linecap="round" style="animation:flow 7s linear infinite"/>
+          <path d="M262 470 q-6 90 12 170 q14 66 4 150" fill="none" stroke="#9fd4ee" stroke-width="7" opacity=".28"/>
+          <!-- cliffside habitat with lights -->
+          <g transform="translate(392,556)">
+            <path d="M0 0 h54 v26 h-70 v-14 Z" fill="#57628f"/>
+            <path d="M0 0 h54" stroke="#a9b6e0" stroke-width="1.6"/>
+            <rect x="6" y="8" width="7" height="6" fill="#ffe9b0" opacity=".9"/>
+            <rect x="20" y="8" width="7" height="6" fill="#ffe9b0" opacity=".65"/>
+            <rect x="34" y="8" width="7" height="6" fill="#bfeeff" opacity=".8"/>
+            <circle cx="58" cy="-4" r="2.4" fill="#ff8f8f" style="animation:blink 8s linear infinite"/>
+          </g>
+          <!-- cable car line down the face -->
+          <path id="cablepathL" d="M340 470 L640 860" stroke="#20294a" stroke-width="2" fill="none"/>
+          <g>
+            <animateMotion dur="90s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;.5;1" calcMode="linear">
+              <mpath href="#cablepathL"/>
+            </animateMotion>
+            <path d="M0 0 v10" stroke="#20294a" stroke-width="2"/>
+            <rect x="-8" y="10" width="16" height="11" rx="2" fill="#57628f"/>
+            <rect x="-5" y="13" width="10" height="4" fill="#ffe9b0" opacity=".85"/>
+          </g>
+        </g>
+
+        <!-- RIGHT needle massif -->
+        <g>
+          <path d="M1960 1060 L1960 380 L1860 200 L1810 340 L1760 90 L1700 300 L1650 220 L1600 470 L1540 380 L1470 720 L1420 640 L1380 1060 Z" fill="#39466f"/>
+          <path d="M1760 90 L1810 340 L1774 364 L1730 210 Z" fill="#7e8bbb"/>
+          <path d="M1860 200 L1908 316 L1866 340 L1840 260 Z" fill="#6d7aac"/>
+          <path d="M1600 470 L1540 380 L1524 500 L1566 560 Z" fill="#6d7aac"/>
+          <path d="M1760 90 L1810 340M1600 470 L1540 380" stroke="#a9b6e0" stroke-width="2.5" fill="none"/>
+          <!-- hanging vegetation shelves -->
+          <path d="M1500 560 q80 -34 170 2 q80 32 150 20 L1830 660 q-100 34 -200 -8 q-80 -32 -136 -24 Z" fill="#2d5c47"/>
+          <path d="M1540 580 q60 -24 130 4 l-14 38 q-66 -20 -126 -6Z" fill="#3f7d55"/>
+          <path d="M1470 820 q100 -42 200 -2 q90 36 180 18 L1860 928 q-120 42 -230 -6 q-90 -38 -166 -26 Z" fill="#25503f"/>
+          <path d="M1530 850 q80 -30 170 4 l-16 42 q-84 -26 -164 -8Z" fill="#38714e"/>
+          <use href="#flowerclump" transform="translate(1650,608) scale(1.1)"/>
+          <use href="#flowerclump" transform="translate(1760,640) scale(.85)"/>
+          <use href="#flowerclump" transform="translate(1580,880)"/>
+          <use href="#flowerclump" transform="translate(1720,900) scale(1.25)"/>
+          <use href="#flowerclump" transform="translate(1500,690) scale(.7)"/>
+          <use href="#flowerclump" transform="translate(1840,700) scale(.9)"/>
+          <path d="M1666 560 q10 100 -6 180 q-12 62 0 140" fill="none" stroke="#dff3fd" stroke-width="4"
+                stroke-dasharray="16 20" stroke-linecap="round" style="animation:flow 8s linear infinite 2s"/>
+          <path d="M1666 560 q10 100 -6 180 q-12 62 0 140" fill="none" stroke="#9fd4ee" stroke-width="7" opacity=".28"/>
+          <!-- rotating relay dish on the ridge -->
+          <g transform="translate(1552,392)">
+            <path d="M0 0 v-16" stroke="#20294a" stroke-width="3"/>
+            <g style="animation:dishTurn 47s ease-in-out infinite alternate;transform-origin:0 -16px">
+              <path d="M-14 -16 a14 8 0 0 1 28 0 Z" fill="#8b98c8"/>
+              <path d="M-14 -16 a14 8 0 0 1 28 0" stroke="#c6d2f2" stroke-width="1.4" fill="none"/>
+            </g>
+            <circle cx="0" cy="-26" r="2" fill="#ff8f8f" style="animation:blink 7s linear infinite 3.5s"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- =================== THE CITY (f .95) =================== -->
+  <div class="layer" data-f="0.95" id="layer-city">
+    <div class="piece" style="top:394vh;height:74vh;left:50%;width:90vw;min-width:860px;transform:translateX(-50%)">
+      <svg viewBox="0 0 1500 640" preserveAspectRatio="xMidYMax meet">
+        <defs>
+          <pattern id="winA" width="16" height="20" patternUnits="userSpaceOnUse">
+            <rect x="4" y="5" width="6" height="8" fill="#eef9ff" opacity=".6"/>
+          </pattern>
+          <pattern id="winB" width="13" height="16" patternUnits="userSpaceOnUse">
+            <rect x="3" y="4" width="5" height="6" fill="#dff4ff" opacity=".42"/>
+          </pattern>
+          <pattern id="winC" width="20" height="12" patternUnits="userSpaceOnUse">
+            <rect x="4" y="3" width="11" height="4" fill="#f2fbff" opacity=".5"/>
+          </pattern>
+        </defs>
+
+        <!-- low back districts, hazed -->
+        <g opacity=".82">
+          <rect x="60" y="470" width="90" height="170" fill="#7fa8cf"/>
+          <rect x="170" y="440" width="60" height="200" fill="#8db4d6"/>
+          <rect x="640" y="452" width="110" height="188" fill="#7fa8cf"/>
+          <rect x="1210" y="470" width="120" height="170" fill="#8db4d6"/>
+          <rect x="1340" y="430" width="52" height="210" fill="#7fa8cf"/>
+          <rect x="60" y="470" width="90" height="170" fill="url(#winB)"/>
+          <rect x="640" y="452" width="110" height="188" fill="url(#winB)"/>
+          <rect x="1210" y="470" width="120" height="170" fill="url(#winB)"/>
+        </g>
+
+        <!-- T1: terraced garden ziggurat -->
+        <g>
+          <rect x="230" y="330" width="120" height="310" fill="#9dcbe8"/>
+          <rect x="248" y="260" width="84" height="80" fill="#aed7ee"/>
+          <rect x="266" y="212" width="48" height="56" fill="#9dcbe8"/>
+          <rect x="230" y="330" width="120" height="310" fill="url(#winA)"/>
+          <rect x="248" y="260" width="84" height="80" fill="url(#winB)"/>
+          <path d="M230 330h120M248 260h84M266 212h48" stroke="#eaf7ff" stroke-width="2"/>
+          <path d="M224 336h132v6h-132zM242 266h96v5h-96z" fill="#57986b"/>
+          <path d="M224 336h132M242 266h96" stroke="#7fc48b" stroke-width="2"/>
+          <path d="M290 212 v-26" stroke="#eaf7ff" stroke-width="2"/>
+          <circle cx="290" cy="182" r="2.6" fill="#ff8f8f" style="animation:blink 6s linear infinite"/>
+        </g>
+
+        <!-- T2: twin spires + skybridge -->
+        <g>
+          <path d="M420 640 V240 L446 200 L472 240 V640 Z" fill="#8fc0e2"/>
+          <path d="M420 640 V240 L446 200" fill="none" stroke="#e8f6ff" stroke-width="2"/>
+          <rect x="424" y="250" width="44" height="390" fill="url(#winB)"/>
+          <path d="M500 640 V300 L522 268 L544 300 V640 Z" fill="#7cb2da"/>
+          <rect x="504" y="308" width="36" height="332" fill="url(#winB)"/>
+          <rect x="470" y="360" width="32" height="9" fill="#cfe8f6"/>
+          <path d="M470 360h32" stroke="#eef9ff" stroke-width="1.6"/>
+          <rect x="470" y="470" width="32" height="8" fill="#cfe8f6"/>
+          <circle cx="446" cy="194" r="2.6" fill="#ff8f8f" style="animation:blink 7s linear infinite 2s"/>
+          <!-- solar collector slowly tracking -->
+          <g style="animation:panelTrack 80s ease-in-out infinite alternate;transform-origin:522px 262px">
+            <path d="M508 262 h28" stroke="#2f3f66" stroke-width="3"/>
+            <rect x="506" y="256" width="32" height="6" fill="#5fb8e8"/>
+          </g>
+        </g>
+
+        <!-- T4: the central spire (focal) -->
+        <g>
+          <path d="M700 640 V180 L730 60 L760 180 V640 Z" fill="#a8d4ee"/>
+          <path d="M700 640 V180 L730 60" fill="none" stroke="#f2fbff" stroke-width="2.4"/>
+          <path d="M760 180 V640" stroke="#5f88b4" stroke-width="4"/>
+          <rect x="706" y="200" width="48" height="440" fill="url(#winA)"/>
+          <rect x="668" y="330" width="34" height="310" fill="#8fc0e2"/>
+          <rect x="668" y="330" width="34" height="310" fill="url(#winB)"/>
+          <rect x="758" y="380" width="38" height="260" fill="#7cb2da"/>
+          <rect x="758" y="380" width="38" height="260" fill="url(#winB)"/>
+          <path d="M668 330h34M758 380h38" stroke="#e8f6ff" stroke-width="1.8"/>
+          <!-- energy conduit, gently pulsing -->
+          <path d="M730 92 V600" stroke="#9fe8ff" stroke-width="2" style="animation:pulse 7s ease-in-out infinite"/>
+          <path d="M730 60 v-38" stroke="#e8f6ff" stroke-width="2"/>
+          <circle cx="730" cy="18" r="3" fill="#ffb4b4" style="animation:blink 5s linear infinite 1s"/>
+          <!-- observation ring -->
+          <ellipse cx="730" cy="176" rx="46" ry="10" fill="none" stroke="#e8f6ff" stroke-width="3"/>
+          <ellipse cx="730" cy="176" rx="46" ry="10" fill="rgba(238,249,255,.2)"/>
+        </g>
+
+        <!-- T6: ancient foundation + modern glass extension -->
+        <g>
+          <path d="M880 640 V420 q0 -34 30 -34 h50 q30 0 30 34 V640 Z" fill="#8a8ea6"/>
+          <path d="M896 640 V446h18v194M934 640 V446h18v194" stroke="#6f7390" stroke-width="6" fill="none"/>
+          <path d="M880 420 q0 -34 30 -34 h50 q30 0 30 34" fill="none" stroke="#b9bccd" stroke-width="2.4"/>
+          <rect x="972" y="390" width="10" height="250" fill="#6f7390"/>
+          <path d="M898 640 V386h74" fill="none" stroke="#9a9eb4" stroke-width="0"/>
+          <!-- glass tower grown out of the old stone -->
+          <path d="M902 400 V180 L958 150 L986 200 V400 Z" fill="#9dcbe8"/>
+          <rect x="908" y="196" width="72" height="200" fill="url(#winB)"/>
+          <path d="M902 400 V180 L958 150" fill="none" stroke="#eaf7ff" stroke-width="2"/>
+          <circle cx="958" cy="144" r="2.4" fill="#d7ffe2" style="animation:blink 8s linear infinite 4s"/>
+          <!-- hanging gardens off the old wall -->
+          <path d="M876 470 q-16 26 4 40M876 512 q-14 22 2 36" stroke="#3f7d55" stroke-width="5" fill="none" style="animation:swayA 12s ease-in-out infinite alternate;transform-origin:876px 470px"/>
+        </g>
+
+        <!-- T7: arch building -->
+        <g>
+          <path d="M1060 640 V360 h34 V520 h72 V360 h34 V640 Z" fill="#7cb2da"/>
+          <path d="M1060 360 h34M1166 360 h34" stroke="#e8f6ff" stroke-width="2"/>
+          <rect x="1060" y="330" width="140" height="34" fill="#9dcbe8"/>
+          <rect x="1060" y="330" width="140" height="34" fill="url(#winC)"/>
+          <path d="M1060 330h140" stroke="#f2fbff" stroke-width="2.2"/>
+          <path d="M1076 364 v276M1184 364 v276" stroke="#5f88b4" stroke-width="0"/>
+          <rect x="1064" y="366" width="26" height="274" fill="url(#winB)"/>
+          <rect x="1170" y="366" width="26" height="274" fill="url(#winB)"/>
+          <!-- vertical park under the arch -->
+          <path d="M1104 520 q26 -18 52 0 v14 q-26 -14 -52 0Z" fill="#57986b"/>
+        </g>
+
+        <!-- T5: leaning monolith with hex crown -->
+        <g>
+          <path d="M1268 640 L1288 300 L1338 288 L1372 640 Z" fill="#8fc0e2"/>
+          <rect x="1284" y="306" width="72" height="330" fill="url(#winB)" transform="skewX(-2)"/>
+          <path d="M1288 300 L1338 288" stroke="#eaf7ff" stroke-width="2.4"/>
+          <path d="M1296 300 L1290 266 L1312 250 L1338 258 L1342 288 Z" fill="#aed7ee"/>
+          <circle cx="1312" cy="244" r="2.4" fill="#ff8f8f" style="animation:blink 9s linear infinite 5s"/>
+        </g>
+
+        <!-- floating platform district -->
+        <g style="animation:bob 34s ease-in-out infinite alternate">
+          <ellipse cx="580" cy="180" rx="64" ry="12" fill="#6f9cc6"/>
+          <path d="M516 180 a64 12 0 0 0 128 0 l-10 22 a54 9 0 0 1 -108 0 Z" fill="#54759c"/>
+          <rect x="548" y="152" width="18" height="28" fill="#9dcbe8"/>
+          <rect x="574" y="160" width="14" height="20" fill="#8fc0e2"/>
+          <path d="M600 172 q8 -18 16 0" stroke="#3f7d55" stroke-width="5" fill="none"/>
+          <circle cx="612" cy="150" r="6" fill="#57986b"/>
+          <circle cx="516" cy="180" r="2" fill="#ffe9b8" style="animation:blink2 6s linear infinite"/>
+          <circle cx="644" cy="180" r="2" fill="#9fe8ff" style="animation:blink2 6s linear infinite 3s"/>
+          <path d="M560 202 l-4 10M600 202 l4 10" stroke="#9fe8ff" stroke-width="1.6" opacity=".5"/>
+        </g>
+
+        <!-- sky bridges between major towers -->
+        <path d="M350 380 H420" stroke="#cfe8f6" stroke-width="7"/>
+        <path d="M350 380 H420" stroke="#eef9ff" stroke-width="2"/>
+        <path d="M544 420 H668" stroke="#cfe8f6" stroke-width="6"/>
+        <path d="M796 440 H880" stroke="#cfe8f6" stroke-width="6"/>
+        <path d="M986 380 H1060 " stroke="#cfe8f6" stroke-width="5"/>
+
+        <!-- sky train: rail + capsule -->
+        <path id="railPath" d="M40 560 C 360 520 700 546 1000 512 C 1200 490 1360 500 1480 476" fill="none" stroke="#5f88b4" stroke-width="3" opacity=".85"/>
+        <g>
+          <animateMotion dur="44s" repeatCount="indefinite" rotate="auto"><mpath href="#railPath"/></animateMotion>
+          <rect x="-16" y="-7" width="32" height="9" rx="4" fill="#eaf7ff"/>
+          <rect x="-12" y="-5" width="8" height="4" fill="#5fb8e8"/>
+          <rect x="0" y="-5" width="8" height="4" fill="#5fb8e8"/>
+          <circle cx="16" cy="-2" r="1.6" fill="#9fe8ff"/>
+        </g>
+        <g>
+          <animateMotion dur="58s" begin="21s" repeatCount="indefinite" rotate="auto" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#railPath"/></animateMotion>
+          <rect x="-13" y="-11" width="26" height="8" rx="4" fill="#dff0fa"/>
+          <circle cx="-13" cy="-7" r="1.4" fill="#ffe9b8"/>
+        </g>
+
+        <!-- commuter craft: slow lane arcs over the districts -->
+        <path id="laneA" d="M-40 300 C 400 260 1000 320 1540 250" fill="none"/>
+        <path id="laneB" d="M1540 380 C 1000 430 500 350 -40 420" fill="none"/>
+        <g opacity=".9">
+          <g><animateMotion dur="70s" repeatCount="indefinite" rotate="auto"><mpath href="#laneA"/></animateMotion>
+            <path d="M-7 0 L5 -3 L9 0 L5 3 Z" fill="#46507c"/><circle cx="7" r="1.6" fill="#9fe8ff" style="animation:blink2 3s linear infinite"/></g>
+          <g><animateMotion dur="92s" begin="26s" repeatCount="indefinite" rotate="auto"><mpath href="#laneA"/></animateMotion>
+            <path d="M-6 0 L4 -2.5 L8 0 L4 2.5 Z" fill="#57628f"/><circle cx="6" r="1.4" fill="#ffe9b8" style="animation:blink2 4s linear infinite 1s"/></g>
+          <g><animateMotion dur="80s" begin="10s" repeatCount="indefinite" rotate="auto"><mpath href="#laneB"/></animateMotion>
+            <path d="M-7 0 L5 -3 L9 0 L5 3 Z" fill="#46507c"/><circle cx="7" r="1.6" fill="#9fe8ff" style="animation:blink2 3.5s linear infinite 2s"/></g>
+          <g><animateMotion dur="105s" begin="48s" repeatCount="indefinite" rotate="auto"><mpath href="#laneB"/></animateMotion>
+            <path d="M-5 0 L4 -2 L7 0 L4 2 Z" fill="#5b6890"/><circle cx="5" r="1.2" fill="#dff0fa" style="animation:blink2 5s linear infinite"/></g>
+        </g>
+
+        <!-- alien wildlife circling the spire thermals -->
+        <path id="birdPath" d="M730 240 C 900 200 980 300 830 330 C 660 360 560 280 730 240Z" fill="none"/>
+        <g stroke="#26304f" stroke-width="2.4" fill="none" stroke-linecap="round">
+          <g><animateMotion dur="52s" repeatCount="indefinite" rotate="auto"><mpath href="#birdPath"/></animateMotion><path d="M-6 0 Q-2 -5 0 0 Q2 -5 6 0"/></g>
+          <g><animateMotion dur="52s" begin="4s" repeatCount="indefinite" rotate="auto"><mpath href="#birdPath"/></animateMotion><path d="M-5 0 Q-1.6 -4 0 0 Q1.6 -4 5 0"/></g>
+          <g><animateMotion dur="52s" begin="9s" repeatCount="indefinite" rotate="auto"><mpath href="#birdPath"/></animateMotion><path d="M-4 0 Q-1.4 -3.4 0 0 Q1.4 -3.4 4 0"/></g>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- =================== VALLEY FLOOR & RIVER (f 1.0) =================== -->
+  <div class="layer" data-f="1" id="layer-valley">
+    <div class="piece" style="top:452vh;height:58vh">
+      <svg viewBox="0 0 1920 580" preserveAspectRatio="xMidYMax slice">
+        <defs>
+          <g id="flr">
+            <circle cx="0" cy="0" r="8" fill="#d85fa6"/>
+            <circle cx="11" cy="5" r="7" fill="#ef7ab8"/>
+            <circle cx="-10" cy="6" r="6" fill="#c04a92"/>
+            <circle cx="4" cy="-9" r="6" fill="#ef7ab8"/>
+            <circle cx="-4" cy="12" r="5" fill="#d85fa6"/>
+          </g>
+        </defs>
+
+        <!-- valley ridge line (dips where the river exits the city) -->
+        <path d="M0 580 V180 q140 -44 300 -16 q170 30 320 -8 q90 -22 180 -6 q70 36 130 36 q60 0 126 -34 q120 -20 240 8 q170 40 330 6 q160 -32 294 12 V580 Z" fill="#28325a"/>
+        <path d="M300 164 q170 30 320 -8 q90 -22 180 -6" fill="none" stroke="#48548a" stroke-width="3"/>
+        <path d="M1226 190 q170 40 330 6" fill="none" stroke="#48548a" stroke-width="3"/>
+
+        <!-- forested banks along the crest, crisp canopy groups -->
+        <g fill="#1f4a3a">
+          <path d="M560 150 q80 -42 170 -6 q80 32 150 12 q38 38 -10 62 q-100 38 -200 -4 q-90 -36 -140 -18 Z"/>
+          <path d="M1080 158 q90 -38 180 2 q80 34 160 14 q28 42 -20 62 q-110 34 -210 -8 q-80 -32 -130 -20 Z"/>
+          <path d="M150 200 q100 -46 210 -4 q90 34 170 16 q34 44 -16 66 q-120 40 -240 -6 q-100 -38 -150 -24 Z"/>
+          <path d="M1440 214 q110 -42 220 2 q90 36 200 16 L1920 300 q-140 46 -280 0 q-110 -38 -170 -26 Z"/>
+        </g>
+        <g fill="#2f6a4c">
+          <path d="M600 164 q66 -32 140 -2 l-12 38 q-70 -20 -132 -6Z"/>
+          <path d="M1120 172 q70 -28 150 4 l-14 38 q-70 -22 -140 -10Z"/>
+          <path d="M210 214 q80 -34 170 0 l-14 42 q-80 -24 -160 -10Z"/>
+          <path d="M1510 228 q84 -30 180 4 l-16 42 q-84 -26 -170 -12Z"/>
+        </g>
+
+        <!-- river: slips out of the city gap and meanders down the basin -->
+        <path d="M905 118 q-26 52 -6 96 q22 38 -16 72 q-32 32 -2 84 q24 44 -8 130 L880 580" fill="none" stroke="#2f6ea8" stroke-width="84" stroke-linecap="round"/>
+        <path d="M905 118 q-26 52 -6 96 q22 38 -16 72 q-32 32 -2 84 q24 44 -8 130 L880 580" fill="none" stroke="#4aa7dd" stroke-width="70" stroke-linecap="round"/>
+        <path d="M905 128 q-26 48 -6 90 q22 38 -16 72 q-32 32 -2 84 q24 44 -8 130" fill="none" stroke="#8fd4f2" stroke-width="5" stroke-dasharray="24 32" stroke-linecap="round" style="animation:flowSlow 14s linear infinite"/>
+        <path d="M916 160 q-10 34 4 62" fill="none" stroke="#d9f2fd" stroke-width="2.4" stroke-dasharray="10 42" style="animation:flowSlow 9s linear infinite 2s"/>
+        <path d="M886 292 q-16 26 2 54" fill="none" stroke="#d9f2fd" stroke-width="2.4" stroke-dasharray="12 48" style="animation:flowSlow 11s linear infinite 4s"/>
+
+        <!-- hover ferry gliding the river -->
+        <g>
+          <animateMotion dur="66s" repeatCount="indefinite" rotate="auto"
+            path="M905 150 q-26 38 -6 74 q22 38 -16 72 q-32 32 -2 84 q24 44 -8 130"/>
+          <path d="M-10 0 L8 -3 L12 0 L8 3 Z" fill="#e8f4fc"/>
+          <path d="M-10 0 L8 -3" stroke="#ffffff" stroke-width="1"/>
+          <circle cx="10" r="1.5" fill="#9fe8ff" style="animation:blink2 4s linear infinite"/>
+        </g>
+
+        <!-- banks overlapping the river course, so it reads as terrain not a ribbon -->
+        <g>
+          <path d="M770 226 q80 -24 160 4 q56 20 100 14 q22 30 -12 46 q-84 24 -164 -8 q-64 -26 -100 -16 Z" fill="#234f3d"/>
+          <path d="M806 240 q64 -16 138 8 l-12 30 q-66 -18 -134 -8Z" fill="#336a4a"/>
+          <use href="#flr" transform="translate(880,258) scale(.75)"/>
+          <path d="M1016 316 q-76 -20 -152 8 q-52 18 -94 12 q-20 28 12 44 q78 22 154 -10 q60 -24 94 -14 Z" fill="#20493a"/>
+          <use href="#flr" transform="translate(924,346) scale(.7)"/>
+        </g>
+
+        <!-- blossom fields on the banks -->
+        <use href="#flr" transform="translate(660,206)"/>
+        <use href="#flr" transform="translate(756,232) scale(.8)"/>
+        <use href="#flr" transform="translate(580,238) scale(1.15)"/>
+        <use href="#flr" transform="translate(1170,222)"/>
+        <use href="#flr" transform="translate(1264,250) scale(.9)"/>
+        <use href="#flr" transform="translate(300,268) scale(1.2)"/>
+        <use href="#flr" transform="translate(404,290) scale(.85)"/>
+        <use href="#flr" transform="translate(1530,282) scale(1.1)"/>
+        <use href="#flr" transform="translate(1636,306) scale(.9)"/>
+        <use href="#flr" transform="translate(210,300)"/>
+        <use href="#flr" transform="translate(1800,270) scale(.8)"/>
+      </svg>
+
+      <!-- rolling mist over the river mouth -->
+      <div class="mist" style="top:12%;left:38%;width:26vw;height:9vh;animation:mistRoll 60s ease-in-out infinite alternate"></div>
+      <div class="mist" style="top:21%;left:47%;width:20vw;height:7vh;animation:mistRoll 78s ease-in-out infinite alternate-reverse;opacity:.8"></div>
+      <div class="mist" style="top:6%;left:10%;width:18vw;height:6vh;animation:mistRoll 90s ease-in-out infinite alternate;opacity:.55"></div>
+      <div class="mist" style="top:10%;left:68%;width:18vw;height:6vh;animation:mistRoll 84s ease-in-out infinite alternate-reverse;opacity:.6"></div>
+    </div>
+  </div>
+
+  <!-- =================== FOREGROUND (f 1.2) =================== -->
+  <div class="layer" data-f="1.2" id="layer-fg">
+    <!-- overhanging branch, top right -->
+    <div class="piece" style="top:492vh;left:auto;right:0;width:30vw;height:20vh">
+      <svg viewBox="0 0 800 300" preserveAspectRatio="xMaxYMin meet">
+        <g style="animation:swayB 14s ease-in-out infinite alternate;transform-origin:800px 20px">
+          <path d="M800 30 q-180 10 -320 80 q-90 44 -150 120" fill="none" stroke="#141a33" stroke-width="16" stroke-linecap="round"/>
+          <path d="M620 74 q-60 6 -110 50M480 130 q-50 14 -80 60" fill="none" stroke="#141a33" stroke-width="9" stroke-linecap="round"/>
+          <g fill="#1d3a52">
+            <ellipse cx="500" cy="120" rx="46" ry="20" transform="rotate(-24 500 120)"/>
+            <ellipse cx="380" cy="190" rx="42" ry="18" transform="rotate(-30 380 190)"/>
+            <ellipse cx="600" cy="80" rx="40" ry="17" transform="rotate(-18 600 80)"/>
+            <ellipse cx="330" cy="250" rx="38" ry="16" transform="rotate(-36 330 250)"/>
+          </g>
+          <g fill="none" stroke="#4a7ea8" stroke-width="2">
+            <path d="M462 138 q40 -20 78 -34M346 206 q36 -20 70 -32"/>
+          </g>
+          <circle cx="430" cy="170" r="9" fill="#ef7ab8"/>
+          <circle cx="443" cy="163" r="6" fill="#f9a6d0"/>
+          <circle cx="552" cy="104" r="8" fill="#d85fa6"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- left rock face with giant blossoms -->
+    <div class="piece" style="top:504vh;left:0;width:24vw;height:66vh">
+      <svg viewBox="0 0 600 1000" preserveAspectRatio="xMinYMin meet">
+        <path d="M0 0 L170 60 L120 240 L220 420 L140 640 L240 860 L160 1000 L0 1000 Z" fill="#10152b"/>
+        <path d="M170 60 L120 240 L220 420" fill="none" stroke="#3f5f96" stroke-width="3"/>
+        <g style="animation:swayA 11s ease-in-out infinite alternate;transform-origin:150px 430px">
+          <path d="M150 430 q80 -30 150 -110" fill="none" stroke="#173229" stroke-width="12" stroke-linecap="round"/>
+          <g transform="translate(300,320)">
+            <circle r="34" fill="#c8549c"/>
+            <circle cx="24" cy="12" r="26" fill="#ef7ab8"/>
+            <circle cx="-22" cy="16" r="24" fill="#a83c84"/>
+            <circle cx="4" cy="-26" r="22" fill="#ef7ab8"/>
+            <circle r="12" fill="#ffd9a8"/>
+            <circle r="5" fill="#fff0d8"/>
+          </g>
+        </g>
+        <g style="animation:swayB 13s ease-in-out infinite alternate;transform-origin:180px 700px">
+          <path d="M180 700 q60 -20 120 -60" fill="none" stroke="#173229" stroke-width="10" stroke-linecap="round"/>
+          <g transform="translate(310,630)">
+            <circle r="26" fill="#d85fa6"/>
+            <circle cx="18" cy="10" r="20" fill="#ef7ab8"/>
+            <circle cx="-16" cy="12" r="18" fill="#b6438b"/>
+            <circle r="9" fill="#ffd9a8"/>
+          </g>
+        </g>
+        <path d="M60 520 q30 40 10 90M90 780 q26 34 8 80" stroke="#1d3a52" stroke-width="8" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <!-- bottom hedge of flowering scrub -->
+    <div class="piece" style="top:566vh;height:40vh">
+      <svg viewBox="0 0 1920 600" preserveAspectRatio="xMidYMin slice">
+        <path d="M0 120 q160 -70 340 -20 q200 56 380 -6 q170 -58 340 -4 q200 62 400 2 q160 -48 300 6 q100 40 160 22 V600 H0 Z" fill="#0c1124"/>
+        <g fill="#16233f">
+          <ellipse cx="300" cy="120" rx="130" ry="52"/>
+          <ellipse cx="760" cy="104" rx="150" ry="58"/>
+          <ellipse cx="1240" cy="118" rx="140" ry="54"/>
+          <ellipse cx="1680" cy="130" rx="130" ry="50"/>
+        </g>
+        <g style="animation:swayA 12s ease-in-out infinite alternate;transform-origin:520px 140px">
+          <path d="M520 140 q-10 -70 20 -110" stroke="#173229" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <g transform="translate(545,20)">
+            <circle r="22" fill="#d85fa6"/><circle cx="16" cy="8" r="17" fill="#ef7ab8"/>
+            <circle cx="-14" cy="10" r="15" fill="#b6438b"/><circle r="8" fill="#ffd9a8"/>
+          </g>
+        </g>
+        <g style="animation:swayB 15s ease-in-out infinite alternate;transform-origin:1420px 150px">
+          <path d="M1420 150 q6 -76 -22 -114" stroke="#173229" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <g transform="translate(1394,26)">
+            <circle r="20" fill="#c8549c"/><circle cx="14" cy="8" r="15" fill="#ef7ab8"/>
+            <circle cx="-13" cy="9" r="14" fill="#a83c84"/><circle r="7" fill="#ffd9a8"/>
+          </g>
+        </g>
+        <g style="animation:swayA 10s ease-in-out infinite alternate-reverse;transform-origin:960px 130px">
+          <path d="M960 130 q-4 -60 14 -92" stroke="#173229" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <g transform="translate(976,28)">
+            <circle r="16" fill="#ef7ab8"/><circle cx="11" cy="6" r="12" fill="#f9a6d0"/><circle r="6" fill="#ffd9a8"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- pass-through cloud veil -->
+  <div id="cloudveil">
+    <div class="cv" style="top:-10%;left:-16%;width:70%;height:56%"></div>
+    <div class="cv" style="top:30%;left:40%;width:76%;height:60%"></div>
+    <div class="cv" style="top:56%;left:-10%;width:64%;height:52%"></div>
+    <div class="cv" style="top:-6%;left:56%;width:60%;height:46%"></div>
+  </div>
+
+  <div id="haze"></div>
+  <canvas id="particles"></canvas>
+  <div id="vignette"></div>
+  <div class="bar" id="bar-t"></div>
+  <div class="bar" id="bar-b"></div>
+  <div id="caption"><small></small><span></span></div>
+  <button id="replay" type="button">&#8635;&nbsp; watch again</button>
+  <div id="fader"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ the single shot ============ */
+  var DUR = 70000;          // ~70s descent
+  var CAM_END = 400;        // total camera travel, in vh (for factor-1 layers)
+  var stage = document.getElementById('stage');
+  var layers = [].slice.call(document.querySelectorAll('.layer')).map(function(el){
+    return { el: el, f: parseFloat(el.getAttribute('data-f')) };
+  });
+
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) document.body.classList.add('reduced');
+
+  // easing: eased at both ends but nearly linear through the middle —
+  // the pan should feel like one continuous imperceptible drift
+  function ease(t){
+    if (t <= 0) return 0; if (t >= 1) return 1;
+    return t*t*(3-2*t)*0.3 + t*0.7;
+  }
+  function clamp01(v){ return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function ramp(p, a, b){ return clamp01((p - a) / (b - a)); }
+
+  /* ============ opacity-scripted elements ============ */
+  var skySpace = document.getElementById('sky-space');
+  var skyStrat = document.getElementById('sky-strat');
+  var haze     = document.getElementById('haze');
+  var veil     = document.getElementById('cloudveil');
+  var cirrus   = document.getElementById('cirrusgroup');
+  var cumulus  = document.getElementById('cumulusgroup');
+  var sunEl    = document.getElementById('sunpiece');
+  var nebula   = document.getElementById('layer-nebula');
+
+  /* ============ captions ============ */
+  var capEl = document.getElementById('caption');
+  var capSm = capEl.querySelector('small');
+  var capTx = capEl.querySelector('span');
+  var CAPS = [
+    { a:0.015, b:0.15, k:'expedition record 0-01',
+      t:'The long crossing ends. System Khe-9, outer marches. A world no chart remembers.' },
+    { a:0.30, b:0.46, k:'expedition record 0-02',
+      t:'Fleet Meridian begins descent. No signal from below. No answer. Only weather.' },
+    { a:0.80, b:0.985, k:'expedition record 0-03',
+      t:'Then, beneath the needle peaks — the city. Old before we ever left home. Still lit.' }
+  ];
+  var curCap = -1;
+
+  /* ============ starfield canvas ============ */
+  var starCv = document.getElementById('stars');
+  var starCx = starCv.getContext('2d');
+  var pCv = document.getElementById('particles');
+  var pCx = pCv.getContext('2d');
+  var W = 0, H = 0, DPR = 1;
+
+  var starList = [];
+  function seedStars(){
+    starList.length = 0;
+    var n = Math.round(W * H / 6500);
+    for (var i = 0; i < n; i++){
+      starList.push({
+        x: Math.random(), y: Math.random(),
+        r: Math.random() < 0.85 ? (0.4 + Math.random()*0.8) : (1.1 + Math.random()*0.9),
+        tw: 2 + Math.random()*5, ph: Math.random()*Math.PI*2,
+        warm: Math.random() < 0.14
+      });
+    }
+  }
+
+  /* ============ atmospheric particles (leaves / spores / dust) ============ */
+  var parts = [];
+  function seedParts(){
+    parts.length = 0;
+    var i;
+    for (i = 0; i < 9; i++) parts.push({ kind:'leaf',
+      x: Math.random()*W, y: Math.random()*H, vx: -(14+Math.random()*22), vy: 9+Math.random()*14,
+      rot: Math.random()*Math.PI*2, vr: (Math.random()-0.5)*1.4, s: 4+Math.random()*5,
+      sway: Math.random()*Math.PI*2 });
+    for (i = 0; i < 26; i++) parts.push({ kind:'spore',
+      x: Math.random()*W, y: Math.random()*H, vx: (Math.random()-0.5)*6, vy: -(3+Math.random()*7),
+      s: 0.8+Math.random()*1.6, ph: Math.random()*Math.PI*2 });
+    for (i = 0; i < 30; i++) parts.push({ kind:'dust',
+      x: Math.random()*W, y: Math.random()*H, vx: (Math.random()-0.5)*3, vy: (Math.random()-0.5)*2,
+      s: 0.5+Math.random()*0.9, ph: Math.random()*Math.PI*2 });
+  }
+
+  function resize(){
+    DPR = Math.min(window.devicePixelRatio || 1, 1.5);
+    W = window.innerWidth; H = window.innerHeight;
+    [starCv, pCv].forEach(function(c){
+      c.width = Math.round(W*DPR); c.height = Math.round(H*DPR);
+      c.getContext('2d').setTransform(DPR,0,0,DPR,0,0);
+    });
+    seedStars(); seedParts();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  /* ============ main loop ============ */
+  var t0 = null, lastT = null;
+  var replayBtn = document.getElementById('replay');
+  var fader = document.getElementById('fader');
+  var done = false;
+
+  function frame(now){
+    if (t0 === null){ t0 = now; lastT = now; }
+    var dt = Math.min((now - lastT)/1000, 0.1);
+    lastT = now;
+
+    var raw = (now - t0)/DUR;
+    var p = ease(clamp01(raw));
+    if (reduced) p = 1;
+    var cam = CAM_END * p;
+
+    // after touchdown: the camera breathes, almost still
+    if (raw >= 1) cam += Math.sin(now*0.00012)*1.1 + Math.sin(now*0.00007)*0.6;
+
+    // parallax
+    for (var i = 0; i < layers.length; i++){
+      layers[i].el.style.transform = 'translate3d(0,' + (-cam*layers[i].f) + 'vh,0)';
+    }
+
+    // sky cross-fade: space → stratosphere → morning
+    var spaceO = 1 - ramp(p, 0.14, 0.42);
+    var stratO = ramp(p, 0.06, 0.26) * (1 - ramp(p, 0.44, 0.72));
+    skySpace.style.opacity = spaceO;
+    skyStrat.style.opacity = stratO;
+    nebula.style.opacity = spaceO;
+    sunEl.style.opacity = 1 - ramp(p, 0.3, 0.5);
+
+    // atmosphere thickens
+    cirrus.style.opacity  = ramp(p, 0.13, 0.3) * (1 - ramp(p, 0.8, 1)*0.72);
+    cumulus.style.opacity = ramp(p, 0.24, 0.4);
+    haze.style.opacity    = ramp(p, 0.62, 0.9);
+
+    // brief pass through the cloud deck
+    var v = ramp(p, 0.46, 0.53) * (1 - ramp(p, 0.55, 0.66));
+    veil.style.opacity = v * 0.96;
+
+    // captions
+    var want = -1, k;
+    for (k = 0; k < CAPS.length; k++) if (p >= CAPS[k].a && p <= CAPS[k].b) { want = k; break; }
+    if (want !== curCap){
+      curCap = want;
+      if (want >= 0){ capSm.textContent = CAPS[want].k; capTx.textContent = CAPS[want].t; }
+    }
+    if (want >= 0){
+      var c = CAPS[want];
+      capEl.style.opacity = (ramp(p, c.a, c.a + 0.03) * (1 - ramp(p, c.b - 0.03, c.b)) * 0.92);
+    } else capEl.style.opacity = 0;
+
+    /* ---- stars ---- */
+    starCx.clearRect(0,0,W,H);
+    var starGlobal = clamp01(1.1 - p*1.5);
+    for (i = 0; i < starList.length; i++){
+      var s = starList[i];
+      var tw = 0.55 + 0.45*Math.sin(now/1000*s.tw + s.ph);
+      // a few stars stay faintly visible high in the sky, even at dawn
+      var topKeep = clamp01(1 - (s.y/0.3)) * 0.22;
+      var a = tw * Math.min(1, starGlobal + topKeep);
+      if (a < 0.02) continue;
+      starCx.globalAlpha = a;
+      starCx.fillStyle = s.warm ? '#f6e0c8' : '#dfe9ff';
+      starCx.beginPath();
+      starCx.arc(s.x*W, s.y*H, s.r, 0, 6.2832);
+      starCx.fill();
+    }
+    starCx.globalAlpha = 1;
+
+    /* ---- pollen / leaves / dust ---- */
+    pCx.clearRect(0,0,W,H);
+    var pa = ramp(p, 0.58, 0.8);
+    if (pa > 0.01 && !reduced){
+      for (i = 0; i < parts.length; i++){
+        var q = parts[i];
+        if (q.kind === 'leaf'){
+          q.sway += dt*1.6;
+          q.x += (q.vx + Math.sin(q.sway)*10)*dt;
+          q.y += (q.vy + Math.cos(q.sway*0.7)*5)*dt;
+          q.rot += q.vr*dt;
+          if (q.y > H+20 || q.x < -30){ q.x = W + 20 + Math.random()*60; q.y = Math.random()*H*0.5; }
+          pCx.save();
+          pCx.translate(q.x, q.y); pCx.rotate(q.rot);
+          pCx.globalAlpha = pa*0.8;
+          pCx.fillStyle = i % 3 === 0 ? '#ef7ab8' : '#3f7d55';
+          pCx.beginPath(); pCx.ellipse(0, 0, q.s, q.s*0.42, 0, 0, 6.2832); pCx.fill();
+          pCx.restore();
+        } else if (q.kind === 'spore'){
+          q.ph += dt;
+          q.x += (q.vx + Math.sin(q.ph)*4)*dt;
+          q.y += q.vy*dt;
+          if (q.y < -10){ q.y = H + 10; q.x = Math.random()*W; }
+          if (q.x < -10) q.x = W+10; if (q.x > W+10) q.x = -10;
+          var g = 0.5 + 0.5*Math.sin(q.ph*2);
+          pCx.globalAlpha = pa*(0.25 + 0.4*g);
+          pCx.fillStyle = '#ffe2f1';
+          pCx.beginPath(); pCx.arc(q.x, q.y, q.s, 0, 6.2832); pCx.fill();
+        } else {
+          q.ph += dt*0.7;
+          q.x += q.vx*dt; q.y += q.vy*dt;
+          if (q.x < 0) q.x = W; if (q.x > W) q.x = 0;
+          if (q.y < 0) q.y = H; if (q.y > H) q.y = 0;
+          pCx.globalAlpha = pa*(0.1 + 0.12*Math.sin(q.ph));
+          pCx.fillStyle = '#dceefc';
+          pCx.beginPath(); pCx.arc(q.x, q.y, q.s, 0, 6.2832); pCx.fill();
+        }
+      }
+      pCx.globalAlpha = 1;
+    }
+
+    // touchdown
+    if (raw >= 1 && !done){ done = true; replayBtn.classList.add('on'); }
+
+    requestAnimationFrame(frame);
+  }
+
+  replayBtn.addEventListener('click', function(){
+    done = false; t0 = null; curCap = -1;
+    replayBtn.classList.remove('on');
+    fader.style.transition = 'opacity 1.2s ease';
+    fader.style.opacity = 1;
+    setTimeout(function(){
+      t0 = null;
+      fader.style.transition = 'opacity 2.8s ease';
+      fader.style.opacity = 0;
+    }, 1300);
+  });
+
+  // fade up from black and begin the shot
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){ fader.style.opacity = 0; });
+  });
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
