@@ -448,15 +448,17 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
           <path id="sbp1" d="M-160 260 C 400 180 900 420 1760 240" fill="none"/>
           <path id="sbp2" d="M1760 520 C 1100 380 500 560 -160 420" fill="none"/>
           <path id="sbw1" d="M1200 240 C 1150 400 1080 650 1020 980" fill="none"/>
-          <path id="sbkv" d="M-160 320 C 400 260 800 210 1200 240" fill="none"/>
+          <path id="sbkv" d="M-160 320 C 400 260 800 210 1200 240 L1920 265" fill="none"/>
           <path id="sbkh" d="M-400 380 C 200 320 800 260 1260 268 L1780 190" fill="none"/>
           <path id="sbkb" d="M1060 262 L1790 180" fill="none"/>
           <path id="sfA" d="M-160 200 L1780 360" fill="none"/>
-          <g style="animation:boltAvis 16s linear infinite">
+          <g opacity="0">
+            <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.35;0.355;0.415;0.42;1" dur="16s" repeatCount="indefinite"/>
             <animateMotion dur="16s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.35;.42;1" calcMode="linear"><mpath href="#sbkb"/></animateMotion>
             <path d="M-12 0 h24" stroke="#ff6b52" stroke-width="3" stroke-linecap="round"/>
           </g>
-          <g style="animation:boltAvis 10.5s linear infinite">
+          <g opacity="0">
+            <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.35;0.355;0.415;0.42;1" dur="10.5s" repeatCount="indefinite"/>
             <animateMotion dur="10.5s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.35;.42;1" calcMode="linear"><mpath href="#sfA"/></animateMotion>
             <path d="M-11 0 h22" stroke="#9fe8ff" stroke-width="2.8" stroke-linecap="round"/>
           </g>
@@ -466,16 +468,20 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
           <g><animateMotion dur="7s" begin="1.8s" repeatCount="indefinite" rotate="auto"><mpath href="#sbp2"/></animateMotion><use href="#fgtR" transform="scale(.85)"/><g style="animation:boltDash 1.5s linear infinite .5s"><path d="M12 0 h20" stroke="#ff6b52" stroke-width="3" stroke-linecap="round"/></g></g>
           <g transform="translate(700,300)"><g style="animation:boomA 9s linear infinite"><circle r="18" fill="#ff8f5a" opacity=".5"/><circle r="10" fill="#ffd9a8"/><circle r="5" fill="#fff3e2"/></g></g>
           <g transform="translate(1150,480)"><g style="animation:boomA 12s linear infinite 4s"><circle r="15" fill="#ff8f5a" opacity=".5"/><circle r="8" fill="#ffd9a8"/><circle r="4" fill="#fff3e2"/></g></g>
-          <g style="animation:killA 16s linear infinite">
-            <animateMotion dur="16s" repeatCount="indefinite" rotate="auto" keyPoints="0;1;1" keyTimes="0;.38;1" calcMode="linear"><mpath href="#sbkv"/></animateMotion>
+          <g>
+            <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.379;0.384;1" dur="16s" repeatCount="indefinite"/>
+            <animateMotion dur="16s" repeatCount="indefinite" rotate="auto" keyPoints="0;0.655;1" keyTimes="0;.38;1" calcMode="linear"><mpath href="#sbkv"/></animateMotion>
             <use href="#fgtA"/>
           </g>
           <g><animateMotion dur="16s" repeatCount="indefinite" rotate="auto"><mpath href="#sbkh"/></animateMotion><use href="#fgtR"/></g>
-          <g transform="translate(1200,240)"><g style="animation:boomA 16s linear infinite">
+          <g transform="translate(1200,240)"><g opacity="0">
+            <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.379;0.392;0.44;1" dur="16s" repeatCount="indefinite"/>
+            <animateTransform attributeName="transform" type="scale" values="0.25;0.25;1;1.8;1.8" keyTimes="0;0.379;0.392;0.44;1" dur="16s" repeatCount="indefinite"/>
             <circle r="20" fill="#ff8f5a" opacity=".5"/><circle r="11" fill="#ffd9a8"/><circle r="5" fill="#fff3e2"/>
             <path d="M-26 0 h52 M0 -26 v52 M-18 -18 L18 18 M-18 18 L18 -18" stroke="#ffb98a" stroke-width="2.5" opacity=".8"/>
           </g></g>
-          <g style="animation:wreckA 16s linear infinite">
+          <g opacity="0">
+            <animate attributeName="opacity" values="0;0;0.95;0.95;0;0" keyTimes="0;0.379;0.385;0.74;0.8;1" dur="16s" repeatCount="indefinite"/>
             <animateMotion dur="16s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.38;.8;1" calcMode="linear"><mpath href="#sbw1"/></animateMotion>
             <use href="#fgtA" transform="scale(1.2)"/>
             <path d="M-16 0 C -30 -8 -46 -7 -58 0 C -46 7 -30 8 -16 0 Z" fill="#ff8f5a" opacity=".85"/>
@@ -698,6 +704,15 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
         <circle r="18" fill="#eafcff"/>
         <circle r="30" fill="#9fe8ff" opacity=".45"/>
         <circle r="44" fill="#5fb8e8" opacity=".2"/>
+      </g>
+      <g id="wboom" opacity="0">
+        <circle r="70" fill="none" stroke="#9fe8ff" stroke-width="5"/>
+        <circle r="52" fill="rgba(159,232,255,.22)"/>
+        <circle r="20" fill="#eafcff"/>
+        <path d="M0 -96 v22 M0 96 v-22 M-96 0 h22 M96 0 h-22 M-68 -68 l16 16 M68 68 l-16 -16 M-68 68 l16 -16 M68 -68 l-16 16" stroke="#bfeeff" stroke-width="4" fill="none"/>
+        <polygon points="34,-58 44,-46 28,-42" fill="#5fb8e8"/>
+        <polygon points="-52,30 -38,38 -50,48" fill="#5fb8e8"/>
+        <polygon points="50,42 62,50 48,56" fill="#9fe8ff"/>
       </g>
     </svg>
   </div>
@@ -1429,33 +1444,40 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       <path id="gsC" d="M760 -70 L900 710" fill="none"/>
       <g><animateMotion dur="6.5s" begin="0.9s" repeatCount="indefinite" rotate="auto"><mpath href="#dfp1"/></animateMotion><g style="animation:boltDash 1.2s linear infinite"><path d="M8 0 h26" stroke="#ff6b52" stroke-width="3" stroke-linecap="round"/><path d="M8 0 h10" stroke="#ffd9d0" stroke-width="1.8" stroke-linecap="round"/></g></g>
       <g><animateMotion dur="8.5s" begin="2.55s" repeatCount="indefinite" rotate="auto"><mpath href="#dfp2"/></animateMotion><g style="animation:boltDash 1.5s linear infinite .4s"><path d="M8 0 h22" stroke="#9fe8ff" stroke-width="2.6" stroke-linecap="round"/></g></g>
-      <g style="animation:boltAvis 14s linear infinite">
+      <g opacity="0">
+        <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.35;0.355;0.415;0.42;1" dur="14s" repeatCount="indefinite"/>
         <animateMotion dur="14s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.35;.42;1" calcMode="linear"><mpath href="#kbA"/></animateMotion>
         <path d="M-12 0 h24" stroke="#ff6b52" stroke-width="3" stroke-linecap="round"/>
         <path d="M-12 0 h9" stroke="#ffd9d0" stroke-width="1.8" stroke-linecap="round"/>
       </g>
-      <g style="animation:boltAvis 17s linear infinite">
+      <g opacity="0">
+        <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.35;0.355;0.415;0.42;1" dur="17s" repeatCount="indefinite"/>
         <animateMotion dur="17s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.35;.42;1" calcMode="linear"><mpath href="#kbB"/></animateMotion>
         <path d="M-11 0 h22" stroke="#9fe8ff" stroke-width="2.8" stroke-linecap="round"/>
       </g>
-      <g style="animation:boltAvis 9s linear infinite">
+      <g opacity="0">
+        <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.35;0.355;0.415;0.42;1" dur="9s" repeatCount="indefinite"/>
         <animateMotion dur="9s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.35;.42;1" calcMode="linear"><mpath href="#fbA"/></animateMotion>
         <path d="M-12 0 h24" stroke="#ff6b52" stroke-width="3" stroke-linecap="round"/>
       </g>
-      <g style="animation:boltAvis 12.5s linear infinite">
+      <g opacity="0">
+        <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.35;0.355;0.415;0.42;1" dur="12.5s" repeatCount="indefinite"/>
         <animateMotion dur="12.5s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.35;.42;1" calcMode="linear"><mpath href="#fbB"/></animateMotion>
         <path d="M-11 0 h22" stroke="#9fe8ff" stroke-width="2.8" stroke-linecap="round"/>
       </g>
-      <g style="animation:projVis 2.6s linear infinite">
+      <g>
+        <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.497;0.503;1" dur="2.6s" repeatCount="indefinite"/>
         <animateMotion dur="2.6s" repeatCount="indefinite" rotate="auto" keyPoints="0;1;1" keyTimes="0;.5;1" calcMode="linear"><mpath href="#gsA"/></animateMotion>
         <path d="M-14 0 h28" stroke="#ff6b52" stroke-width="3.5" stroke-linecap="round"/>
         <path d="M-14 0 h10" stroke="#ffd9d0" stroke-width="2" stroke-linecap="round"/>
       </g>
-      <g style="animation:projVis 3.4s linear infinite .9s">
+      <g opacity="0">
+        <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.497;0.503;1" dur="3.4s" begin=".9s" repeatCount="indefinite"/>
         <animateMotion dur="3.4s" begin=".9s" repeatCount="indefinite" rotate="auto" keyPoints="0;1;1" keyTimes="0;.5;1" calcMode="linear"><mpath href="#gsB"/></animateMotion>
         <path d="M-13 0 h26" stroke="#9fe8ff" stroke-width="3" stroke-linecap="round"/>
       </g>
-      <g style="animation:projVis 4.1s linear infinite 2.1s">
+      <g opacity="0">
+        <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.497;0.503;1" dur="4.1s" begin="2.1s" repeatCount="indefinite"/>
         <animateMotion dur="4.1s" begin="2.1s" repeatCount="indefinite" rotate="auto" keyPoints="0;1;1" keyTimes="0;.5;1" calcMode="linear"><mpath href="#gsC"/></animateMotion>
         <path d="M-14 0 h28" stroke="#ff6b52" stroke-width="3.5" stroke-linecap="round"/>
       </g>
@@ -1466,19 +1488,23 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       <g><animateMotion dur="8.5s" begin="2.7s" repeatCount="indefinite" rotate="auto"><mpath href="#dfp2"/></animateMotion><use href="#fgtA" transform="scale(.85)"/></g>
 
       <!-- kill loop A: fleet fighter downed over the city -->
-      <path id="kvA" d="M-60 300 L900 300" fill="none"/>
+      <path id="kvA" d="M-60 300 L900 300 L1900 300" fill="none"/>
       <path id="khA" d="M-300 258 L780 272 L1720 120" fill="none"/>
       <path id="wkA" d="M900 300 C 952 430 1015 650 1070 980" fill="none"/>
-      <g style="animation:killA 14s linear infinite">
-        <animateMotion dur="14s" repeatCount="indefinite" rotate="auto" keyPoints="0;1;1" keyTimes="0;.38;1" calcMode="linear"><mpath href="#kvA"/></animateMotion>
+      <g>
+        <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.379;0.384;1" dur="14s" repeatCount="indefinite"/>
+        <animateMotion dur="14s" repeatCount="indefinite" rotate="auto" keyPoints="0;0.49;1" keyTimes="0;.38;1" calcMode="linear"><mpath href="#kvA"/></animateMotion>
         <use href="#fgtA"/>
       </g>
       <g><animateMotion dur="14s" repeatCount="indefinite" rotate="auto"><mpath href="#khA"/></animateMotion><use href="#fgtR"/></g>
-      <g transform="translate(900,300)"><g style="animation:boomA 14s linear infinite">
+      <g transform="translate(900,300)"><g opacity="0">
+        <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.379;0.392;0.44;1" dur="14s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="scale" values="0.25;0.25;1;1.8;1.8" keyTimes="0;0.379;0.392;0.44;1" dur="14s" repeatCount="indefinite"/>
         <circle r="26" fill="#ff8f5a" opacity=".5"/><circle r="15" fill="#ffd9a8"/><circle r="7" fill="#fff3e2"/>
         <path d="M-34 0 h68 M0 -34 v68 M-24 -24 L24 24 M-24 24 L24 -24" stroke="#ffb98a" stroke-width="2.5" opacity=".8"/>
       </g></g>
-      <g style="animation:wreckA 14s linear infinite">
+      <g opacity="0">
+        <animate attributeName="opacity" values="0;0;0.95;0.95;0;0" keyTimes="0;0.379;0.385;0.66;0.72;1" dur="14s" repeatCount="indefinite"/>
         <animateMotion dur="14s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.38;.72;1" calcMode="linear"><mpath href="#wkA"/></animateMotion>
         <use href="#fgtA"/>
         <path d="M-14 0 C -26 -7 -40 -6 -50 0 C -40 6 -26 7 -14 0 Z" fill="#ff8f5a" opacity=".85"/>
@@ -1486,19 +1512,23 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       </g>
 
       <!-- kill loop B: foundry drone downed, right to left -->
-      <path id="kvB" d="M1680 470 L700 480" fill="none"/>
+      <path id="kvB" d="M1680 470 L700 480 L-300 490" fill="none"/>
       <path id="khB" d="M1980 420 L830 462 L-140 560" fill="none"/>
       <path id="wkB" d="M700 480 C 655 590 600 760 545 1010" fill="none"/>
-      <g style="animation:killA 17s linear infinite">
-        <animateMotion dur="17s" repeatCount="indefinite" rotate="auto" keyPoints="0;1;1" keyTimes="0;.38;1" calcMode="linear"><mpath href="#kvB"/></animateMotion>
+      <g>
+        <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.379;0.384;1" dur="17s" repeatCount="indefinite"/>
+        <animateMotion dur="17s" repeatCount="indefinite" rotate="auto" keyPoints="0;0.495;1" keyTimes="0;.38;1" calcMode="linear"><mpath href="#kvB"/></animateMotion>
         <use href="#fgtR"/>
       </g>
       <g><animateMotion dur="17s" repeatCount="indefinite" rotate="auto"><mpath href="#khB"/></animateMotion><use href="#fgtA"/></g>
-      <g transform="translate(700,480)"><g style="animation:boomA 17s linear infinite">
+      <g transform="translate(700,480)"><g opacity="0">
+        <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.379;0.392;0.44;1" dur="17s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="scale" values="0.25;0.25;1;1.8;1.8" keyTimes="0;0.379;0.392;0.44;1" dur="17s" repeatCount="indefinite"/>
         <circle r="24" fill="#ff8f5a" opacity=".5"/><circle r="14" fill="#ffd9a8"/><circle r="6" fill="#fff3e2"/>
         <path d="M-30 0 h60 M0 -30 v60 M-21 -21 L21 21 M-21 21 L21 -21" stroke="#ffb98a" stroke-width="2.5" opacity=".8"/>
       </g></g>
-      <g style="animation:wreckA 17s linear infinite">
+      <g opacity="0">
+        <animate attributeName="opacity" values="0;0;0.95;0.95;0;0" keyTimes="0;0.379;0.385;0.66;0.72;1" dur="17s" repeatCount="indefinite"/>
         <animateMotion dur="17s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.38;.72;1" calcMode="linear"><mpath href="#wkB"/></animateMotion>
         <use href="#fgtR"/>
         <path d="M-13 0 C -24 -6 -37 -5 -46 0 C -37 5 -24 6 -13 0 Z" fill="#ff8f5a" opacity=".85"/>
@@ -1506,15 +1536,21 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       </g>
 
       <!-- strafing-run ground bursts (bolts live in the bolt layer) -->
-      <g transform="translate(560,700)"><g style="animation:projBoom 2.6s linear infinite">
+      <g transform="translate(560,700)"><g opacity="0">
+        <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.497;0.512;0.58;1" dur="2.6s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="scale" values="0.2;0.2;1;1.75;1.75" keyTimes="0;0.497;0.512;0.58;1" dur="2.6s" repeatCount="indefinite"/>
         <circle r="16" fill="#ff8f5a" opacity=".55"/><circle r="9" fill="#ffd9a8"/><circle r="4" fill="#fff3e2"/>
         <path d="M-22 0 h44 M-15 -12 L15 12 M-15 12 L15 -12" stroke="#ffb98a" stroke-width="2.5" opacity=".8"/>
       </g></g>
-      <g transform="translate(1080,690)"><g style="animation:projBoom 3.4s linear infinite .9s">
+      <g transform="translate(1080,690)"><g opacity="0">
+        <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.497;0.512;0.58;1" dur="3.4s" begin=".9s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="scale" values="0.2;0.2;1;1.75;1.75" keyTimes="0;0.497;0.512;0.58;1" dur="3.4s" begin=".9s" repeatCount="indefinite"/>
         <circle r="14" fill="#ff8f5a" opacity=".55"/><circle r="8" fill="#ffd9a8"/><circle r="3.5" fill="#fff3e2"/>
         <path d="M-19 0 h38 M-13 -11 L13 11 M-13 11 L13 -11" stroke="#ffb98a" stroke-width="2.5" opacity=".8"/>
       </g></g>
-      <g transform="translate(900,710)"><g style="animation:projBoom 4.1s linear infinite 2.1s">
+      <g transform="translate(900,710)"><g opacity="0">
+        <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.497;0.512;0.58;1" dur="4.1s" begin="2.1s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="scale" values="0.2;0.2;1;1.75;1.75" keyTimes="0;0.497;0.512;0.58;1" dur="4.1s" begin="2.1s" repeatCount="indefinite"/>
         <circle r="15" fill="#ff8f5a" opacity=".55"/><circle r="8" fill="#ffd9a8"/><circle r="4" fill="#fff3e2"/>
         <path d="M-20 0 h40 M-14 -11 L14 11 M-14 11 L14 -11" stroke="#ffb98a" stroke-width="2.5" opacity=".8"/>
       </g></g>
@@ -1703,6 +1739,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     contBtn2.classList.remove('on');
     ascent.style.opacity = 0;
     warpFx.style.opacity = 0;
+    wboom.setAttribute('opacity', 0);
     spaceBattle.setAttribute('opacity', 0);
     for (i = 0; i < KILLS3.length; i++){
       KILLS3[i].g.removeAttribute('transform');
@@ -1725,7 +1762,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       t:'One shuttle runs for the black, engines screaming, with everything the foundry can still throw close behind.' },
     { a:20, b:32, k:'Protostar-7 — Report 07',
       t:'Above the ruin the fleet holds the line. Even the stars burn red over Protostar-7 now.' },
-    { a:51, b:62, k:'Protostar-7 — Report 08',
+    { a:36, b:48, k:'Protostar-7 — Report 08',
       t:'Gone — one hard jump past the red. What burned behind them kept burning.' }
   ];
   var KILLS3 = [
@@ -1739,7 +1776,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       pts:[[160,545],[240,560],[195,552]] }
   ];
   var warpFx = el('warpfx');
-  var wr1 = el('wr1'), wr2 = el('wr2'), wr3 = el('wr3'), wcore = el('wcore');
+  var wr1 = el('wr1'), wr2 = el('wr2'), wr3 = el('wr3'), wcore = el('wcore'), wboom = el('wboom');
   contBtn2.addEventListener('click', function(){
     ACT3.started = true; ACT3.t0 = performance.now(); curCap3 = -1;
     contBtn2.classList.remove('on');
@@ -1770,9 +1807,9 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       t3 = (now - ACT3.t0)/1000;
       u3 = clamp01(t3 / (DUR/2000));
       var e3 = u3 < .5 ? 2*u3*u3 : 1 - Math.pow(-2*u3 + 2, 2)/2;
-      var deep = ramp(t3 - DUR/2000, 0, 20);
+      var deep = ramp(t3 - DUR/2000, 0, 14);
       deep = deep < .5 ? 2*deep*deep : 1 - Math.pow(-2*deep + 2, 2)/2;
-      cam = CAM_END * (1 - e3) - 90 * deep;
+      cam = CAM_END * (1 - e3) - 340 * deep;
     }
     var pv = cam / CAM_END;   // visual altitude 0..1, shared by descent and ascent
 
@@ -1944,7 +1981,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 
       if (t2 > 33) contBtn2.classList.add('on');
     } else if (ACT3.started){
-      var T3c = DUR/2000, td = Math.max(0, t3 - T3c), tw = t3 - (T3c + 14);
+      var T3c = DUR/2000, td = Math.max(0, t3 - T3c), tw = t3 - T3c * 0.93;
       var pvc = clamp01(pv);
       // climb-out: red cast thins with altitude but never leaves, even in space
       skyDoom.style.opacity = 0.2 + 0.77 * pvc;
@@ -1956,22 +1993,25 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 
       // hero shuttle: climbs out, then pushes deeper; the warp locks it still
       var lift = 1 - Math.pow(1 - clamp01(u3 / 0.85), 2.2);
-      var sway = 1 - ramp(tw, 0, 1.2);
+      var sway = 1 - ramp(tw, 0, 0.5);
       var ay = 98 - 84 * lift - 5 * ramp(td, 0, 14) + Math.sin(now * 0.0011) * 0.8 * sway;
       var ax = 43 + 3.5 * (u3 < .5 ? 2*u3*u3 : 1 - Math.pow(-2*u3 + 2, 2)/2) + Math.sin(now * 0.0007) * 1.1 * sway;
       var asc = 0.32 + 0.68 * lift;
-      ascent.style.opacity = 1 - ramp(tw, 2.6, 3.6);
+      ascent.style.opacity = 1 - ramp(tw, 0.7, 1.15);
       ascent.style.transform = 'translate3d(' + ax + 'vw,' + ay + 'vh,0) rotate(' + ((Math.sin(now*0.0009)*2 - 2) * sway).toFixed(2) + 'deg) scale(' + asc.toFixed(3) + ')';
 
-      // blue geometric warp: build outer-in, engulf, collapse inward, fade out
-      if (tw > 0 && tw < 5.6){
-        warpFx.style.opacity = ramp(tw, 0, 0.5) * (1 - ramp(tw, 4.8, 5.4));
-        var wsc = (1.7 - 0.7 * ramp(tw, 0, 3)) * (1 - ramp(tw, 4, 5.4) * 0.96);
+      // blue geometric warp: fast snap-in, crush inward, detonate outward
+      if (tw > 0 && tw < 2.3){
+        warpFx.style.opacity = ramp(tw, 0, 0.2);
+        var wsc = tw < 1.45 ? (1.6 - 0.6 * ramp(tw, 0, 1)) * (1 - ramp(tw, 1.15, 1.45) * 0.94) : 1;
         warpFx.style.transform = 'translate3d(' + (ax - 5.5) + 'vw,calc(' + ay + 'vh + 2vw),0) scale(' + wsc.toFixed(3) + ')';
-        wr1.setAttribute('opacity', ramp(tw, 0, 0.6));
-        wr2.setAttribute('opacity', ramp(tw, 0.5, 1.2));
-        wr3.setAttribute('opacity', ramp(tw, 1, 1.8));
-        wcore.setAttribute('opacity', ramp(tw, 1.6, 2.6));
+        var ringsO = 1 - ramp(tw, 1.42, 1.48);
+        wr1.setAttribute('opacity', ramp(tw, 0, 0.2) * ringsO);
+        wr2.setAttribute('opacity', ramp(tw, 0.15, 0.45) * ringsO);
+        wr3.setAttribute('opacity', ramp(tw, 0.35, 0.65) * ringsO);
+        wcore.setAttribute('opacity', ramp(tw, 0.55, 0.85) * ringsO);
+        wboom.setAttribute('opacity', ramp(tw, 1.45, 1.52) * (1 - ramp(tw, 1.78, 2.2)));
+        wboom.setAttribute('transform', 'scale(' + (0.15 + 2.45 * ramp(tw, 1.45, 2.15)).toFixed(3) + ')');
       } else warpFx.style.opacity = 0;
 
       // capital ships die as they come into frame: burst chains, then a
