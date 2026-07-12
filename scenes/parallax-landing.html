@@ -81,7 +81,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 @keyframes fleetIn{from{opacity:0;transform:translate3d(5vw,-1.5vh,0)}to{opacity:1;transform:translate3d(0,0,0)}}
 @keyframes shipDriftA{from{transform:translate3d(0,0,0) rotate(-.5deg)}to{transform:translate3d(-3vw,.8vh,0) rotate(.4deg)}}
 @keyframes shipDriftB{from{transform:translate3d(1.5vw,.6vh,0)}to{transform:translate3d(-1.5vw,-.4vh,0)}}
-@keyframes platformDescend{from{transform:translate3d(0,0,0)}to{transform:translate3d(-2vw,26vh,0)}}
+@keyframes platformDescend{0%{transform:translate3d(0,0,0);opacity:0}3%{opacity:.9}90%{opacity:.9}100%{transform:translate3d(-2vw,26vh,0);opacity:0}}
 @keyframes dishTurn{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
 @keyframes panelTrack{from{transform:rotate(-6deg)}to{transform:rotate(7deg)}}
 @keyframes mistRoll{from{transform:translate3d(-4vw,0,0) scale(1)}50%{transform:translate3d(0,-.6vh,0) scale(1.06)}to{transform:translate3d(4vw,0,0) scale(1)}}
@@ -89,7 +89,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 @keyframes smokeRise{from{transform:translateY(0) scale(1)}to{transform:translateY(-22px) scale(1.12)}}
 @keyframes boltBlink{0%,26%,54%,100%{opacity:0}8%,18%{opacity:1}34%,44%{opacity:.9}}
 @keyframes killA{0%,38.4%{opacity:1}38.9%,100%{opacity:0}}
-@keyframes boltAvis{0%,34.8%{opacity:0}35.2%,37.6%{opacity:1}38%,100%{opacity:0}}
+@keyframes boltAvis{0%,34.8%{opacity:0}35.2%,41.6%{opacity:1}42%,100%{opacity:0}}
 @keyframes boltDash{0%{opacity:0;transform:translateX(0)}6%{opacity:1}30%{opacity:1;transform:translateX(90px)}38%,100%{opacity:0;transform:translateX(120px)}}
 @keyframes projVis{0%,49%{opacity:1}50%,100%{opacity:0}}
 @keyframes projBoom{0%,49%{opacity:0;transform:scale(.2)}56%{opacity:1;transform:scale(1)}66%,100%{opacity:0;transform:scale(1.7)}}
@@ -144,7 +144,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   padding:.55em 1.2em;cursor:pointer;border-radius:2px}
 #continue.on,#continue2.on{opacity:.92;pointer-events:auto}
 #continue:hover,#continue2:hover{background:rgba(255,170,140,.14)}
-#ascentship{position:absolute;top:0;left:0;width:15vw;min-width:190px;z-index:8;opacity:0;pointer-events:none;will-change:transform,opacity}
+#ascentship{position:absolute;top:0;left:0;width:15vw;min-width:190px;z-index:8;opacity:0;pointer-events:none;will-change:transform,opacity;transform-origin:50% 50%}
 #ascentship svg{display:block;width:100%;height:auto;overflow:visible}
 #dogfight{position:absolute;inset:0;z-index:12;opacity:0;pointer-events:none}
 #dogfight svg{width:100%;height:100%}
@@ -209,11 +209,19 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet">
         <defs>
           <!-- long-period drift keeps the fleet coasting, never "flying" -->
+          <g id="shipPuff">
+            <ellipse cx="0" cy="0" rx="26" ry="17" fill="#8d8fa8"/>
+            <ellipse cx="-8" cy="-9" rx="15" ry="9" fill="#bcc0d4"/>
+            <ellipse cx="16" cy="-4" rx="10" ry="7" fill="#a3a6bd"/>
+            <ellipse cx="4" cy="9" rx="19" ry="8" fill="#5c5e7c"/>
+            <circle cx="-6" cy="4" r="4" fill="#ffb46a" opacity=".9"/>
+          </g>
         </defs>
 
         <!-- ===== SHIP A — "Vantage"-class survey carrier =====
              long open truss spine, counter-rotating gravity ring,
              suspended hab/cargo modules, aft drive block, radiator vanes -->
+        <g id="bshipA">
         <g style="animation:shipDriftA 210s ease-in-out infinite alternate">
           <g transform="translate(260,215)">
             <!-- gravity ring, mounted on a solid hub amidships -->
@@ -289,7 +297,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 
           <!-- shuttle peeling away from the carrier, drifting down to the surface -->
           <g opacity=".95">
-            <path id="shuttlePath" d="M560,260 C640,340 560,520 700,700 C760,790 900,860 1040,900" fill="none"/>
+            <path id="shuttlePath" d="M545,242 C640,340 560,520 700,700 C760,790 900,860 1040,900" fill="none"/>
             <g>
               <animateMotion dur="95s" begin="18s" repeatCount="indefinite" rotate="auto">
                 <mpath href="#shuttlePath"/>
@@ -309,7 +317,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 
           <!-- cargo platform on slow descent -->
           <g style="animation:platformDescend 240s linear infinite" opacity=".9">
-            <g transform="translate(430,300)">
+            <g transform="translate(430,262)">
               <rect x="-26" y="0" width="52" height="8" rx="2" fill="#38406a"/>
               <path d="M-26 0h52" stroke="#a5b8e6" stroke-width="1.1"/>
               <rect x="-16" y="-12" width="14" height="12" fill="#4a5480"/>
@@ -319,9 +327,19 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
             </g>
           </g>
         </g>
+        <g id="pfA" opacity="0">
+          <g style="animation:smokeRise 4.5s ease-in-out infinite alternate">
+            <use href="#shipPuff" transform="translate(300,200) scale(1.1)"/>
+            <use href="#shipPuff" transform="translate(480,228) scale(1.5)"/>
+            <use href="#shipPuff" transform="translate(650,202) scale(.9)"/>
+            <use href="#shipPuff" transform="translate(560,185) scale(.7)"/>
+          </g>
+        </g>
+        </g>
 
         <!-- ===== SHIP B — "Weir"-class sail freighter =====
              asymmetric keel hull, exposed ribs, two raked energy sails -->
+        <g id="bshipB">
         <g style="animation:shipDriftB 180s ease-in-out infinite alternate">
           <g transform="translate(980,430)">
             <!-- energy sails -->
@@ -360,7 +378,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
             <circle cx="318" cy="2" r="2.2" fill="#d7ffe2" style="animation:blink 8s linear infinite 4s"/>
           </g>
           <!-- maintenance drones leaving the freighter's bay -->
-          <path id="dronePathA" d="M1180,470 q90,-60 200,-40 q90,20 160,90" fill="none"/>
+          <path id="dronePathA" d="M1150,455 q120,-45 230,-25 q90,20 160,90" fill="none"/>
           <g><animateMotion dur="60s" begin="30s" repeatCount="indefinite"><mpath href="#dronePathA"/></animateMotion>
             <rect x="-3" y="-3" width="6" height="6" fill="#5b6890"/>
             <circle r="1.4" fill="#9fe8ff" style="animation:blink2 3s linear infinite"/>
@@ -370,10 +388,20 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
             <circle r="1.2" fill="#ffe9b8" style="animation:blink2 4s linear infinite 2s"/>
           </g>
         </g>
+        <g id="pfB" opacity="0">
+          <g style="animation:smokeRise 5.5s ease-in-out infinite alternate-reverse">
+            <use href="#shipPuff" transform="translate(1030,420) scale(1.2)"/>
+            <use href="#shipPuff" transform="translate(1180,452) scale(1.4)"/>
+            <use href="#shipPuff" transform="translate(1255,408) scale(.8)"/>
+          </g>
+        </g>
+        </g>
 
         <!-- ===== distant escorts, half-lost in haze ===== -->
         <g opacity=".55">
-          <g transform="translate(1300,150) scale(.42)" style="animation:shipDriftB 260s ease-in-out infinite alternate-reverse">
+          <g id="bshipC">
+          <g transform="translate(1300,150) scale(.42)">
+          <g style="animation:shipDriftB 260s ease-in-out infinite alternate-reverse">
             <rect x="0" y="-5" width="300" height="10" fill="#454e78"/>
             <path d="M0 -5h300" stroke="#93a6d8" stroke-width="2"/>
             <path d="M-40 0 L0 -14 L0 14 Z" fill="#4d578a"/>
@@ -381,30 +409,76 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
             <rect x="230" y="-16" width="46" height="32" rx="4" fill="#38406a"/>
             <circle cx="290" cy="0" r="4" fill="#d7ffe2" style="animation:blink 10s linear infinite 6s"/>
           </g>
-          <g transform="translate(120,560) scale(.5)" style="animation:shipDriftA 280s ease-in-out infinite alternate-reverse">
+          </g>
+          <g id="pfC" opacity="0">
+            <g style="animation:smokeRise 4s ease-in-out infinite alternate">
+              <use href="#shipPuff" transform="translate(1332,140) scale(.6)"/>
+              <use href="#shipPuff" transform="translate(1392,150) scale(.85)"/>
+            </g>
+          </g>
+          </g>
+          <g transform="translate(120,560) scale(.5)">
+          <g style="animation:shipDriftA 280s ease-in-out infinite alternate-reverse">
             <path d="M0 0 L260 -18 L300 6 L240 30 L40 26 Z" fill="#3a4166"/>
             <path d="M0 0 L260 -18 L300 6" fill="none" stroke="#93a6d8" stroke-width="2"/>
             <path d="M70 -6 L60 -70 L120 -50 L118 -8Z" fill="rgba(140,226,255,.12)" stroke="#9fe0f8" stroke-width="1.6"/>
             <circle cx="296" cy="4" r="3.4" fill="#ff8f8f" style="animation:blink 9s linear infinite 2s"/>
           </g>
+          </g>
         </g>
 
         <!-- ACT 3: the battle above, raging around the fleet (opacity scripted) -->
         <g id="spacebattle" opacity="0">
-          <path id="sbp1" d="M-100 260 C 400 180 900 420 1700 240" fill="none"/>
-          <path id="sbp2" d="M1700 520 C 1100 380 500 560 -100 420" fill="none"/>
+          <path id="sbp1" d="M-160 260 C 400 180 900 420 1760 240" fill="none"/>
+          <path id="sbp2" d="M1760 520 C 1100 380 500 560 -160 420" fill="none"/>
           <path id="sbw1" d="M1200 240 C 1150 400 1080 650 1020 980" fill="none"/>
+          <path id="sbkv" d="M-160 320 C 400 260 800 210 1200 240" fill="none"/>
+          <path id="sbkh" d="M-400 380 C 200 320 800 260 1260 268 L1780 190" fill="none"/>
+          <path id="sbkb" d="M1060 262 L1790 180" fill="none"/>
+          <path id="sfA" d="M-160 200 L1780 360" fill="none"/>
+          <g style="animation:boltAvis 16s linear infinite">
+            <animateMotion dur="16s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.35;.42;1" calcMode="linear"><mpath href="#sbkb"/></animateMotion>
+            <path d="M-12 0 h24" stroke="#ff6b52" stroke-width="3" stroke-linecap="round"/>
+          </g>
+          <g style="animation:boltAvis 10.5s linear infinite">
+            <animateMotion dur="10.5s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.35;.42;1" calcMode="linear"><mpath href="#sfA"/></animateMotion>
+            <path d="M-11 0 h22" stroke="#9fe8ff" stroke-width="2.8" stroke-linecap="round"/>
+          </g>
           <g><animateMotion dur="5.5s" repeatCount="indefinite" rotate="auto"><mpath href="#sbp1"/></animateMotion><use href="#fgtR"/></g>
           <g><animateMotion dur="5.5s" begin=".6s" repeatCount="indefinite" rotate="auto"><mpath href="#sbp1"/></animateMotion><use href="#fgtA" transform="scale(.9)"/><g style="animation:boltDash 1.2s linear infinite"><path d="M14 0 h22" stroke="#9fe8ff" stroke-width="3" stroke-linecap="round"/></g></g>
           <g><animateMotion dur="7s" begin="1s" repeatCount="indefinite" rotate="auto"><mpath href="#sbp2"/></animateMotion><use href="#fgtA"/></g>
           <g><animateMotion dur="7s" begin="1.8s" repeatCount="indefinite" rotate="auto"><mpath href="#sbp2"/></animateMotion><use href="#fgtR" transform="scale(.85)"/><g style="animation:boltDash 1.5s linear infinite .5s"><path d="M12 0 h20" stroke="#ff6b52" stroke-width="3" stroke-linecap="round"/></g></g>
           <g transform="translate(700,300)"><g style="animation:boomA 9s linear infinite"><circle r="18" fill="#ff8f5a" opacity=".5"/><circle r="10" fill="#ffd9a8"/><circle r="5" fill="#fff3e2"/></g></g>
           <g transform="translate(1150,480)"><g style="animation:boomA 12s linear infinite 4s"><circle r="15" fill="#ff8f5a" opacity=".5"/><circle r="8" fill="#ffd9a8"/><circle r="4" fill="#fff3e2"/></g></g>
+          <g style="animation:killA 16s linear infinite">
+            <animateMotion dur="16s" repeatCount="indefinite" rotate="auto" keyPoints="0;1;1" keyTimes="0;.38;1" calcMode="linear"><mpath href="#sbkv"/></animateMotion>
+            <use href="#fgtA"/>
+          </g>
+          <g><animateMotion dur="16s" repeatCount="indefinite" rotate="auto"><mpath href="#sbkh"/></animateMotion><use href="#fgtR"/></g>
+          <g transform="translate(1200,240)"><g style="animation:boomA 16s linear infinite">
+            <circle r="20" fill="#ff8f5a" opacity=".5"/><circle r="11" fill="#ffd9a8"/><circle r="5" fill="#fff3e2"/>
+            <path d="M-26 0 h52 M0 -26 v52 M-18 -18 L18 18 M-18 18 L18 -18" stroke="#ffb98a" stroke-width="2.5" opacity=".8"/>
+          </g></g>
           <g style="animation:wreckA 16s linear infinite">
             <animateMotion dur="16s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.38;.8;1" calcMode="linear"><mpath href="#sbw1"/></animateMotion>
             <use href="#fgtR" transform="scale(1.2)"/>
-            <path d="M-18 0 l-26 -8 6 14 Z" fill="#ff8f5a" opacity=".85"/>
+            <path d="M-16 0 C -30 -8 -46 -7 -58 0 C -46 7 -30 8 -16 0 Z" fill="#ff8f5a" opacity=".85"/>
+            <path d="M-16 0 C -25 -4 -34 -3 -41 0 C -34 3 -25 4 -16 0 Z" fill="#ffd9a8" opacity=".9"/>
           </g>
+        </g>
+
+        <!-- ACT 3: capital-ship death bursts (scripted) -->
+        <g id="bxC" opacity="0">
+          <circle r="26" fill="#ff8f5a" opacity=".5"/><circle r="15" fill="#ffd9a8"/><circle r="7" fill="#fff3e2"/>
+          <path d="M-36 0 h72 M0 -36 v72 M-25 -25 L25 25 M-25 25 L25 -25" stroke="#ffb98a" stroke-width="3" opacity=".8"/>
+        </g>
+        <g id="bxB" opacity="0">
+          <circle r="34" fill="#ff8f5a" opacity=".5"/><circle r="19" fill="#ffd9a8"/><circle r="9" fill="#fff3e2"/>
+          <path d="M-46 0 h92 M0 -46 v92 M-32 -32 L32 32 M-32 32 L32 -32" stroke="#ffb98a" stroke-width="3.5" opacity=".8"/>
+        </g>
+        <g id="bxA" opacity="0">
+          <circle r="40" fill="#ff8f5a" opacity=".5"/><circle r="23" fill="#ffd9a8"/><circle r="11" fill="#fff3e2"/>
+          <path d="M-54 0 h108 M0 -54 v108 M-38 -38 L38 38 M-38 38 L38 -38" stroke="#ffb98a" stroke-width="4" opacity=".8"/>
         </g>
       </svg>
       </div>
@@ -768,22 +842,55 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
           <clipPath id="cT7"><path d="M1060 640 V360 h34 V520 h72 V360 h34 V640 Z"/></clipPath>
           <clipPath id="cT7top"><path d="M1060 330h140v34h-140Z"/></clipPath>
           <clipPath id="cT5"><path d="M1268 640 L1288 300 L1338 288 L1372 640 Z"/></clipPath>
-          <!-- ruin smoke: dark sheared column lit from the fire below, torn shreds downwind -->
-          <g id="plume" opacity=".94">
-            <path d="M-7 0 C -12 -28 -2 -50 -10 -76 C -18 -104 -2 -124 -14 -150 L 34 -158 C 18 -130 34 -112 24 -86 C 16 -58 24 -30 11 0 Z" fill="#3f2c28" stroke="#1f1412" stroke-width="3" stroke-linejoin="round"/>
-            <path d="M-7 0 C -10 -16 0 -28 -4 -42 L 9 -44 C 12 -30 8 -14 11 0 Z" fill="#e8925a" opacity=".8"/>
-            <path d="M-1 -48 C -4 -66 4 -80 0 -96" fill="none" stroke="#59403a" stroke-width="5" stroke-linecap="round"/>
-            <path d="M-14 -148 C -44 -140 -66 -152 -60 -172 C -78 -180 -74 -204 -52 -208 C -54 -228 -28 -240 -8 -232 C 0 -250 36 -252 48 -234 C 80 -240 100 -224 90 -206 C 112 -200 110 -178 88 -172 C 98 -156 80 -142 58 -148 C 44 -132 12 -130 2 -144 Z" fill="#4a3330" stroke="#1f1412" stroke-width="4" stroke-linejoin="round"/>
-            <path d="M-52 -208 C -54 -228 -28 -240 -8 -232 C 0 -250 36 -252 48 -234 C 72 -238 90 -228 88 -212 C 56 -228 18 -230 -12 -220 C -28 -214 -44 -212 -52 -208 Z" fill="#5f4340"/>
-            <path d="M-20 -150 C 2 -138 34 -138 54 -150 C 40 -132 6 -130 -10 -140 Z" fill="#d97e42" opacity=".55"/>
-            <path d="M-16 -228 C -2 -238 28 -240 42 -232" fill="none" stroke="#8a625a" stroke-width="4" stroke-linecap="round"/>
-            <path d="M4 -154 C 24 -160 44 -172 54 -190" fill="none" stroke="#241715" stroke-width="4" stroke-linecap="round"/>
-            <path d="M96 -192 C 110 -192 116 -180 108 -172 C 116 -166 112 -154 100 -154 C 88 -154 82 -166 90 -174 C 84 -182 88 -192 96 -192 Z" fill="#443029" stroke="#1f1412" stroke-width="3"/>
-            <path d="M120 -166 C 128 -165 131 -158 126 -153 C 120 -148 112 -152 114 -159 Z" fill="#392722"/>
-            <circle cx="-4" cy="-130" r="3" fill="#ffb46a" style="animation:emberUp 2.4s linear infinite"/>
+          <!-- ruin smoke: columns of orange puff clouds, shaded, no outlines -->
+          <g id="plumeA">
+            <g opacity=".95">
+              <ellipse cx="2" cy="-38" rx="24" ry="18" fill="#c96a35"/>
+              <ellipse cx="-4" cy="-47" rx="14" ry="10" fill="#e2914f"/>
+              <ellipse cx="2" cy="-26" rx="18" ry="8" fill="#9c4a22"/>
+            </g>
+            <g opacity=".92">
+              <ellipse cx="-10" cy="-92" rx="28" ry="20" fill="#d97e42"/>
+              <ellipse cx="-18" cy="-103" rx="16" ry="11" fill="#eda766"/>
+              <ellipse cx="-8" cy="-78" rx="20" ry="9" fill="#a85426"/>
+            </g>
+            <g opacity=".9">
+              <ellipse cx="8" cy="-152" rx="33" ry="24" fill="#c96a35"/>
+              <ellipse cx="0" cy="-166" rx="19" ry="13" fill="#e2914f"/>
+              <ellipse cx="10" cy="-136" rx="24" ry="10" fill="#9c4a22"/>
+              <ellipse cx="32" cy="-146" rx="12" ry="9" fill="#d97e42"/>
+            </g>
+            <g opacity=".85">
+              <ellipse cx="-6" cy="-220" rx="40" ry="28" fill="#d97e42"/>
+              <ellipse cx="-16" cy="-237" rx="24" ry="15" fill="#eda766"/>
+              <ellipse cx="16" cy="-228" rx="18" ry="12" fill="#e2914f"/>
+              <ellipse cx="-4" cy="-198" rx="30" ry="12" fill="#a85426"/>
+            </g>
+            <circle cx="-4" cy="-120" r="3" fill="#ffb46a" style="animation:emberUp 2.4s linear infinite"/>
             <circle cx="14" cy="-170" r="2.2" fill="#ff8f5a" style="animation:emberUp 3.2s linear infinite 1.1s"/>
-            <circle cx="4" cy="-104" r="2" fill="#ffd9a8" style="animation:emberUp 2.8s linear infinite .5s"/>
+            <circle cx="4" cy="-96" r="2" fill="#ffd9a8" style="animation:emberUp 2.8s linear infinite .5s"/>
             <circle cx="-12" cy="-186" r="1.8" fill="#ffcf96" style="animation:emberUp 3.6s linear infinite 1.8s"/>
+          </g>
+          <g id="plumeB">
+            <g opacity=".95">
+              <ellipse cx="0" cy="-30" rx="20" ry="15" fill="#c96a35"/>
+              <ellipse cx="-6" cy="-38" rx="12" ry="8" fill="#e2914f"/>
+              <ellipse cx="0" cy="-20" rx="15" ry="7" fill="#9c4a22"/>
+            </g>
+            <g opacity=".9">
+              <ellipse cx="10" cy="-74" rx="26" ry="19" fill="#d97e42"/>
+              <ellipse cx="2" cy="-85" rx="15" ry="10" fill="#eda766"/>
+              <ellipse cx="12" cy="-60" rx="19" ry="8" fill="#a85426"/>
+            </g>
+            <g opacity=".85">
+              <ellipse cx="-2" cy="-128" rx="34" ry="24" fill="#c96a35"/>
+              <ellipse cx="-12" cy="-142" rx="20" ry="13" fill="#eda766"/>
+              <ellipse cx="14" cy="-134" rx="15" ry="10" fill="#e2914f"/>
+              <ellipse cx="0" cy="-110" rx="25" ry="10" fill="#9c4a22"/>
+            </g>
+            <circle cx="-2" cy="-100" r="2.6" fill="#ffb46a" style="animation:emberUp 2.6s linear infinite"/>
+            <circle cx="10" cy="-130" r="2" fill="#ff8f5a" style="animation:emberUp 3.4s linear infinite 1.3s"/>
+            <circle cx="2" cy="-80" r="1.8" fill="#ffd9a8" style="animation:emberUp 3s linear infinite .7s"/>
           </g>
         </defs>
 
@@ -1052,25 +1159,25 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
             <path d="M702 72 h56 M730 44 v56" stroke="#ffb98a" stroke-width="2.5" opacity=".7"/>
           </g>
           <g id="sm1" opacity="0" transform="translate(450,620)">
-            <g style="animation:smokeRise 6s ease-in-out infinite alternate"><use href="#plume" transform="scale(1.05) rotate(-7)"/></g>
+            <g style="animation:smokeRise 6s ease-in-out infinite alternate"><use href="#plumeA" transform="scale(.9) rotate(-6)"/></g>
           </g>
           <g id="sm2" opacity="0" transform="translate(580,620)">
-            <g style="animation:smokeRise 7s ease-in-out infinite alternate-reverse"><use href="#plume" transform="scale(-.8,.68) rotate(6)"/></g>
+            <g style="animation:smokeRise 7s ease-in-out infinite alternate-reverse"><use href="#plumeB" transform="scale(-.85,.8) rotate(5)"/></g>
           </g>
           <g id="sm3" opacity="0" transform="translate(1130,620)">
-            <g style="animation:smokeRise 5.5s ease-in-out infinite alternate"><use href="#plume" transform="scale(1.15) rotate(-10)"/></g>
+            <g style="animation:smokeRise 5.5s ease-in-out infinite alternate"><use href="#plumeA" transform="scale(1.1) rotate(-8)"/></g>
           </g>
           <g id="sm4" opacity="0" transform="translate(290,620)">
-            <g style="animation:smokeRise 6.5s ease-in-out infinite alternate-reverse"><use href="#plume" transform="scale(-.95,.82) rotate(8)"/></g>
+            <g style="animation:smokeRise 6.5s ease-in-out infinite alternate-reverse"><use href="#plumeB" transform="scale(-1,.9) rotate(7)"/></g>
           </g>
           <g id="sm5" opacity="0" transform="translate(935,620)">
-            <g style="animation:smokeRise 6s ease-in-out infinite alternate"><use href="#plume" transform="scale(1,.9) rotate(-5)"/></g>
+            <g style="animation:smokeRise 6s ease-in-out infinite alternate"><use href="#plumeB" transform="scale(.95,.9) rotate(-4)"/></g>
           </g>
           <g id="sm6" opacity="0" transform="translate(1320,620)">
-            <g style="animation:smokeRise 7.5s ease-in-out infinite alternate-reverse"><use href="#plume" transform="scale(-.85,.68) rotate(9)"/></g>
+            <g style="animation:smokeRise 7.5s ease-in-out infinite alternate-reverse"><use href="#plumeB" transform="scale(-.8,.75) rotate(8)"/></g>
           </g>
           <g id="sm7" opacity="0" transform="translate(730,620)">
-            <g style="animation:smokeRise 5s ease-in-out infinite alternate"><use href="#plume" transform="scale(1.35) rotate(-8)"/></g>
+            <g style="animation:smokeRise 5s ease-in-out infinite alternate"><use href="#plumeA" transform="scale(1.3) rotate(-7)"/></g>
           </g>
         </g>
       </svg>
@@ -1244,29 +1351,76 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
       <defs>
         <g id="fgtA">
-          <path d="M-16 0 L-2 -5 L16 0 L-2 5 Z" fill="#3d466e" stroke="#161c34" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M-16 0 L-2 -5 L16 0" fill="none" stroke="#8fa2d6" stroke-width="1"/>
-          <circle cx="8" cy="0" r="1.6" fill="#bfeeff"/>
-          <path d="M-16 0 l-13 -3 0 6 Z" fill="#9fe8ff" opacity=".8"/>
+          <path d="M-15 0 C -22 -3.5 -30 -2.5 -35 0 C -30 2.5 -22 3.5 -15 0 Z" fill="#9fe8ff" opacity=".85"/>
+          <path d="M-15 0 C -20 -1.8 -25 -1.2 -28 0 C -25 1.2 -20 1.8 -15 0 Z" fill="#eafcff"/>
+          <path d="M-2 -3 L-9 -10 L-14 -10 L-7 -3 Z" fill="#31395e" stroke="#161c34" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M-2 3 L-9 10 L-14 10 L-7 3 Z" fill="#31395e" stroke="#161c34" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M16 0 L8 -4.5 L-8 -5.5 L-15 -3 L-15 3 L-8 5.5 L8 4.5 Z" fill="#3d466e" stroke="#161c34" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M16 0 L8 -4.5 L-8 -5.5 L-15 -3 L0 -1.5 Z" fill="#4d5886"/>
+          <rect x="-17" y="-3" width="4" height="6" rx="1" fill="#161c34"/>
+          <path d="M10 -1.5 L5 -3 L1 -2.5 L1 2 L5 2.5 L10 1 Z" fill="#bfeeff" stroke="#161c34" stroke-width="1"/>
         </g>
         <g id="fgtR">
-          <path d="M-14 0 L0 -6 L14 0 L0 6 Z" fill="#7a4a33" stroke="#2a1712" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M-14 0 L0 -6 L14 0" fill="none" stroke="#c98a5a" stroke-width="1"/>
-          <circle cx="7" cy="0" r="1.6" fill="#ffb98a"/>
-          <path d="M-14 0 l-12 -3 0 6 Z" fill="#ffb46a" opacity=".85"/>
+          <path d="M-14 0 C -21 -3.5 -29 -2.5 -34 0 C -29 2.5 -21 3.5 -14 0 Z" fill="#ffb46a" opacity=".85"/>
+          <path d="M-14 0 C -19 -1.8 -24 -1.2 -27 0 C -24 1.2 -19 1.8 -14 0 Z" fill="#ffe3b0"/>
+          <path d="M0 -4 L-6 -11 L-11 -11 L-5 -4 Z" fill="#5c3a28" stroke="#2a1712" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M0 4 L-6 11 L-11 11 L-5 4 Z" fill="#5c3a28" stroke="#2a1712" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M14 0 L7 -5 L-7 -6 L-14 -3 L-14 3 L-7 6 L7 5 Z" fill="#7a4a33" stroke="#2a1712" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M14 0 L7 -5 L-7 -6 L-14 -3 L0 -1.5 Z" fill="#93552f"/>
+          <rect x="-15" y="-3" width="4" height="6" rx="1" fill="#2a1712"/>
+          <circle cx="7" cy="0" r="1.8" fill="#ffb98a" stroke="#2a1712" stroke-width="1"/>
         </g>
       </defs>
 
       <!-- fast crossers + pursuit bursts -->
       <path id="dfp1" d="M-80 210 C 400 110 1100 330 1720 170" fill="none"/>
       <path id="dfp2" d="M1720 430 C 1000 540 480 370 -100 500" fill="none"/>
+
+      <!-- bolt layer: lasers pass behind the ships and run off the screen edge -->
+      <path id="kbA" d="M700 252 L1720 500" fill="none"/>
+      <path id="kbB" d="M860 458 L-120 590" fill="none"/>
+      <path id="fbA" d="M-100 240 L1720 420" fill="none"/>
+      <path id="fbB" d="M1720 300 L-120 520" fill="none"/>
+      <path id="gsA" d="M320 -60 L560 700" fill="none"/>
+      <path id="gsB" d="M1390 -80 L1080 690" fill="none"/>
+      <path id="gsC" d="M760 -70 L900 710" fill="none"/>
+      <g><animateMotion dur="6.5s" begin="0.9s" repeatCount="indefinite" rotate="auto"><mpath href="#dfp1"/></animateMotion><g style="animation:boltDash 1.2s linear infinite"><path d="M8 0 h26" stroke="#ff6b52" stroke-width="3" stroke-linecap="round"/><path d="M8 0 h10" stroke="#ffd9d0" stroke-width="1.8" stroke-linecap="round"/></g></g>
+      <g><animateMotion dur="8.5s" begin="2.55s" repeatCount="indefinite" rotate="auto"><mpath href="#dfp2"/></animateMotion><g style="animation:boltDash 1.5s linear infinite .4s"><path d="M8 0 h22" stroke="#9fe8ff" stroke-width="2.6" stroke-linecap="round"/></g></g>
+      <g style="animation:boltAvis 14s linear infinite">
+        <animateMotion dur="14s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.35;.42;1" calcMode="linear"><mpath href="#kbA"/></animateMotion>
+        <path d="M-12 0 h24" stroke="#ff6b52" stroke-width="3" stroke-linecap="round"/>
+        <path d="M-12 0 h9" stroke="#ffd9d0" stroke-width="1.8" stroke-linecap="round"/>
+      </g>
+      <g style="animation:boltAvis 17s linear infinite">
+        <animateMotion dur="17s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.35;.42;1" calcMode="linear"><mpath href="#kbB"/></animateMotion>
+        <path d="M-11 0 h22" stroke="#9fe8ff" stroke-width="2.8" stroke-linecap="round"/>
+      </g>
+      <g style="animation:boltAvis 9s linear infinite">
+        <animateMotion dur="9s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.35;.42;1" calcMode="linear"><mpath href="#fbA"/></animateMotion>
+        <path d="M-12 0 h24" stroke="#ff6b52" stroke-width="3" stroke-linecap="round"/>
+      </g>
+      <g style="animation:boltAvis 12.5s linear infinite">
+        <animateMotion dur="12.5s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.35;.42;1" calcMode="linear"><mpath href="#fbB"/></animateMotion>
+        <path d="M-11 0 h22" stroke="#9fe8ff" stroke-width="2.8" stroke-linecap="round"/>
+      </g>
+      <g style="animation:projVis 2.6s linear infinite">
+        <animateMotion dur="2.6s" repeatCount="indefinite" rotate="auto" keyPoints="0;1;1" keyTimes="0;.5;1" calcMode="linear"><mpath href="#gsA"/></animateMotion>
+        <path d="M-14 0 h28" stroke="#ff6b52" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M-14 0 h10" stroke="#ffd9d0" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <g style="animation:projVis 3.4s linear infinite .9s">
+        <animateMotion dur="3.4s" begin=".9s" repeatCount="indefinite" rotate="auto" keyPoints="0;1;1" keyTimes="0;.5;1" calcMode="linear"><mpath href="#gsB"/></animateMotion>
+        <path d="M-13 0 h26" stroke="#9fe8ff" stroke-width="3" stroke-linecap="round"/>
+      </g>
+      <g style="animation:projVis 4.1s linear infinite 2.1s">
+        <animateMotion dur="4.1s" begin="2.1s" repeatCount="indefinite" rotate="auto" keyPoints="0;1;1" keyTimes="0;.5;1" calcMode="linear"><mpath href="#gsC"/></animateMotion>
+        <path d="M-14 0 h28" stroke="#ff6b52" stroke-width="3.5" stroke-linecap="round"/>
+      </g>
       <g><animateMotion dur="6.5s" repeatCount="indefinite" rotate="auto"><mpath href="#dfp1"/></animateMotion><use href="#fgtA"/></g>
       <g><animateMotion dur="6.5s" begin="0.55s" repeatCount="indefinite" rotate="auto"><mpath href="#dfp1"/></animateMotion><use href="#fgtA" transform="scale(.8)"/></g>
       <g><animateMotion dur="6.5s" begin="1.05s" repeatCount="indefinite" rotate="auto"><mpath href="#dfp1"/></animateMotion><use href="#fgtR" transform="scale(.9)"/></g>
-      <g><animateMotion dur="6.5s" begin="0.9s" repeatCount="indefinite" rotate="auto"><mpath href="#dfp1"/></animateMotion><g style="animation:boltDash 1.2s linear infinite"><path d="M8 0 h26" stroke="#ff6b52" stroke-width="3" stroke-linecap="round"/><path d="M8 0 h10" stroke="#ffd9d0" stroke-width="1.8" stroke-linecap="round"/></g></g>
       <g><animateMotion dur="8.5s" begin="2s" repeatCount="indefinite" rotate="auto"><mpath href="#dfp2"/></animateMotion><use href="#fgtR"/></g>
       <g><animateMotion dur="8.5s" begin="2.7s" repeatCount="indefinite" rotate="auto"><mpath href="#dfp2"/></animateMotion><use href="#fgtA" transform="scale(.85)"/></g>
-      <g><animateMotion dur="8.5s" begin="2.55s" repeatCount="indefinite" rotate="auto"><mpath href="#dfp2"/></animateMotion><g style="animation:boltDash 1.5s linear infinite .4s"><path d="M8 0 h22" stroke="#9fe8ff" stroke-width="2.6" stroke-linecap="round"/></g></g>
 
       <!-- kill loop A: fleet fighter downed over the city -->
       <path id="kvA" d="M-60 300 L900 300" fill="none"/>
@@ -1277,12 +1431,6 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
         <use href="#fgtA"/>
       </g>
       <g><animateMotion dur="14s" repeatCount="indefinite" rotate="auto"><mpath href="#khA"/></animateMotion><use href="#fgtR"/></g>
-      <path id="kbA" d="M772 269 L893 298" fill="none"/>
-      <g style="animation:boltAvis 14s linear infinite">
-        <animateMotion dur="14s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.35;.379;1" calcMode="linear"><mpath href="#kbA"/></animateMotion>
-        <path d="M-12 0 h24" stroke="#ff6b52" stroke-width="3" stroke-linecap="round"/>
-        <path d="M-12 0 h9" stroke="#ffd9d0" stroke-width="1.8" stroke-linecap="round"/>
-      </g>
       <g transform="translate(900,300)"><g style="animation:boomA 14s linear infinite">
         <circle r="26" fill="#ff8f5a" opacity=".5"/><circle r="15" fill="#ffd9a8"/><circle r="7" fill="#fff3e2"/>
         <path d="M-34 0 h68 M0 -34 v68 M-24 -24 L24 24 M-24 24 L24 -24" stroke="#ffb98a" stroke-width="2.5" opacity=".8"/>
@@ -1290,8 +1438,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       <g style="animation:wreckA 14s linear infinite">
         <animateMotion dur="14s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.38;.72;1" calcMode="linear"><mpath href="#wkA"/></animateMotion>
         <use href="#fgtA"/>
-        <path d="M-16 0 l-24 -7 5 12 Z" fill="#ff8f5a" opacity=".85"/>
-        <path d="M-14 -1 l-38 -4 8 9 Z" fill="#ffb98a" opacity=".5"/>
+        <path d="M-14 0 C -26 -7 -40 -6 -50 0 C -40 6 -26 7 -14 0 Z" fill="#ff8f5a" opacity=".85"/>
+        <path d="M-14 0 C -22 -3.5 -30 -2.5 -36 0 C -30 2.5 -22 3.5 -14 0 Z" fill="#ffd9a8" opacity=".9"/>
       </g>
 
       <!-- kill loop B: foundry drone downed, right to left -->
@@ -1303,11 +1451,6 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
         <use href="#fgtR"/>
       </g>
       <g><animateMotion dur="17s" repeatCount="indefinite" rotate="auto"><mpath href="#khB"/></animateMotion><use href="#fgtA"/></g>
-      <path id="kbB" d="M838 461 L706 479" fill="none"/>
-      <g style="animation:boltAvis 17s linear infinite">
-        <animateMotion dur="17s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.35;.379;1" calcMode="linear"><mpath href="#kbB"/></animateMotion>
-        <path d="M-11 0 h22" stroke="#9fe8ff" stroke-width="2.8" stroke-linecap="round"/>
-      </g>
       <g transform="translate(700,480)"><g style="animation:boomA 17s linear infinite">
         <circle r="24" fill="#ff8f5a" opacity=".5"/><circle r="14" fill="#ffd9a8"/><circle r="6" fill="#fff3e2"/>
         <path d="M-30 0 h60 M0 -30 v60 M-21 -21 L21 21 M-21 21 L21 -21" stroke="#ffb98a" stroke-width="2.5" opacity=".8"/>
@@ -1315,34 +1458,19 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       <g style="animation:wreckA 17s linear infinite">
         <animateMotion dur="17s" repeatCount="indefinite" rotate="auto" keyPoints="0;0;1;1" keyTimes="0;.38;.72;1" calcMode="linear"><mpath href="#wkB"/></animateMotion>
         <use href="#fgtR"/>
-        <path d="M-14 0 l-22 -6 4 11 Z" fill="#ff8f5a" opacity=".85"/>
+        <path d="M-13 0 C -24 -6 -37 -5 -46 0 C -37 5 -24 6 -13 0 Z" fill="#ff8f5a" opacity=".85"/>
+        <path d="M-13 0 C -20 -3 -27 -2 -32 0 C -27 2 -20 3 -13 0 Z" fill="#ffd9a8" opacity=".9"/>
       </g>
 
-      <!-- strafing runs: bolts dive to the ground and burst on impact -->
-      <path id="gsA" d="M420 190 L560 700" fill="none"/>
-      <path id="gsB" d="M1250 240 L1080 690" fill="none"/>
-      <path id="gsC" d="M820 160 L900 710" fill="none"/>
-      <g style="animation:projVis 2.6s linear infinite">
-        <animateMotion dur="2.6s" repeatCount="indefinite" rotate="auto" keyPoints="0;1;1" keyTimes="0;.5;1" calcMode="linear"><mpath href="#gsA"/></animateMotion>
-        <path d="M-14 0 h28" stroke="#ff6b52" stroke-width="3.5" stroke-linecap="round"/>
-        <path d="M-14 0 h10" stroke="#ffd9d0" stroke-width="2" stroke-linecap="round"/>
-      </g>
+      <!-- strafing-run ground bursts (bolts live in the bolt layer) -->
       <g transform="translate(560,700)"><g style="animation:projBoom 2.6s linear infinite">
         <circle r="16" fill="#ff8f5a" opacity=".55"/><circle r="9" fill="#ffd9a8"/><circle r="4" fill="#fff3e2"/>
         <path d="M-22 0 h44 M-15 -12 L15 12 M-15 12 L15 -12" stroke="#ffb98a" stroke-width="2.5" opacity=".8"/>
       </g></g>
-      <g style="animation:projVis 3.4s linear infinite .9s">
-        <animateMotion dur="3.4s" begin=".9s" repeatCount="indefinite" rotate="auto" keyPoints="0;1;1" keyTimes="0;.5;1" calcMode="linear"><mpath href="#gsB"/></animateMotion>
-        <path d="M-13 0 h26" stroke="#9fe8ff" stroke-width="3" stroke-linecap="round"/>
-      </g>
       <g transform="translate(1080,690)"><g style="animation:projBoom 3.4s linear infinite .9s">
         <circle r="14" fill="#ff8f5a" opacity=".55"/><circle r="8" fill="#ffd9a8"/><circle r="3.5" fill="#fff3e2"/>
         <path d="M-19 0 h38 M-13 -11 L13 11 M-13 11 L13 -11" stroke="#ffb98a" stroke-width="2.5" opacity=".8"/>
       </g></g>
-      <g style="animation:projVis 4.1s linear infinite 2.1s">
-        <animateMotion dur="4.1s" begin="2.1s" repeatCount="indefinite" rotate="auto" keyPoints="0;1;1" keyTimes="0;.5;1" calcMode="linear"><mpath href="#gsC"/></animateMotion>
-        <path d="M-14 0 h28" stroke="#ff6b52" stroke-width="3.5" stroke-linecap="round"/>
-      </g>
       <g transform="translate(900,710)"><g style="animation:projBoom 4.1s linear infinite 2.1s">
         <circle r="15" fill="#ff8f5a" opacity=".55"/><circle r="8" fill="#ffd9a8"/><circle r="4" fill="#fff3e2"/>
         <path d="M-20 0 h40 M-14 -11 L14 11 M-14 11 L14 -11" stroke="#ffb98a" stroke-width="2.5" opacity=".8"/>
@@ -1532,6 +1660,11 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     contBtn2.classList.remove('on');
     ascent.style.opacity = 0;
     spaceBattle.setAttribute('opacity', 0);
+    for (i = 0; i < KILLS3.length; i++){
+      KILLS3[i].g.removeAttribute('transform');
+      KILLS3[i].bx.setAttribute('opacity', 0);
+      KILLS3[i].puff.setAttribute('opacity', 0);
+    }
   }
   contBtn.addEventListener('click', function(){
     ACT2.started = true; ACT2.t0 = performance.now(); curCap2 = -1;
@@ -1544,10 +1677,15 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   var spaceBattle = el('spacebattle');
   var curCap3 = -1;
   var CAPS3 = [
-    { a:1.5, b:10, k:'Protostar-7 — Report 06',
+    { a:2,  b:12, k:'Protostar-7 — Report 06',
       t:'One shuttle runs for the black, engines screaming, with everything the foundry can still throw close behind.' },
-    { a:14,  b:22, k:'Protostar-7 — Report 07',
+    { a:20, b:32, k:'Protostar-7 — Report 07',
       t:'Above the ruin the fleet holds the line. Even the stars burn red over Protostar-7 now.' }
+  ];
+  var KILLS3 = [
+    { g:el('bshipC'), bx:el('bxC'), puff:el('pfC'), dt:3,  cx:1363, cy:142, ang:9,  drop:520 },
+    { g:el('bshipB'), bx:el('bxB'), puff:el('pfB'), dt:9,  cx:1120, cy:430, ang:-7, drop:640 },
+    { g:el('bshipA'), bx:el('bxA'), puff:el('pfA'), dt:15, cx:475,  cy:215, ang:6,  drop:720 }
   ];
   contBtn2.addEventListener('click', function(){
     ACT3.started = true; ACT3.t0 = performance.now(); curCap3 = -1;
@@ -1577,7 +1715,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     var t3 = 0, u3 = 0;
     if (ACT3.started){
       t3 = (now - ACT3.t0)/1000;
-      u3 = clamp01(t3 / (DUR/3000));
+      u3 = clamp01(t3 / (DUR/2000));
       var e3 = u3 < .5 ? 2*u3*u3 : 1 - Math.pow(-2*u3 + 2, 2)/2;
       cam = CAM_END * (1 - e3);
     }
@@ -1728,7 +1866,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
           var uu = u*u;
           var dy = (s.drop || 880) * uu;
           tf = 'translate(0,' + dy.toFixed(1) + ') rotate(' + (s.ang * Math.min(1, uu*1.6)).toFixed(2) + ' ' + s.px + ' ' + s.py + ')';
-          if (u >= 1) s.smoke.setAttribute('opacity', Math.min(0.9, 0.25 + (tau - 2.2 - s.fall) * 0.5));
+          if (u > 0.3) s.smoke.setAttribute('opacity', Math.min(0.92, (u - 0.3) * 0.8 + Math.max(0, tau - 2.2 - s.fall) * 0.5));
           quake += (u < 1 ? 0.25 : 0.5 * Math.exp(-(tau - 2.2 - s.fall) * 1.6));
         }
         s.tw.setAttribute('transform', tf);
@@ -1759,12 +1897,26 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       spaceBattle.setAttribute('opacity', ramp(u3, 0.3, 0.65));
       ACT2.shake = reduced ? 0 : 0.3 * Math.exp(-t3 * 0.9);
 
-      // hero shuttle: lifts from behind the right peaks, camera chases it up
-      var lift = 1 - Math.pow(1 - clamp01(u3 / 0.75), 2.4);
-      var ay = 92 - 74 * lift + Math.sin(now * 0.0011) * 0.8;
-      var ax = 82 - 28 * (u3 < .5 ? 2*u3*u3 : 1 - Math.pow(-2*u3 + 2, 2)/2) + Math.sin(now * 0.0007) * 1.1;
+      // hero shuttle: rises out of the smoke at screen centre, growing as it nears
+      var lift = 1 - Math.pow(1 - clamp01(u3 / 0.85), 2.2);
+      var ay = 98 - 84 * lift + Math.sin(now * 0.0011) * 0.8;
+      var ax = 43 + 3.5 * (u3 < .5 ? 2*u3*u3 : 1 - Math.pow(-2*u3 + 2, 2)/2) + Math.sin(now * 0.0007) * 1.1;
+      var asc = 0.32 + 0.68 * lift;
       ascent.style.opacity = 1;
-      ascent.style.transform = 'translate3d(' + ax + 'vw,' + ay + 'vh,0) rotate(' + (Math.sin(now*0.0009)*2 - 3) + 'deg)';
+      ascent.style.transform = 'translate3d(' + ax + 'vw,' + ay + 'vh,0) rotate(' + (Math.sin(now*0.0009)*2 - 2) + 'deg) scale(' + asc.toFixed(3) + ')';
+
+      // the fleet dies one at a time once we reach the black
+      for (i = 0; i < KILLS3.length; i++){
+        var k3 = KILLS3[i], tk = t3 - (DUR/2000 + k3.dt);
+        if (tk < 0) continue;
+        if (tk < 1.5){
+          k3.bx.setAttribute('opacity', (1 - ramp(tk, 0.9, 1.5)) * (0.7 + 0.3*Math.sin(tk*30)));
+          k3.bx.setAttribute('transform', 'translate(' + k3.cx + ',' + k3.cy + ') scale(' + (0.5 + tk*1.2).toFixed(2) + ')');
+        } else k3.bx.setAttribute('opacity', 0);
+        k3.puff.setAttribute('opacity', Math.min(0.95, ramp(tk, 0.8, 2)));
+        var uk = clamp01((tk - 1.3) / 7);
+        if (uk > 0) k3.g.setAttribute('transform', 'translate(0,' + (k3.drop*uk*uk).toFixed(1) + ') rotate(' + (k3.ang*uk).toFixed(2) + ' ' + k3.cx + ' ' + k3.cy + ')');
+      }
 
       // act-3 reports
       var want3 = -1;
