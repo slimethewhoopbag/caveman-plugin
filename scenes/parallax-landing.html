@@ -160,6 +160,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #strikeflash{position:absolute;inset:0;z-index:24;opacity:0;pointer-events:none;
   background:radial-gradient(80% 60% at 50% 55%,rgba(255,150,100,.55),rgba(255,80,50,.12) 60%,rgba(0,0,0,0) 100%)}
 #doomtint{position:absolute;inset:0;z-index:26;opacity:0;pointer-events:none;mix-blend-mode:multiply;background:#d98d66}
+#warpflash{position:absolute;inset:0;z-index:28;opacity:0;pointer-events:none;background:#eafcff}
 
 .reduced .layer,.reduced svg *{animation:none!important}
 </style>
@@ -688,15 +689,15 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   <!-- =================== ACT 3: geometric warp gate =================== -->
   <div id="warpfx">
     <svg viewBox="-100 -100 200 200">
-      <g id="wr1" opacity="0" style="animation:warpSpin 7s linear infinite">
-        <polygon points="80,0 40,69.3 -40,69.3 -80,0 -40,-69.3 40,-69.3" fill="none" stroke="#5fb8e8" stroke-width="3" opacity=".75"/>
+      <g id="wr1" opacity="0" style="animation:warpSpin 1.1s linear infinite">
+        <polygon points="80,0 40,69.3 -40,69.3 -80,0 -40,-69.3 40,-69.3" fill="none" stroke="#9fe8ff" stroke-width="2.5" opacity=".85"/>
         <path d="M0 -92 v14 M0 92 v-14 M-92 0 h14 M92 0 h-14 M-65 -65 l10 10 M65 65 l-10 -10 M-65 65 l10 -10 M65 -65 l-10 10" stroke="#9fe8ff" stroke-width="2" fill="none"/>
       </g>
-      <g id="wr2" opacity="0" style="animation:warpSpinR 4.5s linear infinite">
+      <g id="wr2" opacity="0" style="animation:warpSpinR .8s linear infinite">
         <polygon points="53.7,31 0,62 -53.7,31 -53.7,-31 0,-62 53.7,-31" fill="none" stroke="#9fe8ff" stroke-width="2.5" stroke-dasharray="18 8"/>
         <circle r="44" fill="none" stroke="#5fb8e8" stroke-width="2" stroke-dasharray="8 14"/>
       </g>
-      <g id="wr3" opacity="0" style="animation:warpSpin 3s linear infinite">
+      <g id="wr3" opacity="0" style="animation:warpSpin .55s linear infinite">
         <polygon points="48,0 24,41.6 -24,41.6 -48,0 -24,-41.6 24,-41.6" fill="none" stroke="#bfeeff" stroke-width="2"/>
         <polygon points="26,0 13,22.5 -13,22.5 -26,0 -13,-22.5 13,-22.5" fill="rgba(140,226,255,.2)" stroke="#d9f6ff" stroke-width="2"/>
       </g>
@@ -1568,6 +1569,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   <div id="haze"></div>
   <div id="strikeflash"></div>
   <div id="doomtint"></div>
+  <div id="warpflash"></div>
   <canvas id="particles"></canvas>
   <div id="vignette"></div>
   <div class="bar" id="bar-t"></div>
@@ -1739,6 +1741,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     contBtn2.classList.remove('on');
     ascent.style.opacity = 0;
     warpFx.style.opacity = 0;
+    warpFlash.style.opacity = 0;
     wboom.setAttribute('opacity', 0);
     spaceBattle.setAttribute('opacity', 0);
     for (i = 0; i < KILLS3.length; i++){
@@ -1777,6 +1780,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   ];
   var warpFx = el('warpfx');
   var wr1 = el('wr1'), wr2 = el('wr2'), wr3 = el('wr3'), wcore = el('wcore'), wboom = el('wboom');
+  var warpFlash = el('warpflash');
   contBtn2.addEventListener('click', function(){
     ACT3.started = true; ACT3.t0 = performance.now(); curCap3 = -1;
     contBtn2.classList.remove('on');
@@ -1807,7 +1811,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       t3 = (now - ACT3.t0)/1000;
       u3 = clamp01(t3 / (DUR/2000));
       var e3 = u3 < .5 ? 2*u3*u3 : 1 - Math.pow(-2*u3 + 2, 2)/2;
-      var deep = ramp(t3 - DUR/2000, 0, 14);
+      var deep = ramp(t3 - DUR/2000 * 0.72, 0, 16);
       deep = deep < .5 ? 2*deep*deep : 1 - Math.pow(-2*deep + 2, 2)/2;
       cam = CAM_END * (1 - e3) - 340 * deep;
     }
@@ -1997,22 +2001,24 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       var ay = 98 - 84 * lift - 5 * ramp(td, 0, 14) + Math.sin(now * 0.0011) * 0.8 * sway;
       var ax = 43 + 3.5 * (u3 < .5 ? 2*u3*u3 : 1 - Math.pow(-2*u3 + 2, 2)/2) + Math.sin(now * 0.0007) * 1.1 * sway;
       var asc = 0.32 + 0.68 * lift;
-      ascent.style.opacity = 1 - ramp(tw, 0.7, 1.15);
+      ascent.style.opacity = 1 - ramp(tw, 2.12, 2.24);
       ascent.style.transform = 'translate3d(' + ax + 'vw,' + ay + 'vh,0) rotate(' + ((Math.sin(now*0.0009)*2 - 2) * sway).toFixed(2) + 'deg) scale(' + asc.toFixed(3) + ')';
 
-      // blue geometric warp: fast snap-in, crush inward, detonate outward
-      if (tw > 0 && tw < 2.3){
-        warpFx.style.opacity = ramp(tw, 0, 0.2);
-        var wsc = tw < 1.45 ? (1.6 - 0.6 * ramp(tw, 0, 1)) * (1 - ramp(tw, 1.15, 1.45) * 0.94) : 1;
+      // blue geometric warp: hyper-spinning charge, then an instant crush,
+      // white screen flash and outward blast
+      if (tw > 0 && tw < 3){
+        warpFx.style.opacity = ramp(tw, 0, 0.15);
+        var wsc = tw < 2.32 ? (1.45 - 0.45 * ramp(tw, 0, 0.5)) * (1 - ramp(tw, 2.2, 2.32) * 0.95) : 1;
         warpFx.style.transform = 'translate3d(' + (ax - 5.5) + 'vw,calc(' + ay + 'vh + 2vw),0) scale(' + wsc.toFixed(3) + ')';
-        var ringsO = 1 - ramp(tw, 1.42, 1.48);
-        wr1.setAttribute('opacity', ramp(tw, 0, 0.2) * ringsO);
-        wr2.setAttribute('opacity', ramp(tw, 0.15, 0.45) * ringsO);
-        wr3.setAttribute('opacity', ramp(tw, 0.35, 0.65) * ringsO);
-        wcore.setAttribute('opacity', ramp(tw, 0.55, 0.85) * ringsO);
-        wboom.setAttribute('opacity', ramp(tw, 1.45, 1.52) * (1 - ramp(tw, 1.78, 2.2)));
-        wboom.setAttribute('transform', 'scale(' + (0.15 + 2.45 * ramp(tw, 1.45, 2.15)).toFixed(3) + ')');
-      } else warpFx.style.opacity = 0;
+        var ringsO = 1 - ramp(tw, 2.24, 2.32);
+        wr1.setAttribute('opacity', ramp(tw, 0, 0.15) * ringsO);
+        wr2.setAttribute('opacity', ramp(tw, 0.1, 0.3) * ringsO);
+        wr3.setAttribute('opacity', ramp(tw, 0.2, 0.42) * ringsO);
+        wcore.setAttribute('opacity', ramp(tw, 0.35, 0.6) * (0.75 + 0.25 * Math.sin(now * 0.02)) * ringsO);
+        wboom.setAttribute('opacity', ramp(tw, 2.3, 2.36) * (1 - ramp(tw, 2.62, 2.9)));
+        wboom.setAttribute('transform', 'scale(' + (0.2 + 2.5 * ramp(tw, 2.3, 2.72)).toFixed(3) + ')');
+        warpFlash.style.opacity = ramp(tw, 2.2, 2.26) * (1 - ramp(tw, 2.32, 2.66)) * 0.95;
+      } else { warpFx.style.opacity = 0; warpFlash.style.opacity = 0; }
 
       // capital ships die as they come into frame: burst chains, then a
       // heavy listing drop that keeps the wrecks on screen
