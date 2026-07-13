@@ -75,8 +75,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 @keyframes blink{0%,92%,100%{opacity:0}94%,97%{opacity:1}}
 @keyframes blink2{0%,88%,100%{opacity:.1}90%,94%{opacity:1}}
 @keyframes thrustPuff{0%,95.4%,100%{opacity:0}96.2%,98%{opacity:.75}}
-@keyframes flow{to{stroke-dashoffset:-480}}
-@keyframes flowSlow{to{stroke-dashoffset:-260}}
+@keyframes flow{to{stroke-dashoffset:-504}}
+@keyframes flowSlow{to{stroke-dashoffset:-252}}
 @keyframes ringSpin{to{stroke-dashoffset:-352}}
 @keyframes fleetIn{from{opacity:0;transform:translate3d(5vw,-1.5vh,0)}to{opacity:1;transform:translate3d(0,0,0)}}
 @keyframes shipDriftA{from{transform:translate3d(0,0,0) rotate(-.5deg)}to{transform:translate3d(-3vw,.8vh,0) rotate(.4deg)}}
@@ -1646,7 +1646,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   var capTx = capEl.querySelector('span');
   var CAPS = [
     { a:0.015, b:0.17, k:'Protostar-1 — Report 01-0',
-      t:'Deep-range observation confirmed a terrestrial world within Protostar-1. Stable oceans, extensive mountain ranges, and dense continental settlement. The potential for habitancy is high.' },
+      t:'Deep-range observation confirmed a terrestrial world within Protostar-1. Stable oceans, extensive mountain ranges, and dense continental settlement.' },
     { a:0.30, b:0.49, k:'Protostar-1 — Report 02-0',
       t:'Descent began. Surface communications remained active, though increasingly fragmented. Civil infrastructure appears intact. Atmospheric conditions are favourable. From orbit, nothing suggests a world nearing collapse.' },
     { a:0.73, b:0.998, k:'Protostar-1 — Report 02-7',
@@ -1735,9 +1735,9 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   }
   var CAPS2 = [
     { a:2,  b:22, k:'Protostar-1 — Report 04-2',
-      t:'The sky opens.\nHigh-energy signatures descend without warning, spreading across the continents with impossible precision. Within minutes, the atmosphere begins to change. Unlikely core interference.' },
+      t:'The sky opens.\nHigh-energy signatures descend without warning, spreading across the continents with impossible precision. Within minutes, the atmosphere begins to change.' },
     { a:23, b:46, k:'Protostar-1 — Report 05-0',
-      t:'Iron-rich storm fronts consume the horizon. Entire districts disappear beneath fire and dust. Surface telemetry collapses one network at a time, though power signatures continue to rise. Unlikely Stellar interference.' }
+      t:'Iron-rich storm fronts consume the horizon. Entire districts disappear beneath fire and dust. Surface telemetry collapses one network at a time, though power signatures continue to rise.' }
   ];
 
   function resetAct2(){
@@ -1785,7 +1785,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     { a:2,  b:21, k:'Protostar-1 — Report 06-0',
       t:'One shuttle escapes the atmosphere.\nNo registered flight path.\nNo potential destination.\nIts in full acceleration.' },
     { a:20, b:34, k:'Protostar-1 — Report 07-0',
-      t:'From orbit, the planet\x27s continents vanished beneath ash and cloud. The infrastructure could no longer be seen. The planet continued to burn brighter with each passing hour. Likely living interference.' },
+      t:'From orbit, the planet\x27s continents vanished beneath ash and cloud. The infrastructure could no longer be seen. The planet continued to burn brighter with each passing hour.' },
     { a:36, b:999, k:'Protostar-1 — Report 08-0', cps:13, fin:true,
       t:'One vessel disappears into deep space.\nProtostar-1 remains, Planet \x01 looking uninhabitable.\nNo further reports were received.' }
   ];
