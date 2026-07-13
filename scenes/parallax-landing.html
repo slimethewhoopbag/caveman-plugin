@@ -133,8 +133,16 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #caption{position:absolute;left:6vw;bottom:9.5vh;z-index:32;max-width:52ch;
   color:#dfe8f5;font-size:clamp(13px,1.4vw,19px);line-height:1.6;font-weight:600;
   letter-spacing:.16em;text-transform:uppercase;opacity:0;
+  background:linear-gradient(100deg,rgba(4,7,14,.62),rgba(4,7,14,.4) 62%,rgba(4,7,14,0));
+  padding:.7em 1.6em .7em 1em;margin-left:-1em;border-radius:3px;
   text-shadow:-1px -1px 0 #0a0c14,1px -1px 0 #0a0c14,-1px 1px 0 #0a0c14,1px 1px 0 #0a0c14,0 2px 3px rgba(3,5,10,.9),0 1px 12px rgba(4,8,20,.8)}
 #caption small{display:block;letter-spacing:.34em;font-weight:500;font-size:.72em;color:#8fb4d8;margin-bottom:.5em}
+#caption .redact{display:inline-block;width:8ch;height:.78em;background:#dfe8f5;border-radius:1px;
+  transform:translateY(.08em);box-shadow:-1px -1px 0 #0a0c14,1px -1px 0 #0a0c14,-1px 1px 0 #0a0c14,1px 1px 0 #0a0c14}
+#caption .cur{display:inline-block;width:.55ch;height:.85em;background:#dfe8f5;margin-left:2px;border-radius:1px;
+  transform:translateY(.1em);animation:curBlink 1.1s ease-in-out infinite;
+  box-shadow:-1px -1px 0 #0a0c14,1px -1px 0 #0a0c14,-1px 1px 0 #0a0c14,1px 1px 0 #0a0c14}
+@keyframes curBlink{0%,100%{opacity:1}50%{opacity:.05}}
 
 #fader{position:absolute;inset:0;background:#020308;z-index:40;pointer-events:none;transition:opacity 2.8s ease}
 #replay{position:absolute;right:5vw;bottom:8.5vh;z-index:33;opacity:0;pointer-events:none;
@@ -708,8 +716,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       </g>
       <g id="wboom" opacity="0">
         <circle r="70" fill="none" stroke="#9fe8ff" stroke-width="5"/>
-        <circle r="52" fill="rgba(159,232,255,.22)"/>
-        <circle r="20" fill="#eafcff"/>
+        <circle r="55" fill="none" stroke="#bfeeff" stroke-width="2" opacity=".7"/>
+        <circle r="12" fill="#eafcff" opacity=".85"/>
         <path d="M0 -96 v22 M0 96 v-22 M-96 0 h22 M96 0 h-22 M-68 -68 l16 16 M68 68 l-16 -16 M-68 68 l16 -16 M68 -68 l-16 16" stroke="#bfeeff" stroke-width="4" fill="none"/>
         <polygon points="34,-58 44,-46 28,-42" fill="#5fb8e8"/>
         <polygon points="-52,30 -38,38 -50,48" fill="#5fb8e8"/>
@@ -1624,12 +1632,12 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   var capSm = capEl.querySelector('small');
   var capTx = capEl.querySelector('span');
   var CAPS = [
-    { a:0.015, b:0.15, k:'Protostar-7 — Report 01',
-      t:'Deep in Universe-7, Fleet Meridian holds vigil over an old foundry-world. No chart remembers when its fires were first lit.' },
-    { a:0.30, b:0.46, k:'Protostar-7 — Report 02',
-      t:'Descent begins. No signal answers the fleet — no alarm, no welcome. Only weather, and a hush where a civilization should be.' },
-    { a:0.80, b:0.985, k:'Protostar-7 — Report 03',
-      t:'Then, beneath the peaks — the city, still lit, still standing. The gravest danger was never what watched from the dark. It was what the foundry could still do to itself.' }
+    { a:0.015, b:0.15, k:'Protostar-1 — Report 01-0',
+      t:'Deep-range observation confirmed the presence of Planet \x01 within Protostar-1. A terrestrial world with stable oceans, extensive mountain ranges, and dense continental settlement. The potential for habitancy is high.' },
+    { a:0.30, b:0.46, k:'Protostar-1 — Report 02-0',
+      t:'Descent began. Surface communications remained active, though increasingly fragmented. Civil infrastructure appears intact. Atmospheric conditions are favourable. From orbit, nothing suggests a world nearing collapse.' },
+    { a:0.80, b:0.985, k:'Protostar-1 — Report 02-7',
+      t:'Every survey had returned the same conclusion: it appears to have endured far longer than any city should. Whatever held Protostar-1 together... had also become the one thing capable of tearing it apart.' }
   ];
   var curCap = -1;
 
@@ -1713,10 +1721,10 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     STRIKES[si].lastSink = -1;
   }
   var CAPS2 = [
-    { a:2,  b:14, k:'Protostar-7 — Report 04',
-      t:'The sky opens. Lances from orbit walk across the districts — the foundry has been found, and it is not empty-handed.' },
-    { a:22, b:40, k:'Protostar-7 — Report 05',
-      t:'Rust squalls boil out of the old works and the towers kneel, one by one. This is the last report from Protostar-7.' }
+    { a:2,  b:16, k:'Protostar-1 — Report 04-2',
+      t:'The sky opens.\nHigh-energy signatures descend without warning, spreading across the continents with impossible precision. Within minutes, the atmosphere begins to change. Unlikely core interference.' },
+    { a:22, b:40, k:'Protostar-1 — Report 05-0',
+      t:'Iron-rich storm fronts consume the horizon. Entire districts disappear beneath fire and dust. Surface telemetry collapses one network at a time, though power signatures continue to rise. Unlikely Stellar interference.' }
   ];
 
   function resetAct2(){
@@ -1761,13 +1769,38 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   var spaceBattle = el('spacebattle');
   var curCap3 = -1;
   var CAPS3 = [
-    { a:2,  b:12, k:'Protostar-7 — Report 06',
-      t:'One shuttle runs for the black, engines screaming, with everything the foundry can still throw close behind.' },
-    { a:20, b:32, k:'Protostar-7 — Report 07',
-      t:'Above the ruin the fleet holds the line. Even the stars burn red over Protostar-7 now.' },
-    { a:36, b:48, k:'Protostar-7 — Report 08',
-      t:'Gone — one hard jump past the red. What burned behind them kept burning.' }
+    { a:2,  b:14, k:'Protostar-1 — Report 06-0',
+      t:'One shuttle escapes the atmosphere.\nNo registered flight path.\nNo potential destination.\nIts in full acceleration.' },
+    { a:20, b:32, k:'Protostar-1 — Report 07-0',
+      t:'From orbit, the planet \x01 continents vanished beneath ash and cloud. The infrastructure could no longer be seen. The planet continued to burn brighter with each passing hour. Likely living interference.' },
+    { a:36, b:999, k:'Protostar-1 — Report 08-0', cps:13, fin:true,
+      t:'One vessel disappears into deep space.\nProtostar-1 remains, Planet \x01 looking uninhabitable.\nNo further reports were received.' }
   ];
+  // typewriter: captions type out on activation; \x01 renders as a redacted bar
+  (function(){
+    var all = [CAPS, CAPS2, CAPS3], a, i, j, s, u;
+    for (a = 0; a < all.length; a++) for (i = 0; i < all[a].length; i++){
+      s = all[a][i].t; u = [];
+      for (j = 0; j < s.length; j++) u.push(s[j] === '\x01' ? 1 : s[j]);
+      all[a][i].u = u;
+    }
+  })();
+  var capT0 = 0;
+  function renderCap(c, nowT){
+    var n = Math.floor(Math.max(0, (nowT - capT0)/1000 - 0.15) * (c.cps || 55));
+    if (n > c.u.length) n = c.u.length;
+    if (c._n === n) return;
+    c._n = n;
+    var html = '', i, q;
+    for (i = 0; i < n; i++){
+      q = c.u[i];
+      if (q === 1) html += '<span class="redact"></span>';
+      else if (q === '\n') html += '<br>';
+      else html += (q === '<' ? '&lt;' : (q === '&' ? '&amp;' : q));
+    }
+    if (c.fin || n < c.u.length) html += '<span class="cur"></span>';
+    capTx.innerHTML = html;
+  }
   var KILLS3 = [
     { g:el('bshipB'), bx:el('bxB'), puff:el('pfB'), dt:.34, cx:1120, cy:430, ang:-7, drop:190,
       pts:[[1020,430],[1160,455],[1250,415]] },
@@ -1855,10 +1888,11 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     if (!ACT2.started){
       if (want !== curCap){
         curCap = want;
-        if (want >= 0){ capSm.textContent = CAPS[want].k; capTx.textContent = CAPS[want].t; }
+        if (want >= 0){ capSm.textContent = CAPS[want].k; CAPS[want]._n = -1; capT0 = now; capTx.innerHTML = ''; }
       }
       if (want >= 0){
         var c = CAPS[want];
+        renderCap(c, now);
         capEl.style.opacity = (ramp(p, c.a, c.a + 0.03) * (1 - ramp(p, c.b - 0.03, c.b)) * 0.92);
       } else capEl.style.opacity = 0;
     }
@@ -1976,10 +2010,11 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       for (k = 0; k < CAPS2.length; k++) if (t2 >= CAPS2[k].a && t2 <= CAPS2[k].b){ want2 = k; break; }
       if (want2 !== curCap2){
         curCap2 = want2;
-        if (want2 >= 0){ capSm.textContent = CAPS2[want2].k; capTx.textContent = CAPS2[want2].t; }
+        if (want2 >= 0){ capSm.textContent = CAPS2[want2].k; CAPS2[want2]._n = -1; capT0 = now; capTx.innerHTML = ''; }
       }
       if (want2 >= 0){
         var c2 = CAPS2[want2];
+        renderCap(c2, now);
         capEl.style.opacity = ramp(t2, c2.a, c2.a + 1.2) * (1 - ramp(t2, c2.b - 1.2, c2.b)) * 0.92;
       } else capEl.style.opacity = 0;
 
@@ -1995,12 +2030,16 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       spaceBattle.setAttribute('opacity', ramp(u3, 0.3, 0.65));
       ACT2.shake = reduced ? 0 : 0.3 * Math.exp(-t3 * 0.9);
 
-      // hero shuttle: climbs out, then pushes deeper; the warp locks it still
+      // hero shuttle: slips out small, swells once past the peaks while
+      // drifting right-to-left, then settles back to centre near full size
       var lift = 1 - Math.pow(1 - clamp01(u3 / 0.85), 2.2);
       var sway = 1 - ramp(tw, 0, 0.5);
+      var grow = ramp(u3, 0.35, 0.95); grow = grow * grow * (3 - 2 * grow);
+      var enter = 1 - ramp(u3, 0.2, 0.6);
+      var drift = Math.sin(3.14159 * ramp(u3, 0.32, 0.92));
       var ay = 98 - 84 * lift - 5 * ramp(td, 0, 14) + Math.sin(now * 0.0011) * 0.8 * sway;
-      var ax = 43 + 3.5 * (u3 < .5 ? 2*u3*u3 : 1 - Math.pow(-2*u3 + 2, 2)/2) + Math.sin(now * 0.0007) * 1.1 * sway;
-      var asc = 0.32 + 0.68 * lift;
+      var ax = 43.5 + 6 * enter - 12 * drift + Math.sin(now * 0.0007) * 1.1 * sway;
+      var asc = 0.24 + 0.74 * grow;
       ascent.style.opacity = 1 - ramp(tw, 2.12, 2.24);
       ascent.style.transform = 'translate3d(' + ax + 'vw,' + ay + 'vh,0) rotate(' + ((Math.sin(now*0.0009)*2 - 2) * sway).toFixed(2) + 'deg) scale(' + asc.toFixed(3) + ')';
 
@@ -2016,7 +2055,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
         wr3.setAttribute('opacity', ramp(tw, 0.2, 0.42) * ringsO);
         wcore.setAttribute('opacity', ramp(tw, 0.35, 0.6) * (0.75 + 0.25 * Math.sin(now * 0.02)) * ringsO);
         wboom.setAttribute('opacity', ramp(tw, 2.3, 2.36) * (1 - ramp(tw, 2.62, 2.9)));
-        wboom.setAttribute('transform', 'scale(' + (0.2 + 2.5 * ramp(tw, 2.3, 2.72)).toFixed(3) + ')');
+        wboom.setAttribute('transform', 'scale(' + (0.2 + 2.0 * ramp(tw, 2.3, 2.72)).toFixed(3) + ')');
         warpFlash.style.opacity = ramp(tw, 2.2, 2.26) * (1 - ramp(tw, 2.32, 2.66)) * 0.95;
       } else { warpFx.style.opacity = 0; warpFlash.style.opacity = 0; }
 
@@ -2045,10 +2084,11 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       for (k = 0; k < CAPS3.length; k++) if (t3 >= CAPS3[k].a && t3 <= CAPS3[k].b){ want3 = k; break; }
       if (want3 !== curCap3){
         curCap3 = want3;
-        if (want3 >= 0){ capSm.textContent = CAPS3[want3].k; capTx.textContent = CAPS3[want3].t; }
+        if (want3 >= 0){ capSm.textContent = CAPS3[want3].k; CAPS3[want3]._n = -1; capT0 = now; capTx.innerHTML = ''; }
       }
       if (want3 >= 0){
         var c3 = CAPS3[want3];
+        renderCap(c3, now);
         capEl.style.opacity = ramp(t3, c3.a, c3.a + 1) * (1 - ramp(t3, c3.b - 1, c3.b)) * 0.92;
       } else capEl.style.opacity = 0;
     }
