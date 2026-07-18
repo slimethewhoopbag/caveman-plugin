@@ -42,19 +42,27 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .piece{position:absolute;left:0;top:0;width:100%;height:100%}
 .piece svg{display:block;width:100%;height:100%}
 
-#layer-nebula{z-index:2}
+#layer-nebfar{z-index:2}
 #layer-galaxies{z-index:3}
-#layer-latfar{z-index:4}
-#layer-latnear{z-index:5}
+#layer-nebmid{z-index:4}
+#layer-latfar{z-index:5}
+#layer-nebnear{z-index:6}
+#layer-latnear{z-index:7}
 
-/* ---------- nebulae: cold cosmic dust, nearly static ---------- */
+/* ---------- nebulae: three depth tiers, parallaxing at different rates ---------- */
 .neb{position:absolute;border-radius:50%;filter:blur(30px)}
-.neb.a{top:6vh;left:8vw;width:48vw;height:36vh;
-  background:radial-gradient(closest-side,rgba(118,82,196,.20),rgba(118,82,196,0) 70%)}
-.neb.b{top:40vh;left:56vw;width:42vw;height:32vh;
-  background:radial-gradient(closest-side,rgba(62,112,200,.18),rgba(62,112,200,0) 70%)}
-.neb.c{top:66vh;left:6vw;width:30vw;height:24vh;
-  background:radial-gradient(closest-side,rgba(196,108,168,.10),rgba(196,108,168,0) 70%)}
+.neb.a{top:2vh;left:4vw;width:58vw;height:42vh;
+  background:radial-gradient(closest-side,rgba(96,66,168,.16),rgba(96,66,168,0) 70%)}
+.neb.b{top:48vh;left:58vw;width:48vw;height:38vh;
+  background:radial-gradient(closest-side,rgba(52,96,178,.14),rgba(52,96,178,0) 70%)}
+.neb.c{top:10vh;left:52vw;width:40vw;height:30vh;
+  background:radial-gradient(closest-side,rgba(118,82,196,.17),rgba(118,82,196,0) 68%)}
+.neb.d{top:60vh;left:6vw;width:36vw;height:28vh;
+  background:radial-gradient(closest-side,rgba(66,124,196,.15),rgba(66,124,196,0) 70%)}
+.neb.e{top:30vh;left:22vw;width:30vw;height:22vh;
+  background:radial-gradient(closest-side,rgba(186,102,160,.10),rgba(186,102,160,0) 66%)}
+.neb.f{top:74vh;left:64vw;width:26vw;height:20vh;
+  background:radial-gradient(closest-side,rgba(88,140,208,.11),rgba(88,140,208,0) 66%)}
 
 /* ---------- generic ambient motion ---------- */
 @keyframes driftR{from{transform:translate3d(-1.6vw,0,0)}to{transform:translate3d(1.6vw,0,0)}}
@@ -65,23 +73,22 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 @keyframes blink{0%,92%,100%{opacity:0}94%,97%{opacity:1}}
 @keyframes blink2{0%,88%,100%{opacity:.1}90%,94%{opacity:1}}
 @keyframes flow{to{stroke-dashoffset:-504}}
-@keyframes streamFlow{to{stroke-dashoffset:-1131}}
 @keyframes latFlow{to{stroke-dashoffset:-310}}
 @keyframes latFlow2{to{stroke-dashoffset:-324}}
 @keyframes ringFlow{to{stroke-dashoffset:-396}}
 @keyframes ringFlowA{to{stroke-dashoffset:-370}}
 @keyframes ringFlowB{to{stroke-dashoffset:384}}
 @keyframes gxSpin{to{transform:rotate(360deg)}}
-@keyframes flameFlick{from{transform:scaleX(.9) scaleY(.96)}to{transform:scaleX(1.08) scaleY(1.04)}}
 @keyframes shardL{from{transform:translate3d(112vw,0,0) rotate(0deg)}to{transform:translate3d(-18vw,4vh,0) rotate(-320deg)}}
 @keyframes shardR{from{transform:translate3d(-16vw,0,0) rotate(0deg)}to{transform:translate3d(114vw,-5vh,0) rotate(280deg)}}
 
 .drift-r{animation:driftR 260s ease-in-out infinite alternate}
 .drift-l{animation:driftL 220s ease-in-out infinite alternate}
 
-/* ---------- lattice (harvested stars + energy streams, JS-generated) ---------- */
-.st{stroke:#bcd7f6;fill:none;stroke-linecap:round;animation:latFlow 7s linear infinite}
-.st2{stroke:#cfe3ff;fill:none;stroke-linecap:round;animation:latFlow2 6s linear infinite}
+/* ---------- settlement web (JS-generated): faint filaments + rare trunk pulses ---------- */
+.fil{fill:none;stroke-linecap:round}
+.st{stroke:#bcd7f6;fill:none;stroke-linecap:round;animation:latFlow 19s linear infinite}
+.st2{stroke:#cfe3ff;fill:none;stroke-linecap:round;animation:latFlow2 15s linear infinite}
 
 /* ---------- the sphere (scripted, not a generic layer) ---------- */
 #sphere{position:absolute;left:50%;top:46%;width:130vmin;height:130vmin;z-index:8;
@@ -93,23 +100,14 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   border-radius:50%;border:2px solid rgba(223,236,255,.9);pointer-events:none;will-change:transform,opacity;
   box-shadow:0 0 46px rgba(159,220,255,.55),inset 0 0 46px rgba(159,220,255,.35)}
 #pulseflash{position:absolute;inset:0;z-index:28;opacity:0;pointer-events:none;background:#eaf4ff}
-#gulp{position:absolute;left:50vw;top:46vh;width:34px;height:34px;z-index:25;opacity:0;
-  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
-  background:radial-gradient(closest-side,#ffffff,rgba(191,238,255,.6) 45%,rgba(159,232,255,0) 72%)}
 
 /* ---------- foreground debris (fastest depth layer) ---------- */
 #debris{position:absolute;inset:0;z-index:18;opacity:0;pointer-events:none}
 .shard{position:absolute;left:0;will-change:transform}
 .shard svg{display:block;width:100%;height:auto;overflow:visible}
 
-/* ---------- migration lanes + fleet ---------- */
-#migstream{position:absolute;inset:0;z-index:20;opacity:0;pointer-events:none}
-#migstream svg{width:100%;height:100%}
-#migstream path{stroke:#dfe9ff;stroke-width:2.2;fill:none;stroke-dasharray:3 26;
-  animation:streamFlow 10s linear infinite;opacity:.75}
-#fleet{position:absolute;inset:0;z-index:22;pointer-events:none}
-.mig{position:absolute;left:0;top:0;will-change:transform,opacity;opacity:0}
-.mig svg{display:block;width:100%;height:auto;overflow:visible}
+/* ---------- the migration fleet (canvas, pseudo-3D funnel) ---------- */
+#fleetcv{z-index:22}
 
 /* ---------- cinema chrome ---------- */
 #vignette{position:absolute;inset:0;z-index:30;pointer-events:none;
@@ -152,7 +150,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #replay.on{opacity:.85;pointer-events:auto}
 #replay:hover{background:rgba(190,215,240,.12)}
 
-.reduced .layer,.reduced svg *,.reduced .shard,.reduced .st,.reduced .st2,.reduced #migstream path{animation:none!important}
+.reduced .layer,.reduced svg *,.reduced .shard,.reduced .st,.reduced .st2{animation:none!important}
 </style>
 </head>
 <body>
@@ -164,12 +162,23 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 
   <canvas id="stars"></canvas>
 
-  <!-- =================== NEBULAE (f .02 — almost static) =================== -->
-  <div class="layer" data-f="0.02" id="layer-nebula">
+  <!-- =================== NEBULAE — three depth tiers (f .006 / .04 / .10) =================== -->
+  <div class="layer" data-f="0.006" id="layer-nebfar">
     <div class="piece">
-      <div class="neb a drift-r"></div>
-      <div class="neb b drift-l"></div>
-      <div class="neb c drift-r"></div>
+      <div class="neb a drift-r" style="animation-duration:340s"></div>
+      <div class="neb b drift-l" style="animation-duration:300s"></div>
+    </div>
+  </div>
+  <div class="layer" data-f="0.04" id="layer-nebmid">
+    <div class="piece">
+      <div class="neb c drift-l" style="animation-duration:250s"></div>
+      <div class="neb d drift-r" style="animation-duration:280s"></div>
+    </div>
+  </div>
+  <div class="layer" data-f="0.10" id="layer-nebnear">
+    <div class="piece">
+      <div class="neb e drift-r" style="animation-duration:200s"></div>
+      <div class="neb f drift-l" style="animation-duration:170s"></div>
     </div>
   </div>
 
@@ -191,6 +200,29 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
         </g>
         <g style="animation:shimmer 40s ease-in-out infinite 14s">
           <ellipse cx="210" cy="840" rx="34" ry="10" fill="rgba(190,170,255,.10)" transform="rotate(30 210 840)"/>
+        </g>
+        <g style="animation:shimmer 44s ease-in-out infinite 20s">
+          <ellipse cx="640" cy="920" rx="30" ry="9" fill="rgba(160,196,255,.09)" transform="rotate(-14 640 920)"/>
+          <ellipse cx="640" cy="920" rx="12" ry="4" fill="rgba(226,236,255,.14)" transform="rotate(-14 640 920)"/>
+        </g>
+        <g style="animation:shimmer 36s ease-in-out infinite 10s">
+          <ellipse cx="1266" cy="288" rx="24" ry="8" fill="rgba(208,182,255,.09)" transform="rotate(46 1266 288)"/>
+        </g>
+        <!-- faint dust bands -->
+        <ellipse cx="1120" cy="620" rx="480" ry="60" fill="rgba(110,130,210,.045)" transform="rotate(-16 1120 620)"/>
+        <ellipse cx="480" cy="420" rx="360" ry="44" fill="rgba(140,110,200,.04)" transform="rotate(12 480 420)"/>
+        <!-- open star clusters -->
+        <g fill="#cdd9f4" opacity=".5">
+          <circle cx="812" cy="252" r="1.3"/><circle cx="826" cy="240" r="1"/><circle cx="800" cy="238" r=".9"/>
+          <circle cx="834" cy="258" r=".8"/><circle cx="818" cy="268" r="1.1"/><circle cx="806" cy="258" r=".7"/>
+        </g>
+        <g fill="#d8ceec" opacity=".42">
+          <circle cx="1470" cy="866" r="1.2"/><circle cx="1486" cy="854" r=".9"/><circle cx="1458" cy="852" r="1"/>
+          <circle cx="1492" cy="874" r=".7"/><circle cx="1474" cy="882" r=".9"/>
+        </g>
+        <g fill="#ccdaf6" opacity=".45">
+          <circle cx="368" cy="622" r="1.1"/><circle cx="384" cy="612" r=".8"/><circle cx="356" cy="608" r="1"/>
+          <circle cx="378" cy="634" r=".9"/><circle cx="362" cy="636" r=".7"/>
         </g>
         <circle cx="980" cy="120" r="2.2" fill="rgba(214,226,255,.5)" style="animation:shimmer 18s ease-in-out infinite"/>
       </svg>
@@ -504,84 +536,9 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     </div>
   </div>
 
-  <!-- =================== MIGRATION LANES (the thousands) =================== -->
-  <div id="migstream">
-    <svg viewBox="0 0 1920 1080" preserveAspectRatio="none">
-      <path d="M-230 950 L960 497"/>
-      <path d="M2150 886 L960 497" style="animation-delay:-3s"/>
-      <path d="M883 1231 L960 497" style="animation-delay:-6s"/>
-    </svg>
-  </div>
+  <!-- =================== THE MIGRATION FLEET (canvas pseudo-3D funnel) =================== -->
+  <canvas id="fleetcv"></canvas>
 
-  <!-- hero migration ships, instantiated + driven from JS -->
-  <div id="fleet"></div>
-  <div id="gulp"></div>
-
-  <!-- ship symbol library -->
-  <svg width="0" height="0" style="position:absolute">
-    <defs>
-      <!-- carrier: open truss spine, gravity ring, aft drive -->
-      <g id="migA">
-        <path d="M-190 -7 l-22 3 22 3z" fill="#9fe8ff" opacity=".5"/>
-        <path d="M-190 4 l-16 2 16 3z" fill="#ffd9a8" opacity=".45"/>
-        <path d="M-186 -12 h24 v22 h-24 z" fill="#2c3354"/>
-        <rect x="-162" y="-8" width="300" height="16" fill="#3a4269"/>
-        <path d="M-162 -8 h300" stroke="#aabdea" stroke-width="1.6"/>
-        <path d="M-162 8 h300" stroke="#222a48" stroke-width="2.2"/>
-        <path d="M-120 -8 v16 M-70 -8 v16 M-6 -8 v16 M60 -8 v16 M104 -8 v16" stroke="#2c3355" stroke-width="2.5"/>
-        <ellipse cx="-30" cy="0" rx="15" ry="42" fill="none" stroke="#2b3354" stroke-width="8"/>
-        <ellipse cx="-30" cy="0" rx="15" ry="42" fill="none" stroke="#7d8fc2" stroke-width="2.6"
-          stroke-dasharray="16 16" style="animation:ringFlow 30s linear infinite"/>
-        <rect x="-46" y="-7" width="32" height="14" rx="2" fill="#39406a"/>
-        <path d="M138 -8 L186 -14 L204 -2 L200 8 L166 13 L138 8 Z" fill="#434c74"/>
-        <path d="M138 -8 L186 -14 L204 -2" fill="none" stroke="#aabdea" stroke-width="1.4"/>
-        <path d="M158 -9 L184 -6 L182 4 L158 6 Z" fill="#bfeeff"/>
-        <rect x="40" y="-16" width="52" height="6" fill="#2c3355"/>
-        <path d="M48 -16 l4 -18 h8 l-2 18Z" fill="#b06a72"/>
-        <path d="M68 -16 l4 -15 h8 l-2 15Z" fill="#9d5a66"/>
-        <circle cx="204" cy="-2" r="2" fill="#ffd9d0" style="animation:blink 5s linear infinite"/>
-        <circle cx="-160" cy="-10" r="1.8" fill="#9fe8ff" style="animation:blink2 4s linear infinite 1s"/>
-      </g>
-      <!-- freighter: keel hull + raked energy sails -->
-      <g id="migB">
-        <path d="M-150 2 l-18 3 18 3z" fill="#ffd9a8" opacity=".5"/>
-        <path d="M-60 -8 L-76 -78 L-24 -58 L-22 -9 Z" fill="rgba(140,226,255,.15)" stroke="#9fe0f8" stroke-width="1.4"/>
-        <path d="M28 -8 L20 -96 L68 -62 L62 -9 Z" fill="rgba(140,226,255,.12)" stroke="#9fe0f8" stroke-width="1.4"
-          style="animation:shimmer 9s ease-in-out infinite"/>
-        <path d="M-60 -8 L-76 -78 M28 -8 L20 -96" stroke="#5b6890" stroke-width="2.5"/>
-        <path d="M-148 -4 L118 -9 L146 3 L106 18 L-42 21 L-134 11 Z" fill="#3d466e"/>
-        <path d="M-148 -4 L118 -9 L146 3" fill="none" stroke="#aabdea" stroke-width="1.4"/>
-        <path d="M-42 21 L106 18 L146 3" fill="none" stroke="#232948" stroke-width="2.4"/>
-        <path d="M-96 -6 v24 M-52 -7 v27 M-8 -8 v27 M36 -8 v26 M80 -9 v26" stroke="#2a3153" stroke-width="3"/>
-        <path d="M84 -9 l4 -13 h30 l6 13Z" fill="#46507c"/>
-        <rect x="90" y="-30" width="20" height="6" rx="1" fill="#bfeeff"/>
-        <circle cx="142" cy="2" r="1.8" fill="#d7ffe2" style="animation:blink 7s linear infinite 2s"/>
-        <circle cx="-70" cy="-74" r="1.6" fill="#ffd9d0" style="animation:blink 6s linear infinite"/>
-      </g>
-      <!-- dart: delta scout -->
-      <g id="migC">
-        <ellipse cx="-104" cy="0" rx="26" ry="12" fill="#ff9a55" opacity=".2"/>
-        <g style="animation:flameFlick .55s ease-in-out infinite alternate;transform-origin:-88px 0px">
-          <path d="M-88 -14 C -120 -19 -140 -13 -154 -6 C -145 -3 -145 3 -154 6 C -140 13 -120 19 -88 14 Z" fill="#ff9a55" opacity=".8"/>
-          <path d="M-88 -10 C -112 -13 -128 -8 -138 -3 C -133 -1 -133 1 -138 3 C -128 8 -112 13 -88 10 Z" fill="#ffc98a" opacity=".95"/>
-          <path d="M-88 -6 C -106 -8 -118 -4 -126 0 C -118 4 -106 8 -88 6 Z" fill="#fff1d8"/>
-        </g>
-        <path d="M-84 -18 L-98 -13 L-98 13 L-84 18 Z" fill="#2c3354" stroke="#161c34" stroke-width="3" stroke-linejoin="round"/>
-        <path d="M148 0 L42 -26 L-56 -30 L-84 -18 L-84 18 L-56 30 L42 26 Z" fill="#3d466e" stroke="#161c34" stroke-width="4" stroke-linejoin="round"/>
-        <path d="M148 0 L42 -26 L-56 -30 L-70 -22 L42 -12 Z" fill="#4d5886"/>
-        <path d="M148 0 L42 26 L-56 30 L-70 22 L42 12 Z" fill="#262e4f"/>
-        <path d="M14 -25 L-22 -54 L-44 -54 L-16 -25 Z" fill="#46507c" stroke="#161c34" stroke-width="3.5" stroke-linejoin="round"/>
-        <path d="M14 25 L-22 54 L-44 54 L-16 25 Z" fill="#31395e" stroke="#161c34" stroke-width="3.5" stroke-linejoin="round"/>
-        <path d="M-28 -28 L-28 28 M22 -25 L22 25" stroke="#232948" stroke-width="2.5" fill="none"/>
-        <path d="M42 -26 L66 -20 L66 20 L42 26 Z" fill="#e8925a"/>
-        <path d="M42 -26 L66 -20 L66 20 L42 26" fill="none" stroke="#161c34" stroke-width="2"/>
-        <path d="M104 -8 L74 -17 L58 -13 L58 13 L74 17 L104 8 Z" fill="#bfeeff" stroke="#161c34" stroke-width="3" stroke-linejoin="round"/>
-        <path d="M104 -8 L74 -17" stroke="#eafcff" stroke-width="1.5"/>
-        <circle cx="148" cy="0" r="2.6" fill="#ffd9d0" style="animation:blink 4s linear infinite"/>
-        <circle cx="-24" cy="-52" r="2" fill="#9fe8ff" style="animation:blink2 3s linear infinite 1s"/>
-      </g>
-    </defs>
-  </svg>
 
   <div id="pulseflash"></div>
   <div id="vignette"></div>
@@ -647,8 +604,6 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   var pulseRing  = el('pulsering');
   var pulseFlash = el('pulseflash');
   var debris     = el('debris');
-  var migStream  = el('migstream');
-  var gulp       = el('gulp');
 
   /* ============ timeline (all in shot progress p) ============ */
   var SC  = [[0,.040],[.15,.078],[.40,.30],[.60,.52],[.80,.72],[.95,.80],[1,.805]];  // sphere scale
@@ -739,64 +694,124 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     }
   }
 
-  /* ============ harvested-star lattice (generated, deterministic) ============ */
+  /* ============ settlement web (generated, deterministic) ============
+     Harvested systems gather in colony clusters. Inside a cluster, faint
+     curved filaments tie the systems to a local heart; between clusters,
+     a rare trunk route carries a slow pulse. No straight dotted lines. */
   var NS = 'http://www.w3.org/2000/svg';
-  function buildLattice(svg, n, seed, near){
+  function curve(rnd, ax, ay, bx, by){
+    var mx = (ax+bx)/2, my = (ay+by)/2;
+    var dx = bx-ax, dy = by-ay, d = Math.hypot(dx,dy) || 1;
+    var bow = (rnd() - .5) * .42 * d;
+    return 'M' + ax.toFixed(1) + ' ' + ay.toFixed(1) +
+           ' Q' + (mx - dy/d*bow).toFixed(1) + ' ' + (my + dx/d*bow).toFixed(1) +
+           ' ' + bx.toFixed(1) + ' ' + by.toFixed(1);
+  }
+  function buildWeb(svg, nClusters, seed, near){
     var s = seed >>> 0;
     function rnd(){ s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }
-    var pts = [], i, j;
-    for (i = 0; i < n; i++) pts.push([60 + rnd()*1800, 40 + rnd()*1000, rnd()]);
-    // streams first, under the nodes
-    for (i = 0; i < n; i++){
-      var best = -1, bd = near ? 5e5 : 1.2e5;
-      for (j = i + 1; j < n; j++){
-        var dx = pts[i][0]-pts[j][0], dy = pts[i][1]-pts[j][1], d2 = dx*dx + dy*dy;
-        if (d2 < bd){ bd = d2; best = j; }
+    var k = near ? 1.7 : 1, ci, ni, i;
+    var hearts = [];
+    var mk = function(tag){ return document.createElementNS(NS, tag); };
+
+    for (ci = 0; ci < nClusters; ci++){
+      var hx = 140 + rnd()*1640, hy = 90 + rnd()*900;
+      var nodes = [], cnt = near ? 2 + Math.floor(rnd()*3) : 3 + Math.floor(rnd()*4);
+      for (ni = 0; ni < cnt; ni++){
+        var aa = rnd()*6.2832, rr = (26 + rnd()*115) * (near ? 1.3 : 1);
+        nodes.push([hx + Math.cos(aa)*rr, hy + Math.sin(aa)*rr*.72, rnd()]);
       }
-      if (best < 0) continue;
-      var ln = document.createElementNS(NS, 'line');
-      ln.setAttribute('x1', pts[i][0].toFixed(1)); ln.setAttribute('y1', pts[i][1].toFixed(1));
-      ln.setAttribute('x2', pts[best][0].toFixed(1)); ln.setAttribute('y2', pts[best][1].toFixed(1));
-      ln.setAttribute('class', near ? 'st2' : 'st');
-      ln.setAttribute('stroke-width', near ? '1.3' : '1');
-      ln.setAttribute('stroke-opacity', near ? '.42' : '.28');
-      ln.setAttribute('stroke-dasharray', near ? '6 30' : '5 26');
-      ln.style.animationDelay = (-rnd()*9).toFixed(2) + 's';
-      ln.style.animationDuration = (near ? 5 : 6.5 + rnd()*3).toFixed(2) + 's';
-      svg.appendChild(ln);
+      hearts.push([hx, hy, nodes]);
     }
-    for (i = 0; i < n; i++){
-      var g = document.createElementNS(NS, 'g'), k = near ? 1.7 : 1;
-      var warm = pts[i][2] < 0.6;   // most stars in the corridor are harvested — dimmed amber
-      var halo = document.createElementNS(NS, 'circle');
-      halo.setAttribute('cx', pts[i][0]); halo.setAttribute('cy', pts[i][1]);
-      halo.setAttribute('r', (5 + pts[i][2]*5) * k);
-      halo.setAttribute('fill', warm ? 'rgba(246,214,168,.08)' : 'rgba(191,222,255,.09)');
-      g.appendChild(halo);
-      var core = document.createElementNS(NS, 'circle');
-      core.setAttribute('cx', pts[i][0]); core.setAttribute('cy', pts[i][1]);
-      core.setAttribute('r', ((warm ? 1.0 : 1.3) + pts[i][2]) * k);
-      core.setAttribute('fill', warm ? '#e8c9a0' : '#dfe9ff');
-      if (pts[i][2] > 0.75) core.style.animation = 'shimmer ' + (4 + pts[i][2]*6).toFixed(1) + 's ease-in-out infinite ' + (-pts[i][2]*5).toFixed(1) + 's';
-      g.appendChild(core);
-      if (warm){  // each harvested star wears its own partial shell
-        var ring = document.createElementNS(NS, 'circle');
-        ring.setAttribute('cx', pts[i][0]); ring.setAttribute('cy', pts[i][1]);
-        ring.setAttribute('r', 4.2 * k);
-        ring.setAttribute('fill', 'none');
-        ring.setAttribute('stroke', 'rgba(255,190,120,.45)');
-        ring.setAttribute('stroke-width', (0.7 * k).toFixed(2));
-        g.appendChild(ring);
+
+    // trunk routes between neighbouring cluster hearts — few, slow, faint
+    var order = hearts.slice().sort(function(a,b){ return a[0]-b[0]; });
+    for (i = 1; i < order.length; i++){
+      if (rnd() < .3) continue;   // some clusters stay dark — irregular, not a chain
+      var tr = mk('path');
+      tr.setAttribute('d', curve(rnd, order[i-1][0], order[i-1][1], order[i][0], order[i][1]));
+      tr.setAttribute('class', near ? 'st2' : 'st');
+      tr.setAttribute('stroke-width', (near ? 1.1 : .9).toFixed(1));
+      tr.setAttribute('stroke-opacity', near ? '.20' : '.15');
+      tr.setAttribute('stroke-dasharray', '2.5 64');
+      tr.style.animationDelay = (-rnd()*22).toFixed(1) + 's';
+      tr.style.animationDuration = (14 + rnd()*12).toFixed(1) + 's';
+      svg.appendChild(tr);
+    }
+
+    for (ci = 0; ci < hearts.length; ci++){
+      var hx2 = hearts[ci][0], hy2 = hearts[ci][1], nodes2 = hearts[ci][2];
+
+      // filaments: static, faint, curved — infrastructure, not constellation lines
+      for (ni = 0; ni < nodes2.length; ni++){
+        if (rnd() < .22) continue;   // stray systems stay unconnected
+        var f = mk('path');
+        f.setAttribute('d', curve(rnd, hx2, hy2, nodes2[ni][0], nodes2[ni][1]));
+        f.setAttribute('class', 'fil');
+        f.setAttribute('stroke', 'rgba(162,192,238,' + (.05 + rnd()*.07).toFixed(3) + ')');
+        f.setAttribute('stroke-width', (.5 + rnd()*.6).toFixed(2));
+        svg.appendChild(f);
       }
-      svg.appendChild(g);
+
+      // cluster heart: a settled hub with a soft halo
+      var hh = mk('circle');
+      hh.setAttribute('cx', hx2); hh.setAttribute('cy', hy2);
+      hh.setAttribute('r', 7 * k);
+      hh.setAttribute('fill', 'rgba(226,206,168,.06)');
+      svg.appendChild(hh);
+      var hc = mk('circle');
+      hc.setAttribute('cx', hx2); hc.setAttribute('cy', hy2);
+      hc.setAttribute('r', 1.7 * k);
+      hc.setAttribute('fill', '#ecd9b6');
+      svg.appendChild(hc);
+
+      for (ni = 0; ni < nodes2.length; ni++){
+        var px = nodes2[ni][0], py = nodes2[ni][1], rv = nodes2[ni][2];
+        var warm = rv < 0.62;   // most systems in the corridor are harvested — dimmed amber
+        var halo = mk('circle');
+        halo.setAttribute('cx', px); halo.setAttribute('cy', py);
+        halo.setAttribute('r', (4 + rv*4.5) * k);
+        halo.setAttribute('fill', warm ? 'rgba(246,214,168,.07)' : 'rgba(191,222,255,.08)');
+        svg.appendChild(halo);
+        var core = mk('circle');
+        core.setAttribute('cx', px); core.setAttribute('cy', py);
+        core.setAttribute('r', ((warm ? .9 : 1.2) + rv*.9) * k);
+        core.setAttribute('fill', warm ? '#e8c9a0' : '#dfe9ff');
+        if (rv > 0.78) core.style.animation = 'shimmer ' + (5 + rv*6).toFixed(1) + 's ease-in-out infinite ' + (-rv*5).toFixed(1) + 's';
+        svg.appendChild(core);
+        if (warm){   // each harvested star wears its own partial shell
+          var ring = mk('circle');
+          ring.setAttribute('cx', px); ring.setAttribute('cy', py);
+          ring.setAttribute('r', 3.8 * k);
+          ring.setAttribute('fill', 'none');
+          ring.setAttribute('stroke', 'rgba(255,190,120,.34)');
+          ring.setAttribute('stroke-width', (0.65 * k).toFixed(2));
+          svg.appendChild(ring);
+          // settlement specks in orbit — the lived-in read
+          var sp1 = mk('circle');
+          sp1.setAttribute('cx', px + (rnd()*10 - 5) * k); sp1.setAttribute('cy', py + (5 + rnd()*4) * k);
+          sp1.setAttribute('r', (0.55 * k).toFixed(2));
+          sp1.setAttribute('fill', 'rgba(210,226,250,.4)');
+          svg.appendChild(sp1);
+          if (rnd() < .5){
+            var sp2 = mk('circle');
+            sp2.setAttribute('cx', px + (rnd()*12 - 6) * k); sp2.setAttribute('cy', py - (5 + rnd()*4) * k);
+            sp2.setAttribute('r', (0.5 * k).toFixed(2));
+            sp2.setAttribute('fill', 'rgba(226,214,190,.34)');
+            svg.appendChild(sp2);
+          }
+        }
+      }
     }
   }
-  buildLattice(el('latFar'), 96, 20260718, false);
-  buildLattice(el('latNear'), 26, 71802602, true);
+  buildWeb(el('latFar'), 11, 20260718, false);
+  buildWeb(el('latNear'), 4, 71802602, true);
 
   /* ============ starfield canvas: forward streaming + lensing ============ */
   var starCv = el('stars');
   var starCx = starCv.getContext('2d');
+  var fleetCv = el('fleetcv');
+  var fleetCx = fleetCv.getContext('2d');
   var W = 0, H = 0, DPR = 1, maxR = 1, vmin = 1;
 
   var starList = [];
@@ -821,37 +836,140 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     maxR = Math.hypot(W, H) * 0.62;
     starCv.width = Math.round(W*DPR); starCv.height = Math.round(H*DPR);
     starCx.setTransform(DPR,0,0,DPR,0,0);
+    fleetCv.width = Math.round(W*DPR); fleetCv.height = Math.round(H*DPR);
+    fleetCx.setTransform(DPR,0,0,DPR,0,0);
     seedStars();
   }
   window.addEventListener('resize', resize);
   resize();
 
-  /* ============ the migration fleet ============ */
-  var TRAVEL = 0.115;                       // p spent crossing to the aperture
-  var TARGET = { x: 50, y: 46 };            // vw / vh
-  var LANES = [
-    { from:{x:-12, y:88},  t0:.780, h:.0095, s0:1.15, designs:['migC','migC','migA','migC','migB','migC'], flip:1,  w:{migA:21,migB:17,migC:13}, z:23 },
-    { from:{x:112, y:82},  t0:.790, h:.0095, s0:1.00, designs:['migC','migB','migC','migC','migA'],        flip:-1, w:{migA:19,migB:15,migC:11}, z:22 },
-    { from:{x:46,  y:114}, t0:.786, h:.0105, s0:1.50, designs:['migA','migC','migB','migC'],               flip:1,  w:{migA:24,migB:19,migC:15}, z:24 }
-  ];
-  var ships = [];
+  /* ============ the migration fleet — pseudo-3D funnel ============
+     Purpose-built cinematic vessels, not the gameplay sprites. Every ship
+     rides its own perfectly straight line from a start spread across the
+     lower half of the frame to the sphere's central aperture, at constant
+     world speed. Screen position is a perspective projection, so vessels
+     near the camera are large, fast and far apart, while the same column
+     compresses into a dense, slow, narrowing river at the gate. Depth
+     classes travel at slightly different world speeds for parallax.
+     Deterministic in p — seeking and replay stay exact. */
+  var GATE = { x:.50, y:.46 };              // fraction of W / H
+  var ZSPAN = 15;                           // depth of the corridor, in near-plane units
+  var FLEET = [];
   (function buildFleet(){
-    var host = el('fleet');
-    for (var li = 0; li < LANES.length; li++){
-      var L = LANES[li];
-      var ang = Math.atan2(TARGET.y - L.from.y, TARGET.x - L.from.x) * 180 / Math.PI;
-      for (var i = 0; i < L.designs.length; i++){
-        var d = document.createElement('div');
-        d.className = 'mig';
-        d.style.width = L.w[L.designs[i]] + 'vw';
-        d.style.zIndex = L.z;
-        d.innerHTML = '<svg viewBox="-160 -100 320 200"><use href="#' + L.designs[i] + '"/></svg>';
-        host.appendChild(d);
-        ships.push({ el: d, t0: L.t0 + i * L.h, from: L.from, s0: L.s0, ang: ang, flip: L.flip, gone: false });
+    var s2 = 89131721 >>> 0;
+    function rnd(){ s2 = (s2 * 1664525 + 1013904223) >>> 0; return s2 / 4294967296; }
+    function spawn(cls, n, spd, len, lenJ, wr){
+      for (var i = 0; i < n; i++){
+        var side = rnd() < .5 ? -1 : 1;
+        FLEET.push({
+          cls: cls,
+          ox: side * (5 + rnd()*54),        // start offset from gate, vw
+          oy: 9 + rnd()*46,                 // vh — always the lower half
+          ph: rnd(),                        // loop phase
+          spd: spd,                         // corridor crossings per shot (per class)
+          L: (len + (rnd()*2 - 1) * lenJ),  // hull length at the near plane, vw
+          wr: wr,                           // stern half-width / length
+          warm: rnd() < .3,
+          fl: rnd()*6.2832,                 // engine flicker phase
+          w: 0
+        });
       }
     }
+    //     class      n   speed  len  jit  width
+    spawn('cap',      5,  1.30, 17.0, 3.5, .15);
+    spawn('med',     18,  1.65,  6.2, 1.6, .17);
+    spawn('sml',    260,  2.00,  1.7,  .7, .19);
   })();
-  var gulpT = -1e9;
+
+  // one vessel, drawn from a shallow rear three-quarter: the hull tapers
+  // away from the camera, the stern face carries the engine light. Ships
+  // never rotate or bank — the heading along each straight lane is fixed.
+  function drawShip(c, sp, x, y, ang, L, a, now){
+    c.save();
+    c.translate(x, y);
+    c.rotate(ang);                       // +x points down the lane, away from us
+    var hw = L * sp.wr;                  // stern half-height
+    var eCol = sp.warm ? '#ffd9a8' : '#9fe8ff';
+    var flick = .8 + .2 * Math.sin(now * .006 + sp.fl);
+
+    if (L < 6){
+      // distant traffic: a tapering streak collapsing to a point of light
+      if (L > 2.2){
+        c.globalAlpha = a * .85;
+        c.strokeStyle = '#39406a';
+        c.lineWidth = Math.max(L * .26, .7);
+        c.beginPath(); c.moveTo(-L*.5, 0); c.lineTo(L*.5, 0); c.stroke();
+      }
+      c.globalAlpha = a * flick;
+      c.fillStyle = eCol;
+      c.beginPath(); c.arc(-L*.5, 0, Math.max(L*.17, .7), 0, 6.2832); c.fill();
+      c.restore();
+      return;
+    }
+
+    c.globalAlpha = a;
+    // keel side, in shadow
+    c.fillStyle = '#242c50';
+    c.beginPath();
+    c.moveTo(-L*.5, -hw*.42);
+    c.lineTo(L*.5, -hw*.05);
+    c.lineTo(L*.5, hw*.10);
+    c.lineTo(-L*.46, hw);
+    c.closePath(); c.fill();
+    // dorsal face, catching the corridor light
+    c.fillStyle = '#3c4674';
+    c.beginPath();
+    c.moveTo(-L*.5, -hw);
+    c.lineTo(L*.5, -hw*.13);
+    c.lineTo(L*.5, -hw*.03);
+    c.lineTo(-L*.5, -hw*.38);
+    c.closePath(); c.fill();
+    // graphic rim along the dorsal edge
+    c.strokeStyle = 'rgba(170,189,234,.85)';
+    c.lineWidth = Math.max(L * .011, .6);
+    c.beginPath(); c.moveTo(-L*.5, -hw); c.lineTo(L*.5, -hw*.13); c.stroke();
+
+    if (sp.cls === 'cap'){
+      // engineering block astern + a low bridge fin
+      c.fillStyle = '#2e3760';
+      c.fillRect(-L*.44, -hw*1.34, L*.17, hw*.5);
+      c.strokeStyle = 'rgba(170,189,234,.6)';
+      c.beginPath(); c.moveTo(-L*.44, -hw*1.34); c.lineTo(-L*.27, -hw*1.34); c.stroke();
+      c.fillStyle = '#333c66';
+      c.fillRect(-L*.06, -hw*1.12, L*.10, hw*.32);
+      // lit flank windows, sparse
+      c.fillStyle = 'rgba(191,238,255,.8)';
+      var wx;
+      for (wx = 0; wx < 4; wx++){
+        c.fillRect(-L*.32 + wx * L*.16, -hw*.22, Math.max(L*.012, .8), Math.max(L*.008, .6));
+      }
+      // slow nav blink at the nose
+      if ((now / 1000 + sp.fl) % 6 < .18){
+        c.fillStyle = '#ffd9d0';
+        c.beginPath(); c.arc(L*.49, -hw*.08, Math.max(L*.012, .9), 0, 6.2832); c.fill();
+      }
+    } else if (sp.cls === 'med'){
+      c.fillStyle = '#333c66';
+      c.fillRect(-L*.3, -hw*1.16, L*.13, hw*.36);
+      c.fillStyle = 'rgba(191,238,255,.7)';
+      c.fillRect(-L*.1, -hw*.2, Math.max(L*.018, .8), Math.max(L*.012, .6));
+    }
+
+    // stern cap + engines facing the camera
+    c.fillStyle = '#151b36';
+    c.fillRect(-L*.5 - L*.035, -hw*.96, L*.055, hw*1.92);
+    var nE = sp.cls === 'cap' ? 3 : sp.cls === 'med' ? 2 : 1, k;
+    for (k = 0; k < nE; k++){
+      var ey = (k - (nE - 1)/2) * hw * .84;
+      c.globalAlpha = a * .3 * flick;
+      c.fillStyle = eCol;
+      c.beginPath(); c.arc(-L*.5 - L*.02, ey, hw*.30, 0, 6.2832); c.fill();
+      c.globalAlpha = a * flick;
+      c.fillStyle = sp.warm ? '#ffedd2' : '#dff6ff';
+      c.beginPath(); c.arc(-L*.5 - L*.02, ey, Math.max(hw*.15, .7), 0, 6.2832); c.fill();
+    }
+    c.restore();
+  }
 
   /* ============ main loop ============ */
   var t0 = null, lastT = null;
@@ -886,9 +1004,13 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     lit = lit * (1 - .94*dim);
     var rot = -26 * (1 - sstep(ramp(p, .06, .46)));
 
-    /* ---- parallax: every layer scales about the vanishing point ---- */
+    /* ---- parallax: every layer scales about the vanishing point.
+           The deep background also recedes — dimming as the sphere
+           closes in, so the shell owns the frame ---- */
+    var bgDim = 1 - .55 * sstep(ramp(p, .26, .78));
     for (var i = 0; i < layers.length; i++){
       layers[i].el.style.transform = 'scale(' + (1 + p * layers[i].f) + ')';
+      layers[i].el.style.opacity = bgDim.toFixed(3);
     }
 
     /* ---- sphere transform + silhouette ---- */
@@ -956,27 +1078,32 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     } else pulseRing.style.opacity = 0;
     pulseFlash.style.opacity = ramp(p, .790, .802) * (1 - ramp(p, .802, .832)) * .5;
 
-    /* ---- debris + migration lanes ---- */
+    /* ---- debris ---- */
     debris.style.opacity = ramp(p, .57, .67) * (1 - ramp(p, .96, .99));
-    migStream.style.opacity = ramp(p, .783, .802) * (1 - ramp(p, .928, .945));
 
-    /* ---- fleet ---- */
-    for (i = 0; i < ships.length; i++){
-      var sh = ships[i];
-      var u = (p - sh.t0) / TRAVEL;
-      if (u <= 0 || u >= 1){
-        if (u >= 1 && !sh.gone && p < 1){ sh.gone = true; gulpT = now; }
-        if (u <= 0) sh.gone = false;
-        sh.el.style.opacity = 0;
-        continue;
+    /* ---- the migration fleet ---- */
+    fleetCx.clearRect(0, 0, W, H);
+    var fleetA = ramp(p, .545, .625) * (1 - ramp(p, .935, .958));
+    if (fleetA > 0.004){
+      var gx = W * GATE.x, gy = H * GATE.y, i3, sp2;
+      for (i3 = 0; i3 < FLEET.length; i3++){
+        sp2 = FLEET[i3];
+        sp2.w = (sp2.ph + p * sp2.spd) % 1;
       }
-      var x = sh.from.x + (TARGET.x - sh.from.x) * u;
-      var y = sh.from.y + (TARGET.y - sh.from.y) * u;
-      var s = sh.s0 * (1 - .96 * u);
-      sh.el.style.opacity = Math.min(ramp(u, 0, .04), 1 - ramp(u, .975, 1));
-      sh.el.style.transform = 'translate3d(' + x.toFixed(2) + 'vw,' + y.toFixed(2) + 'vh,0) translate(-50%,-50%) rotate(' + sh.ang.toFixed(1) + 'deg) scale(' + s.toFixed(3) + ',' + (s * sh.flip).toFixed(3) + ')';
+      FLEET.sort(function(a, b){ return b.w - a.w; });   // far first, near last
+      for (i3 = 0; i3 < FLEET.length; i3++){
+        sp2 = FLEET[i3];
+        var q = 1 / (1 + sp2.w * ZSPAN);
+        var sx2 = gx + sp2.ox * W/100 * q;
+        var sy2 = gy + sp2.oy * H/100 * q;
+        var Lpx = sp2.L * W/100 * q;
+        if (Lpx < .45) continue;
+        var aSh = fleetA * (1 - ramp(sp2.w, .88, .985)) * (.62 + .38*q);
+        if (aSh < .01) continue;
+        if (sx2 < -Lpx || sx2 > W + Lpx || sy2 < -Lpx || sy2 > H + Lpx) continue;
+        drawShip(fleetCx, sp2, sx2, sy2, Math.atan2(gy - sy2, gx - sx2), Lpx, aSh, now);
+      }
     }
-    gulp.style.opacity = Math.exp(-(now - gulpT) / 200) * .95;
 
     /* ---- captions ---- */
     var want = -1, k;
@@ -1006,7 +1133,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       var dxs = x2 - cxs, dys = y2 - cys, ds = st.d * maxR;
       if (ds < rPx * 0.99) continue;                       // behind the sphere
       var tw = 0.55 + 0.45*Math.sin(now/1000*st.tw + st.ph);
-      var a = tw * clamp01(st.d * 6);
+      var a = tw * clamp01(st.d * 6) * (.55 + .45*bgDim);
       if (a < 0.02) continue;
       var col = st.warm ? '#f6e0c8' : '#dfe9ff';
       var lt = 0;
@@ -1047,8 +1174,6 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 
   replayBtn.addEventListener('click', function(){
     done = false; endFading = false; curCap = -1; seek = NaN;
-    for (var i = 0; i < ships.length; i++) ships[i].gone = false;
-    gulpT = -1e9;
     replayBtn.classList.remove('on');
     fader.style.transition = 'opacity .6s ease';
     fader.style.opacity = 1;
