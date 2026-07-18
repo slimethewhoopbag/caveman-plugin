@@ -863,7 +863,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
         var side = rnd() < .5 ? -1 : 1;
         FLEET.push({
           cls: cls,
-          ox: side * (5 + rnd()*54),        // start offset from gate, vw
+          ox: side * (62 + rnd()*46),       // start offset from gate, vw — offscreen at the near plane
           oy: 9 + rnd()*46,                 // vh — always the lower half
           ph: rnd(),                        // loop phase
           spd: spd,                         // corridor crossings per shot (per class)
