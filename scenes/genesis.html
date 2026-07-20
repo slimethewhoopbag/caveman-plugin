@@ -122,6 +122,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #caption .ln.vis{opacity:1;transform:none;transition:none}
 #caption .ln.open{color:#fbfdff;font-weight:700}
 #caption .ln.verdict{color:#ffb488}
+#caption b{font-weight:700;color:#fbfdff;font-style:normal}
 #caption .wd{white-space:nowrap}
 #caption .ch{opacity:0;transition:opacity .1s linear}
 #caption .ch.on{opacity:1}
@@ -201,30 +202,31 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   <div class="layer" data-f="0.015" id="layer-galaxies">
     <div class="piece">
       <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
-        <!-- spiral glyphs: two crossed arm strokes + core, never a plain oval -->
-        <g transform="translate(310,200) rotate(-24)" style="animation:shimmer 26s ease-in-out infinite">
-          <path d="M3 -2 Q14 -16 32 -9 Q40 -5 38 4" fill="none" stroke="rgba(196,170,214,.34)" stroke-width="2.4" stroke-linecap="round"/>
-          <path d="M-3 2 Q-14 16 -32 9 Q-40 5 -38 -4" fill="none" stroke="rgba(196,170,214,.26)" stroke-width="2.2" stroke-linecap="round"/>
-          <circle r="3" fill="rgba(244,230,224,.6)"/>
+        <!-- distant galaxies: soft cluster glows -->
+        <g transform="translate(310,200)" style="animation:shimmer 26s ease-in-out infinite">
+          <circle r="7" fill="rgba(196,170,214,.05)"/>
+          <circle r="3.6" fill="rgba(196,170,214,.10)"/>
+          <circle r="1.9" fill="rgba(196,170,214,.6)"/>
+          <circle cx="6" cy="-3" r=".7" fill="rgba(196,170,214,.4)"/><circle cx="-5" cy="4" r=".6" fill="rgba(196,170,214,.34)"/><circle cx="4" cy="5" r=".5" fill="rgba(196,170,214,.3)"/><circle cx="-6" cy="-4" r=".5" fill="rgba(196,170,214,.28)"/>
         </g>
-        <g transform="translate(1560,150) rotate(18)" style="animation:shimmer 34s ease-in-out infinite 8s">
-          <path d="M2 -2 Q11 -12 24 -7 Q30 -4 29 3" fill="none" stroke="rgba(214,168,160,.30)" stroke-width="2.2" stroke-linecap="round"/>
-          <path d="M-2 2 Q-11 12 -24 7" fill="none" stroke="rgba(214,168,160,.22)" stroke-width="2" stroke-linecap="round"/>
-          <circle r="2.4" fill="rgba(244,226,214,.55)"/>
+        <g transform="translate(1560,150)" style="animation:shimmer 34s ease-in-out infinite 8s">
+          <circle r="7" fill="rgba(214,168,160,.05)"/>
+          <circle r="3.6" fill="rgba(214,168,160,.10)"/>
+          <circle r="1.9" fill="rgba(214,168,160,.55)"/>
+          <circle cx="6" cy="-3" r=".7" fill="rgba(214,168,160,.4)"/><circle cx="-5" cy="4" r=".6" fill="rgba(214,168,160,.34)"/><circle cx="4" cy="5" r=".5" fill="rgba(214,168,160,.3)"/><circle cx="-6" cy="-4" r=".5" fill="rgba(214,168,160,.28)"/>
         </g>
-        <g transform="translate(1710,760) rotate(-40)" style="animation:shimmer 30s ease-in-out infinite 4s">
-          <path d="M3 -3 Q15 -18 34 -10 Q43 -6 41 5" fill="none" stroke="rgba(170,196,214,.30)" stroke-width="2.6" stroke-linecap="round"/>
-          <path d="M-3 3 Q-15 18 -34 10" fill="none" stroke="rgba(170,196,214,.22)" stroke-width="2.2" stroke-linecap="round"/>
-          <circle r="3.2" fill="rgba(230,240,246,.55)"/>
+        <g transform="translate(1710,760)" style="animation:shimmer 30s ease-in-out infinite 4s">
+          <circle r="7" fill="rgba(170,196,214,.05)"/>
+          <circle r="3.6" fill="rgba(170,196,214,.10)"/>
+          <circle r="1.9" fill="rgba(170,196,214,.55)"/>
+          <circle cx="6" cy="-3" r=".7" fill="rgba(170,196,214,.4)"/><circle cx="-5" cy="4" r=".6" fill="rgba(170,196,214,.34)"/><circle cx="4" cy="5" r=".5" fill="rgba(170,196,214,.3)"/><circle cx="-6" cy="-4" r=".5" fill="rgba(170,196,214,.28)"/>
         </g>
-        <g transform="translate(210,840) rotate(30)" style="animation:shimmer 40s ease-in-out infinite 14s">
-          <path d="M2 -2 Q9 -10 19 -6" fill="none" stroke="rgba(196,178,214,.26)" stroke-width="2" stroke-linecap="round"/>
-          <path d="M-2 2 Q-9 10 -19 6" fill="none" stroke="rgba(196,178,214,.2)" stroke-width="1.8" stroke-linecap="round"/>
-          <circle r="2.2" fill="rgba(238,228,244,.5)"/>
+        <g transform="translate(210,840)" style="animation:shimmer 40s ease-in-out infinite 14s">
+          <circle r="7" fill="rgba(196,178,214,.05)"/>
+          <circle r="3.6" fill="rgba(196,178,214,.10)"/>
+          <circle r="1.9" fill="rgba(196,178,214,.5)"/>
+          <circle cx="6" cy="-3" r=".7" fill="rgba(196,178,214,.4)"/><circle cx="-5" cy="4" r=".6" fill="rgba(196,178,214,.34)"/><circle cx="4" cy="5" r=".5" fill="rgba(196,178,214,.3)"/><circle cx="-6" cy="-4" r=".5" fill="rgba(196,178,214,.28)"/>
         </g>
-        <!-- torn dust veils: broken curved strokes, not ellipses -->
-        <path d="M700 560 C880 520 1060 580 1240 548 M1300 542 C1420 522 1540 560 1660 536" fill="none" stroke="rgba(150,90,90,.06)" stroke-width="12" stroke-linecap="round"/>
-        <path d="M220 430 C360 396 520 440 640 414 M700 404 C790 388 880 412 960 396" fill="none" stroke="rgba(120,90,150,.055)" stroke-width="10" stroke-linecap="round"/>
         <!-- irregular star grain -->
         <g fill="rgba(226,214,206,.4)">
           <circle cx="812" cy="252" r="1.3"/><circle cx="829" cy="238" r=".8"/><circle cx="798" cy="236" r="1"/>
@@ -571,16 +573,16 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   var capSm = capEl.querySelector('small');
   var capTx = capEl.querySelector('span');
   var CAPS = [
-    { a:.02, b:.145, k:'Exodus Fleet — Genesis 01-0',
-      t:'The new sky ends at singularity \x01. Mass readings say collapsed star. The same readings say it is caged. Nothing natural holds a horizon this still.' },
-    { a:.185, b:.37, k:'Exodus Fleet — Genesis 02-0',
-      t:'The cage resolved at half a light-hour: rings beyond count, pylons the size of continents, a horizon held open like a pupil in the dark. The builders never fled the universe. They engineered a way out of it.' },
-    { a:.42, b:.585, k:'Exodus Fleet — Genesis 03-1',
-      t:'Insertion lanes lit as we arrived, and the gravity engines took the fleet the way a river takes rain. Helm input is no longer required. Helm input is no longer possible.' },
-    { a:.615, b:.755, k:'Exodus Fleet — Genesis 04-0',
-      t:'Old theory holds that every horizon seeds a universe on its far side... that collapse is not an ending but a birth. The theory never allowed for builders patient enough to hold the door open.' },
-    { a:.775, b:.995, k:'Exodus Fleet — Genesis 05-0', cps:14, fin:true,
-      t:'The fleet entered the horizon in formation. No vessel slowed. No vessel returned.\nLight ended. Then light began — new constants, new stars, no charts at all.\nThe old universe closed behind us without a sound.\nGenesis log, day zero. We begin again.' }
+    { a:.02, b:.145, k:'Genesis 01-1',
+      t:'*Old Knowledge* had believed *black holes* stored matter it ripped apart, in a dense dictionary.\nIt was not completely wrong.' },
+    { a:.185, b:.37, k:'Genesis 01-2',
+      t:'One theory proposed that every *singularity* marks the beginning of another universe. Beyond the *Event Horizon*, space exists once more.' },
+    { a:.42, b:.585, k:'Genesis 01-3',
+      t:'Yet, the *Event Horizon* is no longer the issue, but its what lay within which is of concern.\nRegardless, life is expendable, It always been.' },
+    { a:.615, b:.755, k:'Genesis 01-4',
+      t:'Countless births and deaths changed this. A new vision for a world beyond.\nFor the first time, the horizon remained open long enough for a fleet to pass before the *collapse* completed.' },
+    { a:.775, b:.995, k:'Genesis 01-5', cps:14, fin:true,
+      t:'History remembers this crossing simply as *Genesis*.' }
   ];
   var curCap = -1;
 
@@ -595,10 +597,15 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
         txt = parts[pj].trim();
         if (!txt) continue;
         if (pj < parts.length - 1) txt += '.';
-        var raw = txt.split('\x01'), tk = [], ti;
+        var raw = txt.split('\x01'), tk = [], ti, bi, bp;
         for (ti = 0; ti < raw.length; ti++){
           if (ti > 0) tk.push({ r: 1 });
-          if (raw[ti].length) tk.push(raw[ti]);
+          if (!raw[ti].length) continue;
+          bp = raw[ti].split('*');
+          for (bi = 0; bi < bp.length; bi++){
+            if (!bp[bi].length) continue;
+            tk.push(bi % 2 === 1 ? { b: bp[bi] } : bp[bi]);   // odd run = between * = bold
+          }
         }
         var low = txt.toLowerCase();
         segs.push({ tk: tk, cls: first ? 'open' : (low.indexOf('no further') >= 0 || low.indexOf('day zero') >= 0 ? 'verdict' : '') });
@@ -616,16 +623,19 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       html += '<span class="ln ' + (c.fin ? 'vis ' : '') + seg.cls + '">';
       for (j = 0; j < seg.tk.length; j++){
         tk = seg.tk[j];
-        if (tk.r){ html += '<span class="redact ch"></span>'; }
-        else if (c.fin){
-          words = tk.split(' ');
+        if (tk.r){ html += '<span class="redact ch"></span>'; continue; }
+        var isB = tk && tk.b != null, str = isB ? tk.b : tk;
+        if (isB) html += '<b>';
+        if (c.fin){
+          words = str.split(' ');
           for (w = 0; w < words.length; w++){
             if (w > 0) html += '<span class="ch"> </span>';
             html += '<span class="wd">';
             for (ch = 0; ch < words[w].length; ch++) html += '<span class="ch">' + esc(words[w][ch]) + '</span>';
             html += '</span>';
           }
-        } else html += esc(tk);
+        } else html += esc(str);
+        if (isB) html += '</b>';
       }
       html += '</span>';
     }

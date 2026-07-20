@@ -121,6 +121,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #caption .ln.vis{opacity:1;transform:none;transition:none}
 #caption .ln.open{color:#fbfdff;font-weight:700}
 #caption .ln.verdict{color:#ffb488}
+#caption b{font-weight:700;color:#fbfdff;font-style:normal}
 #caption .wd{white-space:nowrap}
 #caption .ch{opacity:0;transition:opacity .1s linear}
 #caption .ch.on{opacity:1}
@@ -200,35 +201,37 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   <div class="layer" data-f="0.015" id="layer-galaxies">
     <div class="piece">
       <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
-        <!-- spiral glyphs: crossed arm strokes + core, never a plain oval -->
-        <g transform="translate(310,200) rotate(-24)" style="animation:shimmer 26s ease-in-out infinite">
-          <path d="M3 -2 Q15 -17 33 -10 Q42 -5 40 5" fill="none" stroke="rgba(196,186,255,.44)" stroke-width="2.6" stroke-linecap="round"/>
-          <path d="M-3 2 Q-15 17 -33 10 Q-42 5 -40 -5" fill="none" stroke="rgba(196,186,255,.34)" stroke-width="2.3" stroke-linecap="round"/>
-          <circle r="3.2" fill="rgba(240,236,255,.7)"/>
+        <!-- distant galaxies: soft cluster glows -->
+        <g transform="translate(310,200)" style="animation:shimmer 26s ease-in-out infinite">
+          <circle r="7" fill="rgba(196,186,255,.05)"/>
+          <circle r="3.6" fill="rgba(196,186,255,.10)"/>
+          <circle r="1.9" fill="rgba(196,186,255,.7)"/>
+          <circle cx="6" cy="-3" r=".7" fill="rgba(196,186,255,.4)"/><circle cx="-5" cy="4" r=".6" fill="rgba(196,186,255,.34)"/><circle cx="4" cy="5" r=".5" fill="rgba(196,186,255,.3)"/><circle cx="-6" cy="-4" r=".5" fill="rgba(196,186,255,.28)"/>
         </g>
-        <g transform="translate(1560,150) rotate(18)" style="animation:shimmer 34s ease-in-out infinite 8s">
-          <path d="M2 -2 Q12 -13 25 -8 Q31 -4 30 3" fill="none" stroke="rgba(216,196,255,.4)" stroke-width="2.3" stroke-linecap="round"/>
-          <path d="M-2 2 Q-12 13 -25 8" fill="none" stroke="rgba(216,196,255,.3)" stroke-width="2.1" stroke-linecap="round"/>
-          <circle r="2.6" fill="rgba(246,240,255,.65)"/>
+        <g transform="translate(1560,150)" style="animation:shimmer 34s ease-in-out infinite 8s">
+          <circle r="7" fill="rgba(216,196,255,.05)"/>
+          <circle r="3.6" fill="rgba(216,196,255,.10)"/>
+          <circle r="1.9" fill="rgba(216,196,255,.65)"/>
+          <circle cx="6" cy="-3" r=".7" fill="rgba(216,196,255,.4)"/><circle cx="-5" cy="4" r=".6" fill="rgba(216,196,255,.34)"/><circle cx="4" cy="5" r=".5" fill="rgba(216,196,255,.3)"/><circle cx="-6" cy="-4" r=".5" fill="rgba(216,196,255,.28)"/>
         </g>
-        <g transform="translate(1710,760) rotate(-40)" style="animation:shimmer 30s ease-in-out infinite 4s">
-          <path d="M3 -3 Q16 -19 36 -11 Q45 -6 43 6" fill="none" stroke="rgba(178,206,255,.4)" stroke-width="2.8" stroke-linecap="round"/>
-          <path d="M-3 3 Q-16 19 -36 11" fill="none" stroke="rgba(178,206,255,.3)" stroke-width="2.3" stroke-linecap="round"/>
-          <circle r="3.4" fill="rgba(232,242,255,.65)"/>
+        <g transform="translate(1710,760)" style="animation:shimmer 30s ease-in-out infinite 4s">
+          <circle r="7" fill="rgba(178,206,255,.05)"/>
+          <circle r="3.6" fill="rgba(178,206,255,.10)"/>
+          <circle r="1.9" fill="rgba(178,206,255,.65)"/>
+          <circle cx="6" cy="-3" r=".7" fill="rgba(178,206,255,.4)"/><circle cx="-5" cy="4" r=".6" fill="rgba(178,206,255,.34)"/><circle cx="4" cy="5" r=".5" fill="rgba(178,206,255,.3)"/><circle cx="-6" cy="-4" r=".5" fill="rgba(178,206,255,.28)"/>
         </g>
-        <g transform="translate(210,840) rotate(30)" style="animation:shimmer 40s ease-in-out infinite 14s">
-          <path d="M2 -2 Q10 -11 20 -7" fill="none" stroke="rgba(206,190,255,.34)" stroke-width="2.1" stroke-linecap="round"/>
-          <path d="M-2 2 Q-10 11 -20 7" fill="none" stroke="rgba(206,190,255,.26)" stroke-width="1.9" stroke-linecap="round"/>
-          <circle r="2.4" fill="rgba(242,236,255,.6)"/>
+        <g transform="translate(210,840)" style="animation:shimmer 40s ease-in-out infinite 14s">
+          <circle r="7" fill="rgba(206,190,255,.05)"/>
+          <circle r="3.6" fill="rgba(206,190,255,.10)"/>
+          <circle r="1.9" fill="rgba(206,190,255,.6)"/>
+          <circle cx="6" cy="-3" r=".7" fill="rgba(206,190,255,.4)"/><circle cx="-5" cy="4" r=".6" fill="rgba(206,190,255,.34)"/><circle cx="4" cy="5" r=".5" fill="rgba(206,190,255,.3)"/><circle cx="-6" cy="-4" r=".5" fill="rgba(206,190,255,.28)"/>
         </g>
-        <g transform="translate(640,920) rotate(-14)" style="animation:shimmer 44s ease-in-out infinite 20s">
-          <path d="M2 -2 Q11 -12 22 -7" fill="none" stroke="rgba(186,210,255,.32)" stroke-width="2.1" stroke-linecap="round"/>
-          <path d="M-2 2 Q-11 12 -22 7" fill="none" stroke="rgba(186,210,255,.24)" stroke-width="1.9" stroke-linecap="round"/>
-          <circle r="2.4" fill="rgba(238,244,255,.55)"/>
+        <g transform="translate(640,920)" style="animation:shimmer 44s ease-in-out infinite 20s">
+          <circle r="7" fill="rgba(186,210,255,.05)"/>
+          <circle r="3.6" fill="rgba(186,210,255,.10)"/>
+          <circle r="1.9" fill="rgba(186,210,255,.55)"/>
+          <circle cx="6" cy="-3" r=".7" fill="rgba(186,210,255,.4)"/><circle cx="-5" cy="4" r=".6" fill="rgba(186,210,255,.34)"/><circle cx="4" cy="5" r=".5" fill="rgba(186,210,255,.3)"/><circle cx="-6" cy="-4" r=".5" fill="rgba(186,210,255,.28)"/>
         </g>
-        <!-- drifting dust veils: broken curved strokes -->
-        <path d="M700 560 C880 520 1060 580 1240 548 M1300 542 C1420 522 1540 560 1660 536" fill="none" stroke="rgba(120,110,200,.07)" stroke-width="12" stroke-linecap="round"/>
-        <path d="M220 430 C360 396 520 440 640 414 M700 404 C790 388 880 412 960 396" fill="none" stroke="rgba(100,120,200,.06)" stroke-width="10" stroke-linecap="round"/>
         <!-- irregular star grain -->
         <g fill="rgba(226,230,250,.5)">
           <circle cx="812" cy="252" r="1.3"/><circle cx="829" cy="238" r=".8"/><circle cx="798" cy="236" r="1"/>
@@ -634,16 +637,16 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   var capSm = capEl.querySelector('small');
   var capTx = capEl.querySelector('span');
   var CAPS = [
-    { a:.02, b:.145, k:'Exodus Fleet — Ascension 01-0',
-      t:'Long-range survey counted four hundred harvested stars along the transit corridor. Each one dimmed, each one ringed, each one still feeding the relay lattice. The energy travels ahead of us. Every reading terminates at the same coordinates.' },
-    { a:.185, b:.37, k:'Exodus Fleet — Ascension 02-0',
-      t:'The silhouette resolved at one-third light-hour: a complete engineered shell, enclosing star \x01. Scale estimates were revised four times during approach. The fleet has stopped transmitting scale estimates.' },
-    { a:.42, b:.585, k:'Exodus Fleet — Ascension 03-2',
-      t:'The sphere registered our approach. Apertures opened in sequence along the near meridian, and stored stellar output began moving through surface conduits older than recorded history. No hail was received. None appears to be required.' },
-    { a:.615, b:.755, k:'Exodus Fleet — Ascension 04-0',
-      t:'Core output is still climbing. The background constellations have begun to bend around the shell, and navigation no longer agrees with observation... The builders did not harvest four hundred stars for power. They harvested them for an exit.' },
-    { a:.775, b:.995, k:'Exodus Fleet — Ascension 05-0', cps:14, fin:true,
-      t:'The aperture opened onto stars that appear on no chart.\nThe fleet crossed in formation. No vessel slowed. No vessel returned.\nThe sphere folded its light away behind them.\nNo further entries appear in this log.' }
+    { a:.02, b:.145, k:'Exodus Fleet — Ascension 01-1',
+      t:'It was not long before *cores* were harvested. An amount of energy that no being alone could harvest.' },
+    { a:.185, b:.37, k:'Exodus Fleet — Ascension 01-2',
+      t:'The *Dyson Sphere* marked the end of conventional travel. For the first time, the energy of entire core systems was gathered with a single purpose...' },
+    { a:.42, b:.585, k:'Exodus Fleet — Ascension 01-3',
+      t:'Early *Warp Theory* described spacetime as a fabric that could be folded. Yet it had proved impossible on many occasions.\nEnergy was needed.\nAnd a core harvested.' },
+    { a:.615, b:.755, k:'Exodus Fleet — Ascension 01-4',
+      t:'When enough cores are brought together, the distance becomes negotiable. Two galaxies did not seem like such a dream now.\nwhile for *another*, it was never a dream.' },
+    { a:.775, b:.995, k:'Exodus Fleet — Ascension 01-5', cps:14, fin:true,
+      t:'History remembers this crossing simply as *Ascension*.' }
   ];
   var curCap = -1;
 
@@ -658,10 +661,15 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
         txt = parts[pj].trim();
         if (!txt) continue;
         if (pj < parts.length - 1) txt += '.';
-        var raw = txt.split('\x01'), tk = [], ti;
+        var raw = txt.split('\x01'), tk = [], ti, bi, bp;
         for (ti = 0; ti < raw.length; ti++){
           if (ti > 0) tk.push({ r: 1 });
-          if (raw[ti].length) tk.push(raw[ti]);
+          if (!raw[ti].length) continue;
+          bp = raw[ti].split('*');
+          for (bi = 0; bi < bp.length; bi++){
+            if (!bp[bi].length) continue;
+            tk.push(bi % 2 === 1 ? { b: bp[bi] } : bp[bi]);   // odd run = between * = bold
+          }
         }
         var low = txt.toLowerCase();
         segs.push({ tk: tk, cls: first ? 'open' : (low.indexOf('no further') >= 0 ? 'verdict' : '') });
@@ -679,16 +687,19 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       html += '<span class="ln ' + (c.fin ? 'vis ' : '') + seg.cls + '">';
       for (j = 0; j < seg.tk.length; j++){
         tk = seg.tk[j];
-        if (tk.r){ html += '<span class="redact ch"></span>'; }
-        else if (c.fin){
-          words = tk.split(' ');
+        if (tk.r){ html += '<span class="redact ch"></span>'; continue; }
+        var isB = tk && tk.b != null, str = isB ? tk.b : tk;
+        if (isB) html += '<b>';
+        if (c.fin){
+          words = str.split(' ');
           for (w = 0; w < words.length; w++){
             if (w > 0) html += '<span class="ch"> </span>';
             html += '<span class="wd">';
             for (ch = 0; ch < words[w].length; ch++) html += '<span class="ch">' + esc(words[w][ch]) + '</span>';
             html += '</span>';
           }
-        } else html += esc(tk);
+        } else html += esc(str);
+        if (isB) html += '</b>';
       }
       html += '</span>';
     }
