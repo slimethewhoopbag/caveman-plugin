@@ -49,20 +49,9 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #layer-nebnear{z-index:6}
 #layer-latnear{z-index:7}
 
-/* ---------- nebulae: three depth tiers, parallaxing at different rates ---------- */
-.neb{position:absolute;border-radius:50%;filter:blur(30px)}
-.neb.a{top:2vh;left:4vw;width:58vw;height:42vh;
-  background:radial-gradient(closest-side,rgba(96,66,168,.16),rgba(96,66,168,0) 70%)}
-.neb.b{top:48vh;left:58vw;width:48vw;height:38vh;
-  background:radial-gradient(closest-side,rgba(52,96,178,.14),rgba(52,96,178,0) 70%)}
-.neb.c{top:10vh;left:52vw;width:40vw;height:30vh;
-  background:radial-gradient(closest-side,rgba(118,82,196,.17),rgba(118,82,196,0) 68%)}
-.neb.d{top:60vh;left:6vw;width:36vw;height:28vh;
-  background:radial-gradient(closest-side,rgba(66,124,196,.15),rgba(66,124,196,0) 70%)}
-.neb.e{top:30vh;left:22vw;width:30vw;height:22vh;
-  background:radial-gradient(closest-side,rgba(186,102,160,.10),rgba(186,102,160,0) 66%)}
-.neb.f{top:74vh;left:64vw;width:26vw;height:20vh;
-  background:radial-gradient(closest-side,rgba(88,140,208,.11),rgba(88,140,208,0) 66%)}
+/* ---------- nebulae: hand-drawn aurora veils in three parallax tiers ---------- */
+.nebsoft{filter:blur(26px)}
+.nebfine{filter:blur(3px);opacity:.8}
 
 /* ---------- generic ambient motion ---------- */
 @keyframes driftR{from{transform:translate3d(-1.6vw,0,0)}to{transform:translate3d(1.6vw,0,0)}}
@@ -74,7 +63,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 @keyframes blink2{0%,88%,100%{opacity:.1}90%,94%{opacity:1}}
 @keyframes flow{to{stroke-dashoffset:-504}}
 @keyframes latFlow{to{stroke-dashoffset:-310}}
-@keyframes latFlow2{to{stroke-dashoffset:-324}}
+@keyframes latFlow2{to{stroke-dashoffset:-248}}
 @keyframes ringFlow{to{stroke-dashoffset:-396}}
 @keyframes ringFlowA{to{stroke-dashoffset:-370}}
 @keyframes ringFlowB{to{stroke-dashoffset:384}}
@@ -162,23 +151,51 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 
   <canvas id="stars"></canvas>
 
-  <!-- =================== NEBULAE — three depth tiers (f .006 / .04 / .10) =================== -->
+  <!-- =================== NEBULAE — hand-drawn aurora veils, three parallax tiers =================== -->
   <div class="layer" data-f="0.006" id="layer-nebfar">
-    <div class="piece">
-      <div class="neb a drift-r" style="animation-duration:340s"></div>
-      <div class="neb b drift-l" style="animation-duration:300s"></div>
+    <div class="piece nebsoft drift-r" style="animation-duration:340s">
+      <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <path d="M-60 220 C240 100 540 280 860 190 C1120 120 1330 220 1250 300 C1080 452 780 330 520 410 C260 486 -30 380 -60 220 Z" fill="rgba(108,74,190,.17)"/>
+        <path d="M160 260 C400 170 640 300 860 240 C1000 202 1070 262 986 314 C820 412 580 330 400 372 C260 404 158 340 160 260 Z" fill="rgba(140,102,220,.12)"/>
+        <path d="M1140 560 C1380 440 1660 520 1990 430 L1990 740 C1750 840 1490 700 1310 770 C1170 820 1080 680 1140 560 Z" fill="rgba(64,118,212,.16)"/>
+        <path d="M1300 590 C1500 510 1720 560 1910 510 L1910 660 C1740 730 1560 650 1440 690 C1340 720 1260 660 1300 590 Z" fill="rgba(98,150,232,.11)"/>
+      </svg>
     </div>
   </div>
   <div class="layer" data-f="0.04" id="layer-nebmid">
-    <div class="piece">
-      <div class="neb c drift-l" style="animation-duration:250s"></div>
-      <div class="neb d drift-r" style="animation-duration:280s"></div>
+    <div class="piece nebsoft drift-l" style="animation-duration:280s">
+      <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <path d="M-40 800 C280 660 560 820 880 730 C1090 672 1180 770 1070 830 C860 950 580 860 340 930 C140 984 -40 910 -40 800 Z" fill="rgba(190,108,168,.13)"/>
+        <path d="M80 810 C300 720 540 820 740 770 C860 740 910 792 838 832 C680 912 480 850 320 892 C200 922 88 880 80 810 Z" fill="rgba(216,140,192,.09)"/>
+        <path d="M1220 40 C1440 -40 1700 70 1990 6 L1990 260 C1790 336 1570 232 1410 292 C1290 334 1160 168 1220 40 Z" fill="rgba(108,80,200,.14)"/>
+      </svg>
+    </div>
+    <div class="piece nebfine drift-l" style="animation-duration:280s">
+      <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <path d="M220 640 Q380 600 520 636 T860 610" fill="none" stroke="rgba(190,206,255,.10)" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M1240 210 Q1380 180 1500 214 T1780 190" fill="none" stroke="rgba(214,190,255,.09)" stroke-width="2.2" stroke-linecap="round"/>
+        <g fill="rgba(228,232,250,.4)">
+          <circle cx="480" cy="300" r="1.1"/><circle cx="506" cy="288" r=".7"/><circle cx="466" cy="278" r=".9"/>
+          <circle cx="528" cy="312" r=".6"/><circle cx="492" cy="326" r=".8"/><circle cx="450" cy="314" r=".6"/>
+        </g>
+        <g fill="rgba(238,224,240,.36)">
+          <circle cx="1480" cy="840" r="1"/><circle cx="1508" cy="826" r=".7"/><circle cx="1460" cy="818" r=".8"/>
+          <circle cx="1526" cy="856" r=".6"/><circle cx="1494" cy="868" r=".9"/>
+        </g>
+      </svg>
     </div>
   </div>
   <div class="layer" data-f="0.10" id="layer-nebnear">
-    <div class="piece">
-      <div class="neb e drift-r" style="animation-duration:200s"></div>
-      <div class="neb f drift-l" style="animation-duration:170s"></div>
+    <div class="piece nebsoft drift-r" style="animation-duration:210s">
+      <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <path d="M260 1000 C540 880 900 970 1260 900 C1500 852 1700 930 1760 1010 L1760 1150 L220 1150 Z" fill="rgba(150,96,210,.13)"/>
+        <path d="M1380 -50 C1560 -90 1790 -30 1990 -70 L1990 130 C1810 190 1630 110 1510 150 C1410 182 1330 40 1380 -50 Z" fill="rgba(70,130,220,.13)"/>
+      </svg>
+    </div>
+    <div class="piece nebfine drift-r" style="animation-duration:210s">
+      <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <path d="M480 940 Q700 880 920 922 T1360 898" fill="none" stroke="rgba(206,190,255,.10)" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
     </div>
   </div>
 
@@ -186,43 +203,48 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   <div class="layer" data-f="0.015" id="layer-galaxies">
     <div class="piece">
       <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
-        <g style="animation:shimmer 26s ease-in-out infinite">
-          <ellipse cx="310" cy="200" rx="46" ry="14" fill="rgba(168,184,255,.14)" transform="rotate(-24 310 200)"/>
-          <ellipse cx="310" cy="200" rx="20" ry="6" fill="rgba(224,230,255,.20)" transform="rotate(-24 310 200)"/>
+        <!-- spiral glyphs: crossed arm strokes + core, never a plain oval -->
+        <g transform="translate(310,200) rotate(-24)" style="animation:shimmer 26s ease-in-out infinite">
+          <path d="M3 -2 Q15 -17 33 -10 Q42 -5 40 5" fill="none" stroke="rgba(196,186,255,.44)" stroke-width="2.6" stroke-linecap="round"/>
+          <path d="M-3 2 Q-15 17 -33 10 Q-42 5 -40 -5" fill="none" stroke="rgba(196,186,255,.34)" stroke-width="2.3" stroke-linecap="round"/>
+          <circle r="3.2" fill="rgba(240,236,255,.7)"/>
         </g>
-        <g style="animation:shimmer 34s ease-in-out infinite 8s">
-          <ellipse cx="1560" cy="150" rx="38" ry="11" fill="rgba(200,178,255,.12)" transform="rotate(18 1560 150)"/>
-          <ellipse cx="1560" cy="150" rx="15" ry="5" fill="rgba(238,230,255,.18)" transform="rotate(18 1560 150)"/>
+        <g transform="translate(1560,150) rotate(18)" style="animation:shimmer 34s ease-in-out infinite 8s">
+          <path d="M2 -2 Q12 -13 25 -8 Q31 -4 30 3" fill="none" stroke="rgba(216,196,255,.4)" stroke-width="2.3" stroke-linecap="round"/>
+          <path d="M-2 2 Q-12 13 -25 8" fill="none" stroke="rgba(216,196,255,.3)" stroke-width="2.1" stroke-linecap="round"/>
+          <circle r="2.6" fill="rgba(246,240,255,.65)"/>
         </g>
-        <g style="animation:shimmer 30s ease-in-out infinite 4s">
-          <ellipse cx="1710" cy="760" rx="52" ry="15" fill="rgba(150,190,255,.11)" transform="rotate(-40 1710 760)"/>
-          <ellipse cx="1710" cy="760" rx="22" ry="7" fill="rgba(220,236,255,.16)" transform="rotate(-40 1710 760)"/>
+        <g transform="translate(1710,760) rotate(-40)" style="animation:shimmer 30s ease-in-out infinite 4s">
+          <path d="M3 -3 Q16 -19 36 -11 Q45 -6 43 6" fill="none" stroke="rgba(178,206,255,.4)" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M-3 3 Q-16 19 -36 11" fill="none" stroke="rgba(178,206,255,.3)" stroke-width="2.3" stroke-linecap="round"/>
+          <circle r="3.4" fill="rgba(232,242,255,.65)"/>
         </g>
-        <g style="animation:shimmer 40s ease-in-out infinite 14s">
-          <ellipse cx="210" cy="840" rx="34" ry="10" fill="rgba(190,170,255,.10)" transform="rotate(30 210 840)"/>
+        <g transform="translate(210,840) rotate(30)" style="animation:shimmer 40s ease-in-out infinite 14s">
+          <path d="M2 -2 Q10 -11 20 -7" fill="none" stroke="rgba(206,190,255,.34)" stroke-width="2.1" stroke-linecap="round"/>
+          <path d="M-2 2 Q-10 11 -20 7" fill="none" stroke="rgba(206,190,255,.26)" stroke-width="1.9" stroke-linecap="round"/>
+          <circle r="2.4" fill="rgba(242,236,255,.6)"/>
         </g>
-        <g style="animation:shimmer 44s ease-in-out infinite 20s">
-          <ellipse cx="640" cy="920" rx="30" ry="9" fill="rgba(160,196,255,.09)" transform="rotate(-14 640 920)"/>
-          <ellipse cx="640" cy="920" rx="12" ry="4" fill="rgba(226,236,255,.14)" transform="rotate(-14 640 920)"/>
+        <g transform="translate(640,920) rotate(-14)" style="animation:shimmer 44s ease-in-out infinite 20s">
+          <path d="M2 -2 Q11 -12 22 -7" fill="none" stroke="rgba(186,210,255,.32)" stroke-width="2.1" stroke-linecap="round"/>
+          <path d="M-2 2 Q-11 12 -22 7" fill="none" stroke="rgba(186,210,255,.24)" stroke-width="1.9" stroke-linecap="round"/>
+          <circle r="2.4" fill="rgba(238,244,255,.55)"/>
         </g>
-        <g style="animation:shimmer 36s ease-in-out infinite 10s">
-          <ellipse cx="1266" cy="288" rx="24" ry="8" fill="rgba(208,182,255,.09)" transform="rotate(46 1266 288)"/>
+        <!-- drifting dust veils: broken curved strokes -->
+        <path d="M700 560 C880 520 1060 580 1240 548 M1300 542 C1420 522 1540 560 1660 536" fill="none" stroke="rgba(120,110,200,.07)" stroke-width="12" stroke-linecap="round"/>
+        <path d="M220 430 C360 396 520 440 640 414 M700 404 C790 388 880 412 960 396" fill="none" stroke="rgba(100,120,200,.06)" stroke-width="10" stroke-linecap="round"/>
+        <!-- irregular star grain -->
+        <g fill="rgba(226,230,250,.5)">
+          <circle cx="812" cy="252" r="1.3"/><circle cx="829" cy="238" r=".8"/><circle cx="798" cy="236" r="1"/>
+          <circle cx="838" cy="260" r=".6"/><circle cx="816" cy="272" r="1.1"/><circle cx="800" cy="258" r=".6"/>
+          <circle cx="852" cy="246" r=".7"/>
         </g>
-        <!-- faint dust bands -->
-        <ellipse cx="1120" cy="620" rx="480" ry="60" fill="rgba(110,130,210,.045)" transform="rotate(-16 1120 620)"/>
-        <ellipse cx="480" cy="420" rx="360" ry="44" fill="rgba(140,110,200,.04)" transform="rotate(12 480 420)"/>
-        <!-- open star clusters -->
-        <g fill="#cdd9f4" opacity=".5">
-          <circle cx="812" cy="252" r="1.3"/><circle cx="826" cy="240" r="1"/><circle cx="800" cy="238" r=".9"/>
-          <circle cx="834" cy="258" r=".8"/><circle cx="818" cy="268" r="1.1"/><circle cx="806" cy="258" r=".7"/>
+        <g fill="rgba(230,222,246,.42)">
+          <circle cx="1470" cy="866" r="1.2"/><circle cx="1490" cy="852" r=".8"/><circle cx="1456" cy="850" r="1"/>
+          <circle cx="1498" cy="876" r=".6"/><circle cx="1472" cy="884" r=".9"/><circle cx="1442" cy="872" r=".6"/>
         </g>
-        <g fill="#d8ceec" opacity=".42">
-          <circle cx="1470" cy="866" r="1.2"/><circle cx="1486" cy="854" r=".9"/><circle cx="1458" cy="852" r="1"/>
-          <circle cx="1492" cy="874" r=".7"/><circle cx="1474" cy="882" r=".9"/>
-        </g>
-        <g fill="#ccdaf6" opacity=".45">
-          <circle cx="368" cy="622" r="1.1"/><circle cx="384" cy="612" r=".8"/><circle cx="356" cy="608" r="1"/>
-          <circle cx="378" cy="634" r=".9"/><circle cx="362" cy="636" r=".7"/>
+        <g fill="rgba(222,232,250,.44)">
+          <circle cx="368" cy="622" r="1.1"/><circle cx="386" cy="610" r=".7"/><circle cx="354" cy="606" r="1"/>
+          <circle cx="380" cy="636" r=".9"/><circle cx="360" cy="638" r=".6"/><circle cx="340" cy="620" r=".7"/>
         </g>
         <circle cx="980" cy="120" r="2.2" fill="rgba(214,226,255,.5)" style="animation:shimmer 18s ease-in-out infinite"/>
       </svg>
@@ -502,9 +524,9 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
         <!-- gravitational lensing halo -->
         <g id="lensHalo" opacity="0">
           <circle r="452" fill="none" stroke="rgba(159,232,255,.45)" stroke-width="2"
-            stroke-dasharray="260 80" style="animation:ringFlowA 90s linear infinite"/>
+            stroke-dasharray="290 80" style="animation:ringFlowA 90s linear infinite"/>
           <circle r="466" fill="none" stroke="rgba(255,217,168,.32)" stroke-width="1.5"
-            stroke-dasharray="200 120" style="animation:ringFlowB 110s linear infinite"/>
+            stroke-dasharray="264 120" style="animation:ringFlowB 110s linear infinite"/>
           <path d="M-320 -318 A451 451 0 0 1 -50 -448" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="3"/>
           <path d="M320 318 A451 451 0 0 1 50 448" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2.5"/>
         </g>
@@ -733,7 +755,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
       tr.setAttribute('class', near ? 'st2' : 'st');
       tr.setAttribute('stroke-width', (near ? 1.1 : .9).toFixed(1));
       tr.setAttribute('stroke-opacity', near ? '.20' : '.15');
-      tr.setAttribute('stroke-dasharray', '2.5 64');
+      tr.setAttribute('stroke-dasharray', '2 60');
       tr.style.animationDelay = (-rnd()*22).toFixed(1) + 's';
       tr.style.animationDuration = (14 + rnd()*12).toFixed(1) + 's';
       svg.appendChild(tr);
