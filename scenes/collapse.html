@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Stellar Foundry — Collapse</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&display=swap');
+
+/* ============================================================
+   COLLAPSE — a single-shot cinematic 2.5D parallax environment.
+   One continuous ~100s forward drift at constant speed: a living
+   star dominates the frame → the Emperor's flagship rises from
+   below and holds → the Core Collapser separates and dwindles to a
+   pea against the photosphere → it ignites within → the star pulses,
+   blue-shifts and falls inward with no debris → darkness, and a
+   single contained Core remains as the flagship advances.
+   Built on the Ascension engine: same layers, starfield, settlement
+   web, captions and chrome. Lore text is placeholder for now.
+   Debug: open with #p=0.63 in the URL to seek to that progress.
+   ============================================================ */
+
+:root{
+  --ink:#0b0d1f;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:#04050d;font-family:"Chakra Petch","Bank Gothic",Eurostile,"Segoe UI",Arial,sans-serif}
+#stage{position:fixed;inset:0;overflow:hidden;transform:translateZ(0)}
+
+/* ---------- sky ---------- */
+.sky{position:absolute;inset:0;pointer-events:none}
+#sky-space{background:linear-gradient(#03040b 0%,#0a0d22 58%,#101430 100%)}
+#sky-coreglow{background:radial-gradient(62vmin at 50% 46%,rgba(255,196,120,.20),rgba(255,180,100,.05) 55%,rgba(255,180,100,0) 75%);opacity:0}
+#sky-tearglow{background:radial-gradient(40vmin at 50% 46%,rgba(190,220,255,.22),rgba(160,190,255,.04) 50%,rgba(160,190,255,0) 72%);opacity:0}
+
+canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#stars{z-index:1}
+
+/* ---------- parallax layers (forward pan = scale about the vanishing point) ---------- */
+.layer{position:absolute;inset:0;will-change:transform;pointer-events:none;transform-origin:50% 46%}
+.piece{position:absolute;left:0;top:0;width:100%;height:100%}
+.piece svg{display:block;width:100%;height:100%}
+
+#layer-nebfar{z-index:2}
+#layer-galaxies{z-index:3}
+#layer-nebmid{z-index:4}
+#layer-latfar{z-index:5}
+#layer-nebnear{z-index:6}
+#layer-latnear{z-index:7}
+
+/* ---------- nebulae: hand-drawn aurora veils in three parallax tiers ---------- */
+.nebsoft{filter:blur(26px)}
+.nebfine{filter:blur(3px);opacity:.8}
+
+/* ---------- generic ambient motion ---------- */
+@keyframes driftR{from{transform:translate3d(-1.6vw,0,0)}to{transform:translate3d(1.6vw,0,0)}}
+@keyframes driftL{from{transform:translate3d(1.3vw,0,0)}to{transform:translate3d(-1.3vw,0,0)}}
+@keyframes bob{from{transform:translate3d(0,-.4vh,0)}to{transform:translate3d(0,.4vh,0)}}
+@keyframes shimmer{0%,100%{opacity:.5}50%{opacity:.9}}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:.85}}
+@keyframes blink{0%,92%,100%{opacity:0}94%,97%{opacity:1}}
+@keyframes blink2{0%,88%,100%{opacity:.1}90%,94%{opacity:1}}
+@keyframes flow{to{stroke-dashoffset:-504}}
+@keyframes latFlow{to{stroke-dashoffset:-310}}
+@keyframes latFlow2{to{stroke-dashoffset:-248}}
+@keyframes ringFlow{to{stroke-dashoffset:-396}}
+@keyframes ringFlowA{to{stroke-dashoffset:-370}}
+@keyframes ringFlowB{to{stroke-dashoffset:384}}
+@keyframes gxSpin{to{transform:rotate(360deg)}}
+
+.drift-r{animation:driftR 260s ease-in-out infinite alternate}
+.drift-l{animation:driftL 220s ease-in-out infinite alternate}
+
+/* ---------- settlement web (JS-generated): faint filaments + rare trunk pulses ---------- */
+.fil{fill:none;stroke-linecap:round}
+.st{stroke:#bcd7f6;fill:none;stroke-linecap:round;animation:latFlow 19s linear infinite}
+.st2{stroke:#cfe3ff;fill:none;stroke-linecap:round;animation:latFlow2 15s linear infinite}
+
+/* ---------- the star (scripted, not a generic layer) ---------- */
+#star{position:absolute;left:50%;top:46%;width:130vmin;height:130vmin;z-index:8;
+  pointer-events:none;will-change:transform,opacity}
+#star svg{display:block;width:100%;height:100%;overflow:visible}
+
+/* ---------- the contained Core, revealed after the collapse ---------- */
+#remnant{position:absolute;left:50%;top:42%;width:9vmin;height:9vmin;z-index:9;opacity:0;
+  transform:translate(-50%,-50%);pointer-events:none}
+#remnant svg{display:block;width:100%;height:100%;overflow:visible}
+
+/* ---------- the Core Collapser vessel ---------- */
+#corev{position:absolute;left:50%;top:0;width:7.5vw;min-width:64px;z-index:10;opacity:0;
+  pointer-events:none;will-change:transform,opacity}
+#corev svg{display:block;width:100%;height:auto;overflow:visible}
+
+/* ---------- the Emperor's flagship, bottom centre ---------- */
+#flag{position:absolute;left:50%;top:100%;width:46vw;min-width:430px;z-index:12;
+  pointer-events:none;will-change:transform}
+#flag svg{display:block;width:100%;height:auto;overflow:visible}
+#flag .inner{animation:flagBob 34s ease-in-out infinite alternate}
+@keyframes flagBob{from{transform:translate3d(0,-.3vh,0) rotate(-.12deg)}to{transform:translate3d(0,.3vh,0) rotate(.12deg)}}
+@keyframes engF{0%,100%{opacity:.8}50%{opacity:1}}
+
+/* ---------- pulse ring + flashes ---------- */
+#pulsering{position:absolute;left:50%;top:46%;width:100vmin;height:100vmin;z-index:9;opacity:0;
+  border-radius:50%;border:2px solid rgba(223,236,255,.9);pointer-events:none;will-change:transform,opacity;
+  box-shadow:0 0 46px rgba(159,220,255,.55),inset 0 0 46px rgba(159,220,255,.35)}
+#pulseflash{position:absolute;inset:0;z-index:28;opacity:0;pointer-events:none;background:#eaf4ff}
+
+/* ---------- cinema chrome ---------- */
+#vignette{position:absolute;inset:0;z-index:30;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 46%,rgba(0,0,0,0) 58%,rgba(3,4,12,.46) 100%)}
+.bar{position:absolute;left:0;width:100%;height:5.5vh;background:#020308;z-index:31}
+#bar-t{top:0}#bar-b{bottom:0}
+
+#caption{position:absolute;left:0;bottom:5.5vh;z-index:32;width:min(74vw,92ch);
+  color:#e6eef8;font-size:clamp(13px,1.4vw,19px);line-height:1.62;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;opacity:0;
+  padding:1.4em 1.9em 1.5em 5.4vw;
+  background:linear-gradient(103deg,rgba(5,8,16,.78),rgba(5,8,16,.55) 58%,rgba(5,8,16,0));
+  border-top:1px solid rgba(150,190,230,.30);border-right:1px solid rgba(150,190,230,.16);
+  border-top-right-radius:2px;
+  text-shadow:-1px -1px 0 #0a0c14,1px -1px 0 #0a0c14,-1px 1px 0 #0a0c14,1px 1px 0 #0a0c14,0 2px 3px rgba(3,5,10,.9),0 1px 12px rgba(4,8,20,.8)}
+#caption::before{content:"";position:absolute;top:-1px;right:-1px;width:15px;height:15px;
+  border-top:2px solid rgba(184,214,242,.72);border-right:2px solid rgba(184,214,242,.72);border-top-right-radius:2px}
+#caption small{display:block;letter-spacing:.34em;font-weight:500;font-size:.72em;color:#8fb4d8;margin-bottom:.75em}
+#caption .ln{display:block;opacity:0;transform:translateY(5px);
+  transition:opacity .55s ease,transform .55s ease;margin-bottom:.46em}
+#caption .ln.on{opacity:1;transform:none}
+#caption .ln.vis{opacity:1;transform:none;transition:none}
+#caption .ln.open{color:#fbfdff;font-weight:700}
+#caption .ln.verdict{color:#ffb488}
+#caption b{font-weight:700;color:#fbfdff;font-style:normal}
+#caption .wd{white-space:nowrap}
+#caption .ch{opacity:0;transition:opacity .1s linear}
+#caption .ch.on{opacity:1}
+#caption .redact{display:inline-block;width:8ch;height:.72em;background:#e6eef8;border-radius:1px;
+  transform:translateY(.06em);box-shadow:-1px -1px 0 #0a0c14,1px -1px 0 #0a0c14,-1px 1px 0 #0a0c14,1px 1px 0 #0a0c14}
+#caption .cur{display:inline-block;width:.5ch;height:.82em;background:#e6eef8;margin-left:1px;border-radius:1px;
+  transform:translateY(.1em);animation:curBlink 1.05s ease-in-out infinite;
+  box-shadow:-1px -1px 0 #0a0c14,1px -1px 0 #0a0c14,-1px 1px 0 #0a0c14,1px 1px 0 #0a0c14}
+@keyframes curBlink{0%,100%{opacity:1}50%{opacity:.03}}
+
+#fader{position:absolute;inset:0;background:#020308;z-index:40;pointer-events:none;transition:opacity 2.8s ease;opacity:1}
+#replay{position:absolute;right:5vw;bottom:8.5vh;z-index:45;opacity:0;pointer-events:none;
+  transition:opacity 2s ease;background:none;border:1px solid rgba(190,215,240,.45);
+  color:#d5e4f4;font:inherit;font-size:13px;letter-spacing:.22em;text-transform:uppercase;
+  padding:.55em 1.2em;cursor:pointer;border-radius:2px}
+#replay.on{opacity:.85;pointer-events:auto}
+#replay:hover{background:rgba(190,215,240,.12)}
+
+.reduced .layer,.reduced svg *,.reduced .st,.reduced .st2{animation:none!important}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <div class="sky" id="sky-space"></div>
+  <div class="sky" id="sky-coreglow"></div>
+  <div class="sky" id="sky-tearglow"></div>
+
+  <canvas id="stars"></canvas>
+
+  <!-- =================== NEBULAE — hand-drawn aurora veils, three parallax tiers =================== -->
+  <div class="layer" data-f="0.006" id="layer-nebfar">
+    <div class="piece nebsoft drift-r" style="animation-duration:340s">
+      <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <path d="M-60 220 C240 100 540 280 860 190 C1120 120 1330 220 1250 300 C1080 452 780 330 520 410 C260 486 -30 380 -60 220 Z" fill="rgba(108,74,190,.17)"/>
+        <path d="M160 260 C400 170 640 300 860 240 C1000 202 1070 262 986 314 C820 412 580 330 400 372 C260 404 158 340 160 260 Z" fill="rgba(140,102,220,.12)"/>
+        <path d="M1140 560 C1380 440 1660 520 1990 430 L1990 740 C1750 840 1490 700 1310 770 C1170 820 1080 680 1140 560 Z" fill="rgba(64,118,212,.16)"/>
+        <path d="M1300 590 C1500 510 1720 560 1910 510 L1910 660 C1740 730 1560 650 1440 690 C1340 720 1260 660 1300 590 Z" fill="rgba(98,150,232,.11)"/>
+      </svg>
+    </div>
+  </div>
+  <div class="layer" data-f="0.04" id="layer-nebmid">
+    <div class="piece nebsoft drift-l" style="animation-duration:280s">
+      <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <path d="M-40 800 C280 660 560 820 880 730 C1090 672 1180 770 1070 830 C860 950 580 860 340 930 C140 984 -40 910 -40 800 Z" fill="rgba(190,108,168,.13)"/>
+        <path d="M80 810 C300 720 540 820 740 770 C860 740 910 792 838 832 C680 912 480 850 320 892 C200 922 88 880 80 810 Z" fill="rgba(216,140,192,.09)"/>
+        <path d="M1220 40 C1440 -40 1700 70 1990 6 L1990 260 C1790 336 1570 232 1410 292 C1290 334 1160 168 1220 40 Z" fill="rgba(108,80,200,.14)"/>
+      </svg>
+    </div>
+    <div class="piece nebfine drift-l" style="animation-duration:280s">
+      <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <g fill="rgba(228,232,250,.4)">
+          <circle cx="480" cy="300" r="1.1"/><circle cx="506" cy="288" r=".7"/><circle cx="466" cy="278" r=".9"/>
+          <circle cx="528" cy="312" r=".6"/><circle cx="492" cy="326" r=".8"/><circle cx="450" cy="314" r=".6"/>
+        </g>
+        <g fill="rgba(238,224,240,.36)">
+          <circle cx="1480" cy="840" r="1"/><circle cx="1508" cy="826" r=".7"/><circle cx="1460" cy="818" r=".8"/>
+          <circle cx="1526" cy="856" r=".6"/><circle cx="1494" cy="868" r=".9"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="layer" data-f="0.10" id="layer-nebnear">
+    <div class="piece nebsoft drift-r" style="animation-duration:210s">
+      <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <path d="M260 1000 C540 880 900 970 1260 900 C1500 852 1700 930 1760 1010 L1760 1150 L220 1150 Z" fill="rgba(150,96,210,.13)"/>
+        <path d="M1380 -50 C1560 -90 1790 -30 1990 -70 L1990 130 C1810 190 1630 110 1510 150 C1410 182 1330 40 1380 -50 Z" fill="rgba(70,130,220,.13)"/>
+      </svg>
+    </div>
+    <div class="piece nebfine drift-r" style="animation-duration:210s">
+      <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+      </svg>
+    </div>
+  </div>
+
+  <!-- =================== DISTANT GALAXIES (f .015) =================== -->
+  <div class="layer" data-f="0.015" id="layer-galaxies">
+    <div class="piece">
+      <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <!-- distant galaxies: soft cluster glows -->
+        <g transform="translate(430,150)" style="animation:shimmer 26s ease-in-out infinite">
+          <circle r="7" fill="rgba(196,186,255,.05)"/>
+          <circle r="3.6" fill="rgba(196,186,255,.10)"/>
+          <circle r="1.9" fill="rgba(196,186,255,.7)"/>
+          <circle cx="6" cy="-3" r=".7" fill="rgba(196,186,255,.4)"/><circle cx="-5" cy="4" r=".6" fill="rgba(196,186,255,.34)"/><circle cx="4" cy="5" r=".5" fill="rgba(196,186,255,.3)"/><circle cx="-6" cy="-4" r=".5" fill="rgba(196,186,255,.28)"/>
+        </g>
+        <g transform="translate(1440,240)" style="animation:shimmer 34s ease-in-out infinite 8s">
+          <circle r="7" fill="rgba(216,196,255,.05)"/>
+          <circle r="3.6" fill="rgba(216,196,255,.10)"/>
+          <circle r="1.9" fill="rgba(216,196,255,.65)"/>
+          <circle cx="6" cy="-3" r=".7" fill="rgba(216,196,255,.4)"/><circle cx="-5" cy="4" r=".6" fill="rgba(216,196,255,.34)"/><circle cx="4" cy="5" r=".5" fill="rgba(216,196,255,.3)"/><circle cx="-6" cy="-4" r=".5" fill="rgba(216,196,255,.28)"/>
+        </g>
+        <g transform="translate(1660,880)" style="animation:shimmer 30s ease-in-out infinite 4s">
+          <circle r="7" fill="rgba(178,206,255,.05)"/>
+          <circle r="3.6" fill="rgba(178,206,255,.10)"/>
+          <circle r="1.9" fill="rgba(178,206,255,.65)"/>
+          <circle cx="6" cy="-3" r=".7" fill="rgba(178,206,255,.4)"/><circle cx="-5" cy="4" r=".6" fill="rgba(178,206,255,.34)"/><circle cx="4" cy="5" r=".5" fill="rgba(178,206,255,.3)"/><circle cx="-6" cy="-4" r=".5" fill="rgba(178,206,255,.28)"/>
+        </g>
+        <g transform="translate(150,700)" style="animation:shimmer 40s ease-in-out infinite 14s">
+          <circle r="7" fill="rgba(206,190,255,.05)"/>
+          <circle r="3.6" fill="rgba(206,190,255,.10)"/>
+          <circle r="1.9" fill="rgba(206,190,255,.6)"/>
+          <circle cx="6" cy="-3" r=".7" fill="rgba(206,190,255,.4)"/><circle cx="-5" cy="4" r=".6" fill="rgba(206,190,255,.34)"/><circle cx="4" cy="5" r=".5" fill="rgba(206,190,255,.3)"/><circle cx="-6" cy="-4" r=".5" fill="rgba(206,190,255,.28)"/>
+        </g>
+        <g transform="translate(780,860)" style="animation:shimmer 44s ease-in-out infinite 20s">
+          <circle r="7" fill="rgba(186,210,255,.05)"/>
+          <circle r="3.6" fill="rgba(186,210,255,.10)"/>
+          <circle r="1.9" fill="rgba(186,210,255,.55)"/>
+          <circle cx="6" cy="-3" r=".7" fill="rgba(186,210,255,.4)"/><circle cx="-5" cy="4" r=".6" fill="rgba(186,210,255,.34)"/><circle cx="4" cy="5" r=".5" fill="rgba(186,210,255,.3)"/><circle cx="-6" cy="-4" r=".5" fill="rgba(186,210,255,.28)"/>
+        </g>
+        <!-- irregular star grain -->
+        <g fill="rgba(226,230,250,.5)">
+          <circle cx="812" cy="252" r="1.3"/><circle cx="829" cy="238" r=".8"/><circle cx="798" cy="236" r="1"/>
+          <circle cx="838" cy="260" r=".6"/><circle cx="816" cy="272" r="1.1"/><circle cx="800" cy="258" r=".6"/>
+          <circle cx="852" cy="246" r=".7"/>
+        </g>
+        <g fill="rgba(230,222,246,.42)">
+          <circle cx="1470" cy="866" r="1.2"/><circle cx="1490" cy="852" r=".8"/><circle cx="1456" cy="850" r="1"/>
+          <circle cx="1498" cy="876" r=".6"/><circle cx="1472" cy="884" r=".9"/><circle cx="1442" cy="872" r=".6"/>
+        </g>
+        <g fill="rgba(222,232,250,.44)">
+          <circle cx="368" cy="622" r="1.1"/><circle cx="386" cy="610" r=".7"/><circle cx="354" cy="606" r="1"/>
+          <circle cx="380" cy="636" r=".9"/><circle cx="360" cy="638" r=".6"/><circle cx="340" cy="620" r=".7"/>
+        </g>
+        <circle cx="980" cy="120" r="2.2" fill="rgba(214,226,255,.5)" style="animation:shimmer 18s ease-in-out infinite"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- =================== HARVESTED-STAR LATTICE, FAR (f .10) =================== -->
+  <div class="layer" data-f="0.10" id="layer-latfar">
+    <div class="piece">
+      <svg id="latFar" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice"></svg>
+    </div>
+  </div>
+
+  <!-- =================== HARVESTED-STAR LATTICE, NEAR (f .30) =================== -->
+  <div class="layer" data-f="0.30" id="layer-latnear">
+    <div class="piece">
+      <svg id="latNear" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice"></svg>
+    </div>
+  </div>
+
+  <!-- =================== THE STAR (scripted depth layer) =================== -->
+  <div id="star">
+    <svg viewBox="-540 -540 1080 1080">
+      <defs>
+        <radialGradient id="gStar" cx="42%" cy="40%" r="78%">
+          <stop offset="0" stop-color="#fff8e8"/>
+          <stop offset=".34" stop-color="#ffd98a"/>
+          <stop offset=".68" stop-color="#ff9a4a"/>
+          <stop offset=".9" stop-color="#e05c28"/>
+          <stop offset="1" stop-color="#b03e1e"/>
+        </radialGradient>
+        <radialGradient id="gStarLimb">
+          <stop offset="0" stop-color="rgba(120,26,4,0)"/>
+          <stop offset=".78" stop-color="rgba(120,26,4,0)"/>
+          <stop offset="1" stop-color="rgba(96,18,2,.6)"/>
+        </radialGradient>
+        <radialGradient id="gCorona2">
+          <stop offset="0" stop-color="rgba(255,170,90,0)"/>
+          <stop offset=".6" stop-color="rgba(255,170,90,0)"/>
+          <stop offset=".76" stop-color="rgba(255,164,84,.30)"/>
+          <stop offset="1" stop-color="rgba(255,140,60,0)"/>
+        </radialGradient>
+        <radialGradient id="gBlueCore">
+          <stop offset="0" stop-color="rgba(240,248,255,.9)"/>
+          <stop offset=".5" stop-color="rgba(150,192,255,.55)"/>
+          <stop offset="1" stop-color="rgba(60,90,200,.28)"/>
+        </radialGradient>
+        <clipPath id="starClip"><circle r="300"/></clipPath>
+      </defs>
+
+      <g id="starAll">
+        <circle id="corona" r="430" fill="url(#gCorona2)"/>
+
+        <g id="starBody">
+          <circle r="300" fill="url(#gStar)"/>
+          <g clip-path="url(#starClip)">
+            <!-- convection blotches: irregular hand-drawn cells, two counter-rotating sheets -->
+            <g opacity=".5">
+              <g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="300s" repeatCount="indefinite"/>
+                <path d="M-150 -60 q34 -34 88 -16 q46 16 26 54 q-18 34 -72 22 q-52 -12 -42 -60Z" fill="rgba(190,60,18,.30)"/>
+                <path d="M60 120 q44 -22 92 4 q40 22 12 56 q-26 30 -76 12 q-48 -18 -28 -72Z" fill="rgba(196,66,20,.26)"/>
+                <path d="M-40 -210 q40 -18 78 6 q30 20 8 48 q-24 28 -66 10 q-42 -18 -20 -64Z" fill="rgba(255,232,190,.16)"/>
+                <path d="M150 -90 q30 -24 66 -8 q32 16 16 46 q-18 30 -58 16 q-40 -14 -24 -54Z" fill="rgba(255,238,200,.13)"/>
+              </g>
+            </g>
+            <g opacity=".42">
+              <g><animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="220s" repeatCount="indefinite"/>
+                <path d="M-190 90 q28 -30 72 -14 q38 14 22 46 q-16 30 -60 18 q-44 -12 -34 -50Z" fill="rgba(180,50,14,.3)"/>
+                <path d="M90 -170 q36 -20 74 2 q30 18 10 46 q-20 26 -60 10 q-40 -16 -24 -58Z" fill="rgba(210,80,26,.24)"/>
+                <path d="M30 30 q26 -22 60 -8 q28 12 14 40 q-16 26 -52 14 q-36 -12 -22 -46Z" fill="rgba(255,240,206,.12)"/>
+              </g>
+            </g>
+            <!-- collapse machinery: ignition point, surface waves, blue shift -->
+            <circle id="ign" r="8" fill="#ffffff" opacity="0"/>
+            <circle id="wv1" r="0" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="10" opacity="0"/>
+            <circle id="wv2" r="0" fill="none" stroke="rgba(214,236,255,.5)" stroke-width="7" opacity="0"/>
+            <circle id="wv3" r="0" fill="none" stroke="rgba(170,204,255,.4)" stroke-width="5" opacity="0"/>
+            <circle id="blueTint" r="302" fill="url(#gBlueCore)" opacity="0"/>
+          </g>
+          <circle r="300" fill="url(#gStarLimb)"/>
+          <!-- prominences riding the limb -->
+          <g stroke="#ffb063" stroke-width="5" fill="none" stroke-linecap="round">
+            <path d="M282 -118 q42 -28 30 -72" style="animation:shimmer 12s ease-in-out infinite"/>
+            <path d="M-266 156 q-44 24 -36 68" style="animation:shimmer 15s ease-in-out infinite 4s"/>
+            <path d="M96 288 q22 44 68 46" stroke-width="4" style="animation:shimmer 18s ease-in-out infinite 8s"/>
+          </g>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <!-- the contained Core, all that remains -->
+  <div id="remnant">
+    <svg viewBox="-60 -60 120 120">
+      <circle r="30" fill="rgba(150,192,255,.10)"/>
+      <circle r="17" fill="#0c1020"/>
+      <circle r="13" fill="url(#gBlueCore)"/>
+      <ellipse rx="24" ry="9" fill="none" stroke="#8a6a3c" stroke-width="1.8" transform="rotate(-18)"/>
+      <ellipse rx="24" ry="9" fill="none" stroke="#5c4a28" stroke-width="1.4" transform="rotate(62)"/>
+      <circle r="4.5" fill="#ffffff" style="animation:pulse 5s ease-in-out infinite"/>
+    </svg>
+  </div>
+
+  <div id="pulsering"></div>
+
+  <!-- =================== THE CORE COLLAPSER (deployed vessel) =================== -->
+  <div id="corev">
+    <svg viewBox="-80 -80 160 160">
+      <defs>
+        <radialGradient id="cvEye">
+          <stop offset="0" stop-color="#eafffb"/>
+          <stop offset=".45" stop-color="#8fe8d8"/>
+          <stop offset="1" stop-color="rgba(111,216,200,0)"/>
+        </radialGradient>
+        <radialGradient id="cvHeatG">
+          <stop offset="0" stop-color="rgba(255,150,60,.95)"/>
+          <stop offset=".6" stop-color="rgba(255,110,40,.55)"/>
+          <stop offset="1" stop-color="rgba(255,90,30,0)"/>
+        </radialGradient>
+      </defs>
+      <!-- heat ripples at the photosphere -->
+      <ellipse id="rip1" rx="0" ry="0" fill="none" stroke="rgba(255,208,150,.6)" stroke-width="3" opacity="0"/>
+      <ellipse id="rip2" rx="0" ry="0" fill="none" stroke="rgba(255,190,130,.45)" stroke-width="2.2" opacity="0"/>
+      <g id="cvBody">
+        <!-- armored fins: four, symmetric, ceremonial -->
+        <g fill="#1b2030" stroke="#8a6a3c" stroke-width="1.6">
+          <path d="M22 -22 L58 -44 L64 -34 L34 -12 Z"/>
+          <path d="M-22 -22 L-58 -44 L-64 -34 L-34 -12 Z"/>
+          <path d="M22 22 L58 44 L64 34 L34 12 Z"/>
+          <path d="M-22 22 L-58 44 L-64 34 L-34 12 Z"/>
+        </g>
+        <!-- collar ring -->
+        <circle r="52" fill="none" stroke="#141926" stroke-width="11"/>
+        <circle r="52" fill="none" stroke="#2c3550" stroke-width="4"/>
+        <circle r="57" fill="none" stroke="#8a6a3c" stroke-width="1.8"/>
+        <g fill="#3a4468">
+          <circle cx="52" cy="0" r="2.6"/><circle cx="-52" cy="0" r="2.6"/>
+          <circle cx="0" cy="52" r="2.6"/><circle cx="0" cy="-52" r="2.6"/>
+          <circle cx="37" cy="37" r="2.2"/><circle cx="-37" cy="37" r="2.2"/>
+          <circle cx="37" cy="-37" r="2.2"/><circle cx="-37" cy="-37" r="2.2"/>
+        </g>
+        <!-- dense armored core -->
+        <circle r="38" fill="#262b40"/>
+        <path d="M-38 0 A38 38 0 0 1 38 0" fill="#2e3450"/>
+        <circle r="38" fill="none" stroke="#12141f" stroke-width="3"/>
+        <ellipse rx="38" ry="14" fill="none" stroke="#a8823f" stroke-width="2.6"/>
+        <ellipse rx="14" ry="38" fill="none" stroke="#7a5e30" stroke-width="2.2"/>
+        <circle r="26" fill="none" stroke="#3a4468" stroke-width="5" stroke-dasharray="12 8"/>
+        <!-- rear eye, facing the fleet it leaves behind -->
+        <circle r="13" fill="#0d0f18"/>
+        <circle r="10" fill="url(#cvEye)" style="animation:pulse 4s ease-in-out infinite"/>
+        <circle r="3.4" fill="#ffffff"/>
+      </g>
+      <!-- heating overlays -->
+      <circle id="cvHeat" r="64" fill="url(#cvHeatG)" opacity="0"/>
+      <circle id="cvWhite" r="46" fill="#ffffff" opacity="0"/>
+    </svg>
+  </div>
+
+  <!-- =================== THE EMPEROR'S FLAGSHIP =================== -->
+  <div id="flag">
+    <div class="inner">
+    <svg viewBox="0 0 900 660">
+      <defs>
+        <linearGradient id="fgDeck" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#6a3a40"/>
+          <stop offset=".55" stop-color="#54262f"/>
+          <stop offset="1" stop-color="#3c1a24"/>
+        </linearGradient>
+        <linearGradient id="fgFlank" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#3c2029"/>
+          <stop offset="1" stop-color="#22101a"/>
+        </linearGradient>
+        <linearGradient id="fgStern" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#363d5c"/>
+          <stop offset="1" stop-color="#1e2238"/>
+        </linearGradient>
+        <radialGradient id="fgEng">
+          <stop offset="0" stop-color="#eafffb"/>
+          <stop offset=".35" stop-color="#8fe8d8"/>
+          <stop offset="1" stop-color="rgba(111,216,200,0)"/>
+        </radialGradient>
+      </defs>
+      <g class="inner">
+        <!-- engine wash -->
+        <ellipse cx="450" cy="586" rx="230" ry="54" fill="rgba(111,216,200,.10)"/>
+
+        <!-- flank walls, falling away port and starboard -->
+        <path d="M340 470 L398 140 L416 128 L416 470 Z" fill="url(#fgFlank)"/>
+        <path d="M560 470 L502 140 L484 128 L484 470 Z" fill="url(#fgFlank)"/>
+        <path d="M398 140 L340 470 M502 140 L560 470" stroke="#1c0d14" stroke-width="2"/>
+
+        <!-- main deck, tapering to the bow -->
+        <path d="M450 84 L488 132 L566 470 L334 470 L412 132 Z" fill="url(#fgDeck)"/>
+        <!-- deck plate seams -->
+        <path d="M430 160 L392 452 M470 160 L508 452 M406 250 H494 M388 340 H512 M370 430 H530" stroke="#3a1b24" stroke-width="2" fill="none"/>
+        <!-- dorsal gilded spine -->
+        <path d="M450 100 V456" stroke="#8a6a3c" stroke-width="7"/>
+        <path d="M450 100 V456" stroke="#e0bd7a" stroke-width="2"/>
+        <path d="M441 150 h18 M439 220 h22 M437 290 h26 M435 360 h30 M433 428 h34" stroke="#a8823f" stroke-width="3"/>
+        <!-- star-light rim along the bow edges -->
+        <path d="M450 84 L488 132 L520 272" stroke="#ffcf9a" stroke-width="2.6" fill="none" opacity=".8"/>
+        <path d="M450 84 L412 132 L380 272" stroke="#ffb87a" stroke-width="2" fill="none" opacity=".55"/>
+        <!-- ceremonial banner strips -->
+        <path d="M424 170 L400 420 h12 L436 172 Z" fill="#7a2830" opacity=".8"/>
+        <path d="M476 170 L500 420 h-12 L464 172 Z" fill="#7a2830" opacity=".8"/>
+        <path d="M424 170 L400 420 M476 170 L500 420" stroke="#c9a86a" stroke-width="1.2" opacity=".7"/>
+
+        <!-- wear: smears, scorch, rust, chipped plate edges -->
+        <path d="M414 210 q8 66 -4 128" stroke="rgba(255,222,196,.06)" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <path d="M488 226 q10 76 4 138" stroke="rgba(0,0,0,.20)" stroke-width="11" fill="none" stroke-linecap="round"/>
+        <path d="M448 300 q-3 60 2 112" stroke="rgba(255,210,180,.05)" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <path d="M368 400 q14 10 30 8 q10 8 2 16 q-22 4 -38 -8Z" fill="rgba(20,8,10,.4)"/>
+        <path d="M520 386 q16 8 26 20 q-4 12 -18 10 q-16 -10 -22 -24Z" fill="rgba(20,8,10,.34)"/>
+        <ellipse cx="404" cy="330" rx="9" ry="5" fill="rgba(122,70,50,.35)" transform="rotate(-70 404 330)"/>
+        <ellipse cx="498" cy="268" rx="7" ry="4" fill="rgba(122,70,50,.3)" transform="rotate(72 498 268)"/>
+        <path d="M334 470 L412 132" stroke="#c9a86a" stroke-width="1.6" stroke-dasharray="3 26" opacity=".5" fill="none"/>
+        <path d="M566 470 L488 132" stroke="#c9a86a" stroke-width="1.6" stroke-dasharray="3 30" opacity=".45" fill="none"/>
+
+        <!-- bridge tower astern -->
+        <g>
+          <rect x="410" y="336" width="80" height="48" rx="4" fill="#4c2530"/>
+          <rect x="410" y="336" width="80" height="8" fill="#5e2f3a"/>
+          <rect x="422" y="306" width="56" height="34" rx="3" fill="#5c2e38"/>
+          <rect x="432" y="284" width="36" height="26" rx="3" fill="#6a3a40"/>
+          <path d="M422 306 h56 M432 284 h36" stroke="#ffcf9a" stroke-width="1.8" opacity=".7"/>
+          <g fill="#ffd9a8">
+            <rect x="428" y="314" width="5" height="4" opacity=".9"/><rect x="440" y="314" width="5" height="4" opacity=".55"/>
+            <rect x="452" y="314" width="5" height="4" opacity=".8"/><rect x="464" y="314" width="5" height="4" opacity=".65"/>
+            <rect x="438" y="292" width="5" height="4" opacity=".85"/><rect x="452" y="292" width="5" height="4" opacity=".6"/>
+          </g>
+          <path d="M450 284 v-26" stroke="#8a6a3c" stroke-width="2.4"/>
+          <circle cx="450" cy="254" r="2.6" fill="#ff8f8f" style="animation:blink 7s linear infinite"/>
+        </g>
+
+        <!-- stern sponson fins -->
+        <path d="M340 436 L244 486 L258 520 L356 476 Z" fill="#4c2530"/>
+        <path d="M340 436 L244 486" stroke="#c9a86a" stroke-width="2" fill="none"/>
+        <circle cx="252" cy="502" r="2.4" fill="#ff8f8f" style="animation:blink 6s linear infinite 1s"/>
+        <path d="M560 436 L656 486 L642 520 L544 476 Z" fill="#4c2530"/>
+        <path d="M560 436 L656 486" stroke="#c9a86a" stroke-width="2" fill="none"/>
+        <circle cx="648" cy="502" r="2.4" fill="#9fe8b8" style="animation:blink 6s linear infinite 3.5s"/>
+
+        <!-- stern face -->
+        <path d="M330 470 H570 L596 588 H304 Z" fill="url(#fgStern)"/>
+        <path d="M330 470 H570 L596 588 H304 Z" fill="none" stroke="#8a6a3c" stroke-width="2.2"/>
+        <path d="M348 492 H552 M340 522 H560" stroke="#262b44" stroke-width="2" fill="none"/>
+        <!-- ribbed radiators -->
+        <path d="M330 500 v64 M342 500 v70 M354 502 v72" stroke="#4a5378" stroke-width="4" opacity=".8"/>
+        <path d="M570 500 v64 M558 500 v70 M546 502 v72" stroke="#4a5378" stroke-width="4" opacity=".8"/>
+        <!-- imperial emblem -->
+        <circle cx="450" cy="497" r="15" fill="none" stroke="#c9a86a" stroke-width="2.6"/>
+        <path d="M450 486 L456 500 L450 496 L444 500 Z" fill="#e0bd7a"/>
+        <!-- engines: three bells -->
+        <circle cx="450" cy="546" r="30" fill="#101320"/>
+        <circle cx="450" cy="546" r="30" fill="none" stroke="#3a4468" stroke-width="5"/>
+        <circle cx="450" cy="546" r="18" fill="url(#fgEng)" style="animation:engF .9s ease-in-out infinite"/>
+        <circle cx="380" cy="550" r="20" fill="#101320"/>
+        <circle cx="380" cy="550" r="20" fill="none" stroke="#3a4468" stroke-width="4"/>
+        <circle cx="380" cy="550" r="12" fill="url(#fgEng)" style="animation:engF 1.1s ease-in-out infinite .3s"/>
+        <circle cx="520" cy="550" r="20" fill="#101320"/>
+        <circle cx="520" cy="550" r="20" fill="none" stroke="#3a4468" stroke-width="4"/>
+        <circle cx="520" cy="550" r="12" fill="url(#fgEng)" style="animation:engF 1s ease-in-out infinite .6s"/>
+        <path d="M414 574 q10 8 24 6 M462 580 q12 4 24 -2" stroke="rgba(0,0,0,.35)" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <!-- underside deploy bay -->
+        <rect x="426" y="600" width="48" height="13" rx="3" fill="#0d0f18"/>
+        <rect x="426" y="600" width="48" height="13" rx="3" fill="none" stroke="#8a6a3c" stroke-width="1.4"/>
+        <rect id="bayGlow" x="430" y="603" width="40" height="7" fill="#6fd8c8" opacity="0"/>
+      </g>
+    </svg>
+    </div>
+  </div>
+
+
+
+  <div id="pulseflash"></div>
+  <div id="vignette"></div>
+  <div class="bar" id="bar-t"></div>
+  <div class="bar" id="bar-b"></div>
+  <div id="caption"><small></small><span></span></div>
+  <button id="replay" type="button">&#8635;&nbsp; watch again</button>
+  <div id="fader"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ the single shot ============ */
+  var DUR = 100000;    // ~100s forward pan, constant speed
+  var stage = document.getElementById('stage');
+  var layers = [].slice.call(document.querySelectorAll('.layer')).map(function(el){
+    return { el: el, f: parseFloat(el.getAttribute('data-f')) };
+  });
+
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) document.body.classList.add('reduced');
+
+  function clamp01(v){ return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function ramp(p, a, b){ return clamp01((p - a) / (b - a)); }
+  function sstep(t){ return t*t*(3-2*t); }
+  // piecewise-linear keyframe track: kf(p, [[p0,v0],[p1,v1],...])
+  function kf(p, pts){
+    for (var i = 1; i < pts.length; i++){
+      if (p <= pts[i][0]){
+        var a = pts[i-1], b = pts[i];
+        var u = clamp01((p - a[0]) / (b[0] - a[0]));
+        return a[1] + (b[1] - a[1]) * u;
+      }
+    }
+    return pts[pts.length - 1][1];
+  }
+  function el(id){ return document.getElementById(id); }
+
+  /* ============ scripted elements ============ */
+  var starEl   = el('star');
+  var starBody = el('starBody');
+  var corona   = el('corona');
+  var ign      = el('ign');
+  var wvs      = [el('wv1'), el('wv2'), el('wv3')];
+  var blueTint = el('blueTint');
+  var remnant  = el('remnant');
+  var flag     = el('flag');
+  var bayGlow  = el('bayGlow');
+  var corevEl  = el('corev');
+  var cvBody   = el('cvBody');
+  var cvHeat   = el('cvHeat'), cvWhite = el('cvWhite');
+  var rip1     = el('rip1'), rip2 = el('rip2');
+  var skyGlow  = el('sky-coreglow');
+  var skyTear  = el('sky-tearglow');
+  var pulseRing  = el('pulsering');
+  var pulseFlash = el('pulseflash');
+
+  /* ============ timeline (all in shot progress p) ============ */
+  var SC   = [[0,.80],[.5,.98],[.78,1.06],[1,1.08]];                       // forward drift
+  var COLL = [[0,1],[.78,1],[.845,.78],[.90,.40],[.945,.065],[1,.06]];     // the collapse
+
+  /* ============ captions — fleet log, same voice as the landing reports ============ */
+  var capEl = el('caption');
+  var capSm = capEl.querySelector('small');
+  var capTx = capEl.querySelector('span');
+  var CAPS = [
+    { a:.03, b:.14, k:'Collapse 01-1', t:'Placeholder.' },
+    { a:.20, b:.34, k:'Collapse 01-2', t:'Placeholder.' },
+    { a:.44, b:.58, k:'Collapse 01-3', t:'Placeholder.' },
+    { a:.66, b:.80, k:'Collapse 01-4', t:'Placeholder.' },
+    { a:.86, b:.985, k:'Collapse 01-5', cps:14, fin:true, t:'Placeholder.' }
+  ];
+  var curCap = -1;
+
+  // report reveal: sentence-by-sentence fade for logs, slow typewriter for the last
+  var capT0 = 0;
+  function parseCap(c){
+    if (c.segs) return;
+    var hard = c.t.split('\n'), segs = [], h, parts, pj, txt, first = true;
+    for (h = 0; h < hard.length; h++){
+      parts = hard[h].split(/(?<=[a-z0-9])\.\s+/);
+      for (pj = 0; pj < parts.length; pj++){
+        txt = parts[pj].trim();
+        if (!txt) continue;
+        if (pj < parts.length - 1) txt += '.';
+        var raw = txt.split('\x01'), tk = [], ti, bi, bp;
+        for (ti = 0; ti < raw.length; ti++){
+          if (ti > 0) tk.push({ r: 1 });
+          if (!raw[ti].length) continue;
+          bp = raw[ti].split('*');
+          for (bi = 0; bi < bp.length; bi++){
+            if (!bp[bi].length) continue;
+            tk.push(bi % 2 === 1 ? { b: bp[bi] } : bp[bi]);   // odd run = between * = bold
+          }
+        }
+        var low = txt.toLowerCase();
+        segs.push({ tk: tk, cls: first ? 'open' : (low.indexOf('no further') >= 0 ? 'verdict' : '') });
+        first = false;
+      }
+    }
+    c.segs = segs;
+  }
+  function esc(s){ return s.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  function mountCap(c, nowT){
+    parseCap(c); capT0 = nowT;
+    var html = '', i, j, w, ch, seg, tk, words;
+    for (i = 0; i < c.segs.length; i++){
+      seg = c.segs[i];
+      html += '<span class="ln ' + (c.fin ? 'vis ' : '') + seg.cls + '">';
+      for (j = 0; j < seg.tk.length; j++){
+        tk = seg.tk[j];
+        if (tk.r){ html += '<span class="redact ch"></span>'; continue; }
+        var isB = tk && tk.b != null, str = isB ? tk.b : tk;
+        if (isB) html += '<b>';
+        if (c.fin){
+          words = str.split(' ');
+          for (w = 0; w < words.length; w++){
+            if (w > 0) html += '<span class="ch"> </span>';
+            html += '<span class="wd">';
+            for (ch = 0; ch < words[w].length; ch++) html += '<span class="ch">' + esc(words[w][ch]) + '</span>';
+            html += '</span>';
+          }
+        } else html += esc(str);
+        if (isB) html += '</b>';
+      }
+      html += '</span>';
+    }
+    if (c.fin) html += '<span class="cur"></span>';
+    capTx.innerHTML = html;
+    c._lns = capTx.querySelectorAll('.ln');
+    c._chs = c.fin ? capTx.querySelectorAll('.ch') : null;
+    c._cur = c.fin ? capTx.querySelector('.cur') : null;
+    c._shown = -1;
+  }
+  function revealCap(c, nowT){
+    var elp = (nowT - capT0) / 1000;
+    if (c.fin){
+      var n = Math.floor(Math.max(0, elp - 0.2) * (c.cps || 12)), i;
+      if (n > c._chs.length) n = c._chs.length;
+      if (n === c._shown) return;
+      for (i = (c._shown < 0 ? 0 : c._shown); i < n; i++) c._chs[i].classList.add('on');
+      c._shown = n;
+      if (n > 0 && c._cur){ var t = c._chs[n - 1]; t.parentNode.insertBefore(c._cur, t.nextSibling); }
+    } else {
+      for (var i2 = 0; i2 < c._lns.length; i2++) c._lns[i2].classList.add('on');
+    }
+  }
+
+  /* ============ settlement web (generated, deterministic) ============
+     Harvested systems gather in colony clusters. Inside a cluster, faint
+     curved filaments tie the systems to a local heart; between clusters,
+     a rare trunk route carries a slow pulse. No straight dotted lines. */
+  var NS = 'http://www.w3.org/2000/svg';
+  function curve(rnd, ax, ay, bx, by){
+    var mx = (ax+bx)/2, my = (ay+by)/2;
+    var dx = bx-ax, dy = by-ay, d = Math.hypot(dx,dy) || 1;
+    var bow = (rnd() - .5) * .42 * d;
+    return 'M' + ax.toFixed(1) + ' ' + ay.toFixed(1) +
+           ' Q' + (mx - dy/d*bow).toFixed(1) + ' ' + (my + dx/d*bow).toFixed(1) +
+           ' ' + bx.toFixed(1) + ' ' + by.toFixed(1);
+  }
+  function buildWeb(svg, nClusters, seed, near){
+    var s = seed >>> 0;
+    function rnd(){ s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }
+    var k = near ? 1.7 : 1, ci, ni, i;
+    var hearts = [];
+    var mk = function(tag){ return document.createElementNS(NS, tag); };
+
+    for (ci = 0; ci < nClusters; ci++){
+      var hx = 140 + rnd()*1640, hy = 90 + rnd()*900;
+      var nodes = [], cnt = near ? 2 + Math.floor(rnd()*3) : 3 + Math.floor(rnd()*4);
+      for (ni = 0; ni < cnt; ni++){
+        var aa = rnd()*6.2832, rr = (26 + rnd()*115) * (near ? 1.3 : 1);
+        nodes.push([hx + Math.cos(aa)*rr, hy + Math.sin(aa)*rr*.72, rnd()]);
+      }
+      hearts.push([hx, hy, nodes]);
+    }
+
+    // trunk routes between neighbouring cluster hearts — few, slow, faint
+    var order = hearts.slice().sort(function(a,b){ return a[0]-b[0]; });
+    for (i = 1; i < order.length; i++){
+      if (rnd() < .3) continue;   // some clusters stay dark — irregular, not a chain
+      var tr = mk('path');
+      tr.setAttribute('d', curve(rnd, order[i-1][0], order[i-1][1], order[i][0], order[i][1]));
+      tr.setAttribute('class', near ? 'st2' : 'st');
+      tr.setAttribute('stroke-width', (near ? 1.1 : .9).toFixed(1));
+      tr.setAttribute('stroke-opacity', near ? '.20' : '.15');
+      tr.setAttribute('stroke-dasharray', '2 60');
+      tr.style.animationDelay = (-rnd()*22).toFixed(1) + 's';
+      tr.style.animationDuration = (14 + rnd()*12).toFixed(1) + 's';
+      svg.appendChild(tr);
+    }
+
+    for (ci = 0; ci < hearts.length; ci++){
+      var hx2 = hearts[ci][0], hy2 = hearts[ci][1], nodes2 = hearts[ci][2];
+
+      // filaments: static, faint, curved — infrastructure, not constellation lines
+      for (ni = 0; ni < nodes2.length; ni++){
+        if (rnd() < .22) continue;   // stray systems stay unconnected
+        var f = mk('path');
+        f.setAttribute('d', curve(rnd, hx2, hy2, nodes2[ni][0], nodes2[ni][1]));
+        f.setAttribute('class', 'fil');
+        f.setAttribute('stroke', 'rgba(162,192,238,' + (.05 + rnd()*.07).toFixed(3) + ')');
+        f.setAttribute('stroke-width', (.5 + rnd()*.6).toFixed(2));
+        svg.appendChild(f);
+      }
+
+      // cluster heart: a settled hub with a soft halo
+      var hh = mk('circle');
+      hh.setAttribute('cx', hx2); hh.setAttribute('cy', hy2);
+      hh.setAttribute('r', 7 * k);
+      hh.setAttribute('fill', 'rgba(226,206,168,.06)');
+      svg.appendChild(hh);
+      var hc = mk('circle');
+      hc.setAttribute('cx', hx2); hc.setAttribute('cy', hy2);
+      hc.setAttribute('r', 1.7 * k);
+      hc.setAttribute('fill', '#ecd9b6');
+      svg.appendChild(hc);
+
+      for (ni = 0; ni < nodes2.length; ni++){
+        var px = nodes2[ni][0], py = nodes2[ni][1], rv = nodes2[ni][2];
+        var warm = rv < 0.62;   // most systems in the corridor are harvested — dimmed amber
+        var halo = mk('circle');
+        halo.setAttribute('cx', px); halo.setAttribute('cy', py);
+        halo.setAttribute('r', (4 + rv*4.5) * k);
+        halo.setAttribute('fill', warm ? 'rgba(246,214,168,.07)' : 'rgba(191,222,255,.08)');
+        svg.appendChild(halo);
+        var core = mk('circle');
+        core.setAttribute('cx', px); core.setAttribute('cy', py);
+        core.setAttribute('r', ((warm ? .9 : 1.2) + rv*.9) * k);
+        core.setAttribute('fill', warm ? '#e8c9a0' : '#dfe9ff');
+        if (rv > 0.78) core.style.animation = 'shimmer ' + (5 + rv*6).toFixed(1) + 's ease-in-out infinite ' + (-rv*5).toFixed(1) + 's';
+        svg.appendChild(core);
+        if (warm){   // each harvested star wears its own partial shell
+          var ring = mk('circle');
+          ring.setAttribute('cx', px); ring.setAttribute('cy', py);
+          ring.setAttribute('r', 3.8 * k);
+          ring.setAttribute('fill', 'none');
+          ring.setAttribute('stroke', 'rgba(255,190,120,.34)');
+          ring.setAttribute('stroke-width', (0.65 * k).toFixed(2));
+          svg.appendChild(ring);
+          // settlement specks in orbit — the lived-in read
+          var sp1 = mk('circle');
+          sp1.setAttribute('cx', px + (rnd()*10 - 5) * k); sp1.setAttribute('cy', py + (5 + rnd()*4) * k);
+          sp1.setAttribute('r', (0.55 * k).toFixed(2));
+          sp1.setAttribute('fill', 'rgba(210,226,250,.4)');
+          svg.appendChild(sp1);
+          if (rnd() < .5){
+            var sp2 = mk('circle');
+            sp2.setAttribute('cx', px + (rnd()*12 - 6) * k); sp2.setAttribute('cy', py - (5 + rnd()*4) * k);
+            sp2.setAttribute('r', (0.5 * k).toFixed(2));
+            sp2.setAttribute('fill', 'rgba(226,214,190,.34)');
+            svg.appendChild(sp2);
+          }
+        }
+      }
+    }
+  }
+  buildWeb(el('latFar'), 10, 41170718, false);
+  buildWeb(el('latNear'), 4, 90210425, true);
+
+  /* ============ starfield canvas: forward streaming + lensing ============ */
+  var starCv = el('stars');
+  var starCx = starCv.getContext('2d');
+  var W = 0, H = 0, DPR = 1, maxR = 1, vmin = 1;
+
+  var starList = [];
+  function seedStars(){
+    starList.length = 0;
+    var n = Math.round(W * H / 5200);
+    for (var i = 0; i < n; i++){
+      starList.push({
+        a: Math.random() * 6.2832,
+        d: Math.sqrt(Math.random()) * 1.1,
+        z: 0.15 + Math.random() * 0.85,
+        r: Math.random() < 0.85 ? (0.4 + Math.random()*0.8) : (1.1 + Math.random()*0.9),
+        tw: 2 + Math.random()*5, ph: Math.random()*Math.PI*2,
+        warm: Math.random() < 0.14
+      });
+    }
+  }
+  function resize(){
+    DPR = Math.min(window.devicePixelRatio || 1, 1.5);
+    W = window.innerWidth; H = window.innerHeight;
+    vmin = Math.min(W, H);
+    maxR = Math.hypot(W, H) * 0.62;
+    starCv.width = Math.round(W*DPR); starCv.height = Math.round(H*DPR);
+    starCx.setTransform(DPR,0,0,DPR,0,0);
+    seedStars();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  /* ============ main loop ============ */
+  var t0 = null, lastT = null;
+  var replayBtn = el('replay');
+  var fader = el('fader');
+  var done = false, endFading = false;
+  var seek = parseFloat((location.hash.match(/p=([\d.]+)/) || [])[1]);
+
+  function frame(now){
+    if (t0 === null){
+      t0 = now;
+      if (!isNaN(seek)) t0 = now - clamp01(seek) * DUR;
+      lastT = now;
+    }
+    var dt = Math.min((now - lastT)/1000, 0.1);
+    lastT = now;
+
+    var raw = (now - t0)/DUR;
+    var p = clamp01(raw);            // constant speed: linear, never accelerates
+    if (reduced) p = 0.55;
+
+    /* ---- shot state, shared by everything below ---- */
+    var sc     = kf(p, SC);
+    var coll   = kf(p, COLL);
+    var scEff  = sc * coll;
+    var starO  = 1 - ramp(p, .945, .968);
+    var wOn    = ramp(p, .68, .70) * (1 - ramp(p, .93, .95));
+    var blueT  = sstep(ramp(p, .70, .84));
+    var fall   = sstep(ramp(p, .74, .92)) * starO;
+    var acc    = ramp(p, .68, .92);
+
+    /* ---- parallax: every layer scales about the vanishing point;
+           deep space darkens further as the star goes out ---- */
+    var bgDim = (1 - .45 * sstep(ramp(p, .2, .7))) * (1 - .55 * sstep(ramp(p, .86, .96)));
+    for (var i = 0; i < layers.length; i++){
+      layers[i].el.style.transform = 'scale(' + (1 + p * layers[i].f) + ')';
+      layers[i].el.style.opacity = bgDim.toFixed(3);
+    }
+
+    /* ---- the star ---- */
+    starEl.style.opacity = (ramp(p, .0, .05) * Math.max(starO, .0)).toFixed(3);
+    starEl.style.transform = 'translate(-50%,-50%) scale(' + scEff.toFixed(4) + ')';
+    corona.setAttribute('opacity', ((1 - sstep(ramp(p, .80, .92))) * (.85 + .15 * Math.sin(now * .0011)) * starO).toFixed(3));
+    // ignition deep inside, then pulsing waves crossing the surface
+    var ignO = sstep(ramp(p, .64, .675)) * (1 - sstep(ramp(p, .71, .75)));
+    ign.setAttribute('opacity', (ignO * (.55 + .3 * Math.sin(now * .02))).toFixed(3));
+    ign.setAttribute('r', (6 + 26 * sstep(ramp(p, .64, .74))).toFixed(1));
+    var freq = 4 + 11 * acc, k2;
+    for (k2 = 0; k2 < 3; k2++){
+      var phw = ((p - .68) * freq + k2 / 3) % 1;
+      if (phw < 0) phw += 1;
+      wvs[k2].setAttribute('r', (300 * phw).toFixed(1));
+      wvs[k2].setAttribute('opacity', (wOn * (1 - phw) * .8).toFixed(3));
+    }
+    blueTint.setAttribute('opacity', (blueT * (.75 + .25 * Math.sin(now * (.002 + .016 * acc)))).toFixed(3));
+    skyGlow.style.opacity = .4 * starO * (1 - blueT * .7) * ramp(p, 0, .06);
+    skyTear.style.opacity = blueT * .45 * starO + .12 * ramp(p, .958, .985);
+
+    /* ---- the final pulse: a ring contracting inward, one soft flash ---- */
+    var fin = ramp(p, .928, .95);
+    if (fin > 0 && fin < 1){
+      pulseRing.style.opacity = fin * (1 - fin) * 2.4 * .7;
+      pulseRing.style.transform = 'translate(-50%,-50%) scale(' + (1.15 - 1.05 * fin).toFixed(3) + ')';
+    } else pulseRing.style.opacity = 0;
+    pulseFlash.style.opacity = ramp(p, .945, .955) * (1 - ramp(p, .958, .975)) * .45;
+
+    /* ---- the contained Core ---- */
+    var remO = sstep(ramp(p, .958, .982));
+    remnant.style.opacity = remO.toFixed(3);
+    remnant.style.transform = 'translate(-50%,-50%) scale(' + (1.35 - .35 * remO).toFixed(3) + ')';
+
+    /* ---- the flagship: rise, hold, then advance on the Core ---- */
+    var flagIn = sstep(ramp(p, .04, .18));
+    var adv = sstep(ramp(p, .95, .995));
+    flag.style.transform = 'translate(-50%,-100%) translate3d(0,' + (46 * (1 - flagIn) - 2.5 * adv).toFixed(2) + 'vh,0) scale(' + (1 + .06 * adv).toFixed(3) + ')';
+    bayGlow.setAttribute('opacity', (ramp(p, .20, .235) * (1 - ramp(p, .27, .30))).toFixed(3));
+
+    /* ---- the Core Collapser: separation, the long dwindle, the plunge ---- */
+    var cvOn = ramp(p, .245, .255) * (1 - ramp(p, .598, .606));
+    if (cvOn > 0.001){
+      var u = sstep(ramp(p, .25, .52));
+      var q = .55 / (1 + u * 4);                 // dwindles to ~1/80 of the star's face
+      var plunge = ramp(p, .585, .605);
+      var qEff = q * (1 - .6 * plunge);          // sinks beneath while white
+      var cy2 = 40 + 26 * (q / .55);
+      var cx2 = -8.5 * (q / .55);                // deployed clear of the hull, converging on centre
+      corevEl.style.opacity = cvOn.toFixed(3);
+      corevEl.style.transform = 'translate(-50%,-50%) translate3d(' + cx2.toFixed(2) + 'vw,' + cy2.toFixed(2) + 'vh,0) scale(' + qEff.toFixed(4) + ')';
+      // photosphere contact: dark metal -> deep orange -> white -> gone beneath
+      cvHeat.setAttribute('opacity', (sstep(ramp(p, .52, .555)) * .95).toFixed(3));
+      cvWhite.setAttribute('opacity', sstep(ramp(p, .55, .578)).toFixed(3));
+      cvBody.setAttribute('opacity', (1 - ramp(p, .58, .60)).toFixed(3));
+      var rp = ramp(p, .52, .60);
+      rip1.setAttribute('rx', (60 + 240 * rp).toFixed(0));
+      rip1.setAttribute('ry', (22 + 90 * rp).toFixed(0));
+      rip1.setAttribute('opacity', (rp > 0 ? (1 - rp) * .7 : 0).toFixed(3));
+      var rp2 = ramp(p, .55, .62);
+      rip2.setAttribute('rx', (50 + 300 * rp2).toFixed(0));
+      rip2.setAttribute('ry', (18 + 110 * rp2).toFixed(0));
+      rip2.setAttribute('opacity', (rp2 > 0 ? (1 - rp2) * .55 : 0).toFixed(3));
+    } else corevEl.style.opacity = 0;
+
+    /* ---- captions ---- */
+    var want = -1, k;
+    for (k = 0; k < CAPS.length; k++) if (p >= CAPS[k].a && p <= CAPS[k].b) { want = k; break; }
+    if (want !== curCap){
+      curCap = want;
+      if (want >= 0){ capSm.textContent = CAPS[want].k; mountCap(CAPS[want], now); }
+    }
+    if (want >= 0){
+      var c = CAPS[want];
+      revealCap(c, now);
+      capEl.style.opacity = (ramp(p, c.a, c.a + 0.02) * (1 - ramp(p, c.b - 0.02, c.b)) * 0.92);
+    } else capEl.style.opacity = 0;
+
+    /* ---- stars: forward streaming, star occlusion, infall ---- */
+    var cxs = W * 0.5, cys = H * 0.46;
+    var rPx = 1.30 * vmin * 0.2778 * scEff * ramp(p, 0, .06);
+    var occl = starO > .06;
+    starCx.clearRect(0,0,W,H);
+    for (i = 0; i < starList.length; i++){
+      var st = starList[i];
+      if (!reduced){
+        st.d *= 1 + 0.02 * st.z * dt;
+        if (st.d > 1.18){ st.d = 0.04 + Math.random()*0.25; st.a = Math.random()*6.2832; }
+      }
+      var x2 = cxs + Math.cos(st.a) * st.d * maxR;
+      var y2 = cys + Math.sin(st.a) * st.d * maxR;
+      var dxs = x2 - cxs, dys = y2 - cys, ds = st.d * maxR;
+      if (occl && ds < rPx * 1.0) continue;               // behind the star
+      var tw = 0.55 + 0.45*Math.sin(now/1000*st.tw + st.ph);
+      var a = tw * clamp01(st.d * 6) * (.55 + .45*bgDim);
+      if (a < 0.02) continue;
+      var col = st.warm ? '#f6e0c8' : '#dfe9ff';
+      var lt = 0;
+      if (fall > 0 && ds < rPx * 3.4 && rPx > 4){
+        lt = clamp01(1 - (ds - rPx) / (rPx * 2.4));
+        var pull = fall * lt * rPx * 0.22;
+        x2 -= dxs/ds * pull; y2 -= dys/ds * pull;         // light falls inward
+      }
+      var len = fall * lt * lt * rPx * 0.7;
+      starCx.globalAlpha = a;
+      if (len > 1.5){
+        starCx.strokeStyle = col;
+        starCx.lineWidth = st.r * 1.4;
+        starCx.beginPath();
+        starCx.moveTo(x2 - dxs/ds*len/2, y2 - dys/ds*len/2);
+        starCx.lineTo(x2 + dxs/ds*len/2, y2 + dys/ds*len/2);
+        starCx.stroke();
+      } else {
+        starCx.fillStyle = col;
+        starCx.beginPath();
+        starCx.arc(x2, y2, st.r, 0, 6.2832);
+        starCx.fill();
+      }
+    }
+    starCx.globalAlpha = 1;
+
+    /* ---- the end: light gone, drift into black ---- */
+    if (!reduced && p > .985 && !endFading){
+      endFading = true;
+      fader.style.transition = 'opacity 3s ease';
+      fader.style.opacity = 1;
+    }
+    if (raw >= 1.04 && !done){ done = true; replayBtn.classList.add('on'); }
+
+    requestAnimationFrame(frame);
+  }
+
+  replayBtn.addEventListener('click', function(){
+    done = false; endFading = false; curCap = -1; seek = NaN;
+    replayBtn.classList.remove('on');
+    fader.style.transition = 'opacity .6s ease';
+    fader.style.opacity = 1;
+    setTimeout(function(){
+      t0 = null;
+      fader.style.transition = 'opacity 2.8s ease';
+      fader.style.opacity = 0;
+    }, 700);
+  });
+
+  // fade up from black and begin the shot
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){ fader.style.opacity = 0; });
+  });
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
