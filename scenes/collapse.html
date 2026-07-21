@@ -100,14 +100,9 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 @keyframes flagBob{from{transform:translate3d(0,-.25vh,0)}to{transform:translate3d(0,.25vh,0)}}
 @keyframes engF{0%,100%{opacity:.8}50%{opacity:1}}
 
-/* ---------- the escort fleet, holding at a respectful distance ---------- */
-#escorts{position:absolute;inset:0;z-index:11;pointer-events:none}
-.esc{position:absolute;left:0;top:0;will-change:transform}
-.esc .ei{animation:escBob 28s ease-in-out infinite alternate}
-.esc svg{display:block;width:100%;height:auto;overflow:visible}
-@keyframes escBob{from{transform:translate3d(0,-.3vh,0)}to{transform:translate3d(0,.3vh,0)}}
+/* ---------- the escort fleet (canvas, rear three-quarter, holds formation) ---------- */
+#fleetcv{z-index:11}
 @keyframes snakeLoop{to{stroke-dashoffset:-100}}
-@keyframes ringSpin{to{stroke-dashoffset:-360}}
 
 /* ---------- pulse ring + flashes ---------- */
 #pulsering{position:absolute;left:50%;top:46%;width:100vmin;height:100vmin;z-index:9;opacity:0;
@@ -323,37 +318,9 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
           <circle r="300" fill="url(#gStar)"/>
           <g clip-path="url(#starClip)">
             <!-- photosphere mottling: static fractal noise, rotating with the surface -->
-            <g opacity=".3">
+            <g opacity=".36">
               <g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="340s" repeatCount="indefinite"/>
                 <rect x="-430" y="-430" width="860" height="860" filter="url(#fNoise)"/>
-              </g>
-            </g>
-            <!-- convection sheets: one direction, different rates — differential rotation -->
-            <g opacity=".5">
-              <g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="300s" repeatCount="indefinite"/>
-                <path d="M-150 -60 q34 -34 88 -16 q46 16 26 54 q-18 34 -72 22 q-52 -12 -42 -60Z" fill="rgba(190,60,18,.30)"/>
-                <path d="M60 120 q44 -22 92 4 q40 22 12 56 q-26 30 -76 12 q-48 -18 -28 -72Z" fill="rgba(196,66,20,.26)"/>
-                <path d="M-40 -210 q40 -18 78 6 q30 20 8 48 q-24 28 -66 10 q-42 -18 -20 -64Z" fill="rgba(255,232,190,.16)"/>
-                <path d="M150 -90 q30 -24 66 -8 q32 16 16 46 q-18 30 -58 16 q-40 -14 -24 -54Z" fill="rgba(255,238,200,.13)"/>
-                <path d="M-98 148 q14 -12 32 -5 q14 7 6 22 q-9 13 -26 7 q-17 -7 -12 -24Z" fill="rgba(150,40,10,.34)"/>
-                <path d="M198 44 q11 -9 25 -4 q11 5 5 17 q-7 11 -21 6 q-13 -5 -9 -19Z" fill="rgba(150,40,10,.3)"/>
-                <path d="M-236 -18 q10 -9 24 -4 q10 5 4 16 q-6 10 -19 5 q-12 -5 -9 -17Z" fill="rgba(140,36,8,.32)"/>
-                <path d="M-10 246 q12 -10 27 -4 q11 6 4 18 q-7 11 -22 6 q-13 -6 -9 -20Z" fill="rgba(150,40,10,.3)"/>
-                <path d="M118 -248 q10 -8 23 -4 q10 5 4 15 q-6 10 -18 5 q-12 -4 -9 -16Z" fill="rgba(140,36,8,.3)"/>
-              </g>
-            </g>
-            <g opacity=".42">
-              <g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="214s" repeatCount="indefinite"/>
-                <path d="M-190 90 q28 -30 72 -14 q38 14 22 46 q-16 30 -60 18 q-44 -12 -34 -50Z" fill="rgba(180,50,14,.3)"/>
-                <path d="M90 -170 q36 -20 74 2 q30 18 10 46 q-20 26 -60 10 q-40 -16 -24 -58Z" fill="rgba(210,80,26,.24)"/>
-                <path d="M30 30 q26 -22 60 -8 q28 12 14 40 q-16 26 -52 14 q-36 -12 -22 -46Z" fill="rgba(255,240,206,.12)"/>
-                <path d="M-70 -84 q9 -8 21 -3 q9 4 4 14 q-5 9 -17 5 q-11 -4 -8 -16Z" fill="rgba(146,38,10,.36)"/>
-                <path d="M158 158 q9 -7 20 -3 q8 4 3 13 q-5 8 -16 4 q-10 -4 -7 -14Z" fill="rgba(146,38,10,.32)"/>
-                <path d="M-148 -168 q8 -7 19 -3 q8 4 3 12 q-5 8 -15 4 q-9 -4 -7 -13Z" fill="rgba(140,36,8,.3)"/>
-                <path d="M242 -78 q8 -6 18 -3 q7 4 3 12 q-4 8 -14 4 q-9 -3 -7 -13Z" fill="rgba(146,38,10,.3)"/>
-                <path d="M-262 148 q8 -6 18 -3 q7 4 3 11 q-4 7 -14 4 q-9 -3 -7 -12Z" fill="rgba(140,36,8,.3)"/>
-                <path d="M62 -60 q7 -6 17 -2 q7 3 3 11 q-4 7 -13 3 q-9 -3 -7 -12Z" fill="rgba(255,240,206,.14)"/>
-                <path d="M-40 120 q7 -6 16 -2 q6 3 3 10 q-4 7 -13 4 q-8 -3 -6 -12Z" fill="rgba(255,238,200,.12)"/>
               </g>
             </g>
             <!-- flare snakes: single bright runs looping inside the outer surface,
@@ -582,72 +549,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     </div>
   </div>
 
-  <!-- =================== ESCORT SQUADRON (side profiles, holding pattern) =================== -->
-  <div id="escorts"></div>
-
-  <!-- escort symbol library -->
-  <svg width="0" height="0" style="position:absolute">
-    <defs>
-      <!-- survey carrier: truss spine, gravity ring, hab modules -->
-      <g id="escCarrier">
-        <path d="M22 62 l-14 3 14 3z" fill="#9fe8ff" opacity=".6"/>
-        <rect x="22" y="58" width="20" height="14" rx="2" fill="#2c3354"/>
-        <rect x="42" y="60" width="216" height="11" fill="#3a4269"/>
-        <path d="M42 60 h216" stroke="#aabdea" stroke-width="1.4"/>
-        <path d="M42 71 h216" stroke="#222a48" stroke-width="1.8"/>
-        <path d="M76 60 v11 M112 60 v11 M186 60 v11 M222 60 v11" stroke="#2c3355" stroke-width="2"/>
-        <ellipse cx="148" cy="65" rx="11" ry="30" fill="none" stroke="#2b3354" stroke-width="6"/>
-        <ellipse cx="148" cy="65" rx="11" ry="30" fill="none" stroke="#7d8fc2" stroke-width="2"
-          stroke-dasharray="12 12" style="animation:ringSpin 30s linear infinite"/>
-        <rect x="130" y="60" width="36" height="10" rx="2" fill="#39406a"/>
-        <rect x="88" y="74" width="34" height="18" rx="3" fill="#414a76"/>
-        <rect x="93" y="79" width="14" height="5" fill="#bfeeff" opacity=".85"/>
-        <path d="M88 74 h34" stroke="#a5b8e6" stroke-width="1"/>
-        <rect x="196" y="74" width="30" height="14" rx="3" fill="#39406a"/>
-        <circle cx="222" cy="86" r="1.6" fill="#9fe8b8" style="animation:blink2 7s linear infinite"/>
-        <path d="M258 60 L292 54 L304 62 L300 68 L276 73 L258 71 Z" fill="#434c74"/>
-        <path d="M258 60 L292 54 L304 62" fill="none" stroke="#aabdea" stroke-width="1.2"/>
-        <path d="M270 60 L290 58 L289 65 L270 66 Z" fill="#bfeeff"/>
-        <rect x="168" y="46" width="40" height="5" fill="#2c3355"/>
-        <path d="M174 46 l3 -13 h6 l-2 13Z" fill="#b06a72"/>
-        <path d="M190 46 l3 -11 h6 l-2 11Z" fill="#9d5a66"/>
-        <circle cx="303" cy="62" r="1.8" fill="#ffd9d0" style="animation:blink 5s linear infinite"/>
-        <circle cx="44" cy="58" r="1.5" fill="#9fe8ff" style="animation:blink2 4s linear infinite 1s"/>
-      </g>
-      <!-- sail freighter: keel hull, raked energy sails -->
-      <g id="escFreight">
-        <path d="M20 78 l-12 3 12 3z" fill="#ffd9a8" opacity=".55"/>
-        <path d="M96 70 L84 22 L122 36 L124 69 Z" fill="rgba(140,226,255,.15)" stroke="#9fe0f8" stroke-width="1.2"/>
-        <path d="M160 68 L156 8 L192 32 L190 67 Z" fill="rgba(140,226,255,.12)" stroke="#9fe0f8" stroke-width="1.2"
-          style="animation:shimmer 9s ease-in-out infinite"/>
-        <path d="M96 70 L84 22 M160 68 L156 8" stroke="#5b6890" stroke-width="2"/>
-        <path d="M24 76 L212 70 L234 80 L204 92 L60 94 L34 86 Z" fill="#3d466e"/>
-        <path d="M24 76 L212 70 L234 80" fill="none" stroke="#aabdea" stroke-width="1.2"/>
-        <path d="M60 94 L204 92 L234 80" fill="none" stroke="#232948" stroke-width="1.8"/>
-        <path d="M64 74 v18 M100 73 v20 M136 72 v20 M172 71 v20" stroke="#2a3153" stroke-width="2.2"/>
-        <path d="M186 70 l3 -10 h22 l4 10Z" fill="#46507c"/>
-        <rect x="190" y="55" width="15" height="4" rx="1" fill="#bfeeff"/>
-        <rect x="84" y="92" width="28" height="10" rx="2" fill="#31395e"/>
-        <rect x="124" y="92" width="28" height="9" rx="2" fill="#31395e"/>
-        <path d="M84 92 h28 M124 92 h28" stroke="#7d8fc2" stroke-width=".8"/>
-        <circle cx="232" cy="79" r="1.5" fill="#d7ffe2" style="animation:blink 7s linear infinite 2s"/>
-        <circle cx="86" cy="20" r="1.4" fill="#ffd9d0" style="animation:blink 6s linear infinite"/>
-      </g>
-      <!-- dart scout: delta hull, cockpit, small drive flame -->
-      <g id="escDart">
-        <ellipse cx="24" cy="40" rx="12" ry="6" fill="#ff9a55" opacity=".3"/>
-        <path d="M30 36 C 18 33 10 36 4 39 C 8 40 8 41 4 42 C 10 45 18 47 30 44 Z" fill="#ffc98a" opacity=".9"/>
-        <path d="M140 40 L64 26 L34 32 L34 48 L64 54 Z" fill="#3d466e" stroke="#161c34" stroke-width="2.4" stroke-linejoin="round"/>
-        <path d="M140 40 L64 26 L44 30 L100 36 Z" fill="#4d5886"/>
-        <path d="M140 40 L64 54 L44 50 L100 44 Z" fill="#262e4f"/>
-        <path d="M72 27 L52 12 L38 12 L58 27 Z" fill="#46507c" stroke="#161c34" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M72 53 L52 68 L38 68 L58 53 Z" fill="#31395e" stroke="#161c34" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M64 30 L64 50 M92 34 L92 46" stroke="#232948" stroke-width="1.8" fill="none"/>
-        <path d="M112 36 L94 32 L86 34 L86 46 L94 48 L112 44 Z" fill="#bfeeff" stroke="#161c34" stroke-width="1.8" stroke-linejoin="round"/>
-        <circle cx="138" cy="40" r="1.8" fill="#ffd9d0" style="animation:blink 4s linear infinite"/>
-      </g>
-    </defs>
-  </svg>
+  <!-- =================== ESCORT FLEET (canvas, rear three-quarter) =================== -->
+  <canvas id="fleetcv"></canvas>
 
   <div id="pulseflash"></div>
   <div id="vignette"></div>
@@ -712,43 +615,113 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   var SC   = [[0,.86],[.5,1.02],[.78,1.09],[1,1.11]];                      // forward drift
   var COLL = [[0,1],[.78,1],[.845,.78],[.90,.40],[.945,.065],[1,.06]];     // the collapse
 
-  /* ============ escort squadron: in from the flanks, then hold ============ */
-  var ESCFG = [
-    { sym:'escCarrier', vb:'0 0 320 120', side:-1, hx:12, hy:22, w:14,  t0:.05, t1:.24, bob:26 },
-    { sym:'escFreight', vb:'0 0 250 110', side:-1, hx:7,  hy:62, w:10.5,t0:.09, t1:.27, bob:31 },
-    { sym:'escDart',    vb:'0 0 150 80',  side:-1, hx:22, hy:12, w:6,   t0:.13, t1:.30, bob:22 },
-    { sym:'escDart',    vb:'0 0 150 80',  side:-1, hx:4,  hy:42, w:5,   t0:.17, t1:.33, bob:27 },
-    { sym:'escDart',    vb:'0 0 150 80',  side:-1, hx:18, hy:78, w:6.5, t0:.11, t1:.28, bob:24 },
-    { sym:'escCarrier', vb:'0 0 320 120', side:1,  hx:72, hy:10, w:12.5,t0:.07, t1:.26, bob:29 },
-    { sym:'escFreight', vb:'0 0 250 110', side:1,  hx:80, hy:76, w:10,  t0:.12, t1:.29, bob:33 },
-    { sym:'escDart',    vb:'0 0 150 80',  side:1,  hx:66, hy:27, w:5.5, t0:.15, t1:.31, bob:25 },
-    { sym:'escDart',    vb:'0 0 150 80',  side:1,  hx:88, hy:33, w:5,   t0:.19, t1:.34, bob:23 },
-    { sym:'escDart',    vb:'0 0 150 80',  side:1,  hx:74, hy:66, w:6,   t0:.10, t1:.27, bob:26 }
-  ];
-  var escEls = [];
-  (function buildEscorts(){
-    var host = el('escorts'), i2, E, d;
-    for (i2 = 0; i2 < ESCFG.length; i2++){
-      E = ESCFG[i2];
-      d = document.createElement('div');
-      d.className = 'esc';
-      d.style.width = E.w + 'vw';
-      d.innerHTML = '<div class="ei" style="animation-duration:' + E.bob + 's"><svg viewBox="' + E.vb + '"><use href="#' + E.sym + '"/></svg></div>';
-      host.appendChild(d);
-      escEls.push(d);
+  /* ============ escort fleet: rear three-quarter, in from the bottom corners ============
+     The same vessels that crossed in Ascension and Genesis: tapered
+     hulls seen from behind, engine light toward the camera. Each rides
+     a straight lane from a bottom corner toward the star, decelerates,
+     and holds formation at its own depth. Perspective does the rest. */
+  var ESC = [
+    { cls:'cap', L:16,  wr:.15, ox:-58, oy:40, wH:.22, t0:.05, t1:.23, warm:false, fl:0.7 },
+    { cls:'cap', L:14,  wr:.15, ox:44,  oy:52, wH:.30, t0:.08, t1:.26, warm:true,  fl:2.1 },
+    { cls:'med', L:8,   wr:.17, ox:-36, oy:54, wH:.55, t0:.10, t1:.27, warm:false, fl:3.4 },
+    { cls:'med', L:7.5, wr:.17, ox:38,  oy:60, wH:.62, t0:.13, t1:.29, warm:true,  fl:4.8 },
+    { cls:'med', L:7,   wr:.17, ox:-54, oy:28, wH:.75, t0:.07, t1:.25, warm:false, fl:1.2 },
+    { cls:'sml', L:3.6, wr:.19, ox:-24, oy:46, wH:1.1, t0:.15, t1:.31, warm:false, fl:5.5 },
+    { cls:'sml', L:3.2, wr:.19, ox:20,  oy:42, wH:1.3, t0:.18, t1:.33, warm:true,  fl:0.3 },
+    { cls:'sml', L:3.4, wr:.19, ox:-44, oy:64, wH:1.0, t0:.12, t1:.28, warm:false, fl:2.9 },
+    { cls:'sml', L:3,   wr:.19, ox:58,  oy:34, wH:1.2, t0:.20, t1:.34, warm:false, fl:4.1 },
+    { cls:'sml', L:3.8, wr:.19, ox:32,  oy:68, wH:.9,  t0:.11, t1:.27, warm:true,  fl:1.8 }
+  ].sort(function(a, b){ return b.wH - a.wH; });   // far ships draw first
+
+  // one vessel from a shallow rear three-quarter (ported from Ascension)
+  function drawShip(c, sp, x, y, ang, L, a, now){
+    c.save();
+    c.translate(x, y);
+    c.rotate(ang);                       // +x points down the lane, away from us
+    var hw = L * sp.wr;
+    var eCol = sp.warm ? '#ffd9a8' : '#9fe8ff';
+    var flick = .8 + .2 * Math.sin(now * .006 + sp.fl);
+    if (L < 6){
+      if (L > 2.2){
+        c.globalAlpha = a * .85;
+        c.strokeStyle = '#39406a';
+        c.lineWidth = Math.max(L * .26, .7);
+        c.beginPath(); c.moveTo(-L*.5, 0); c.lineTo(L*.5, 0); c.stroke();
+      }
+      c.globalAlpha = a * flick;
+      c.fillStyle = eCol;
+      c.beginPath(); c.arc(-L*.5, 0, Math.max(L*.17, .7), 0, 6.2832); c.fill();
+      c.restore();
+      return;
     }
-  })();
+    c.globalAlpha = a;
+    c.fillStyle = '#242c50';
+    c.beginPath();
+    c.moveTo(-L*.5, -hw*.42); c.lineTo(L*.5, -hw*.05);
+    c.lineTo(L*.5, hw*.10); c.lineTo(-L*.46, hw);
+    c.closePath(); c.fill();
+    c.fillStyle = '#3c4674';
+    c.beginPath();
+    c.moveTo(-L*.5, -hw); c.lineTo(L*.5, -hw*.13);
+    c.lineTo(L*.5, -hw*.03); c.lineTo(-L*.5, -hw*.38);
+    c.closePath(); c.fill();
+    c.strokeStyle = 'rgba(170,189,234,.85)';
+    c.lineWidth = Math.max(L * .011, .6);
+    c.beginPath(); c.moveTo(-L*.5, -hw); c.lineTo(L*.5, -hw*.13); c.stroke();
+    // warm star-light kiss along the top edge, this close to the core
+    c.strokeStyle = 'rgba(255,200,150,.4)';
+    c.lineWidth = Math.max(L * .009, .5);
+    c.beginPath(); c.moveTo(-L*.2, -hw*.74); c.lineTo(L*.5, -hw*.11); c.stroke();
+    if (sp.cls === 'cap'){
+      c.fillStyle = '#2e3760';
+      c.fillRect(-L*.44, -hw*1.34, L*.17, hw*.5);
+      c.strokeStyle = 'rgba(170,189,234,.6)';
+      c.beginPath(); c.moveTo(-L*.44, -hw*1.34); c.lineTo(-L*.27, -hw*1.34); c.stroke();
+      c.fillStyle = '#333c66';
+      c.fillRect(-L*.06, -hw*1.12, L*.10, hw*.32);
+      c.fillStyle = 'rgba(191,238,255,.8)';
+      var wx;
+      for (wx = 0; wx < 4; wx++){
+        c.fillRect(-L*.32 + wx * L*.16, -hw*.22, Math.max(L*.012, .8), Math.max(L*.008, .6));
+      }
+      if ((now / 1000 + sp.fl) % 6 < .18){
+        c.fillStyle = '#ffd9d0';
+        c.beginPath(); c.arc(L*.49, -hw*.08, Math.max(L*.012, .9), 0, 6.2832); c.fill();
+      }
+    } else if (sp.cls === 'med'){
+      c.fillStyle = '#333c66';
+      c.fillRect(-L*.3, -hw*1.16, L*.13, hw*.36);
+      c.fillStyle = 'rgba(191,238,255,.7)';
+      c.fillRect(-L*.1, -hw*.2, Math.max(L*.018, .8), Math.max(L*.012, .6));
+    }
+    c.fillStyle = '#151b36';
+    c.fillRect(-L*.5 - L*.035, -hw*.96, L*.055, hw*1.92);
+    var nE = sp.cls === 'cap' ? 3 : sp.cls === 'med' ? 2 : 1, k;
+    for (k = 0; k < nE; k++){
+      var ey = (k - (nE - 1)/2) * hw * .84;
+      c.globalAlpha = a * .3 * flick;
+      c.fillStyle = eCol;
+      c.beginPath(); c.arc(-L*.5 - L*.02, ey, hw*.30, 0, 6.2832); c.fill();
+      c.globalAlpha = a * flick;
+      c.fillStyle = sp.warm ? '#ffedd2' : '#dff6ff';
+      c.beginPath(); c.arc(-L*.5 - L*.02, ey, Math.max(hw*.15, .7), 0, 6.2832); c.fill();
+    }
+    c.restore();
+  }
 
   /* ============ captions — fleet log, same voice as the landing reports ============ */
   var capEl = el('caption');
   var capSm = capEl.querySelector('small');
   var capTx = capEl.querySelector('span');
   var CAPS = [
-    { a:.03, b:.14, k:'Collapse 01-1', t:'Placeholder.' },
-    { a:.20, b:.34, k:'Collapse 01-2', t:'Placeholder.' },
-    { a:.44, b:.58, k:'Collapse 01-3', t:'Placeholder.' },
-    { a:.66, b:.80, k:'Collapse 01-4', t:'Placeholder.' },
-    { a:.86, b:.985, k:'Collapse 01-5', cps:14, fin:true, t:'Placeholder.' }
+    { a:.03, b:.15, k:'Exodus Fleet — Core Collapse 01-1',
+      t:'Cores were once deemed impossible to reach.\nConditions harsh,\nAnd size harsher.' },
+    { a:.20, b:.36, k:'Exodus Fleet — Core Collapse 01-2',
+      t:'Yet technology exists, pushing the boundaries of what\'s known as possible.\nRules which when played by,\nAllows freedom.' },
+    { a:.44, b:.62, k:'Exodus Fleet — Core Collapse 01-3',
+      t:'The device sets on a path and fleets toward the core.\nIt finds its way deep into the heat. taking days to reach.\nEventually It implodes.' },
+    { a:.70, b:.985, k:'Exodus Fleet — Core Collapse 01-4', cps:14, fin:true,
+      t:'The science is simple.\nReverse engineer a *singularity* and you get a small universe of your own.\nEverything has a use.\nThat\'s why it has to *collapse*.' }
   ];
   var curCap = -1;
 
@@ -942,6 +915,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   /* ============ starfield canvas: forward streaming + lensing ============ */
   var starCv = el('stars');
   var starCx = starCv.getContext('2d');
+  var fleetCv = el('fleetcv');
+  var fleetCx = fleetCv.getContext('2d');
   var W = 0, H = 0, DPR = 1, maxR = 1, vmin = 1;
 
   var starList = [];
@@ -966,6 +941,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     maxR = Math.hypot(W, H) * 0.62;
     starCv.width = Math.round(W*DPR); starCv.height = Math.round(H*DPR);
     starCx.setTransform(DPR,0,0,DPR,0,0);
+    fleetCv.width = Math.round(W*DPR); fleetCv.height = Math.round(H*DPR);
+    fleetCx.setTransform(DPR,0,0,DPR,0,0);
     seedStars();
   }
   window.addEventListener('resize', resize);
@@ -1041,11 +1018,19 @@ canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
     remnant.style.opacity = remO.toFixed(3);
     remnant.style.transform = 'translate(-50%,-50%) scale(' + (1.35 - .35 * remO).toFixed(3) + ')';
 
-    /* ---- escorts: slide in from the flanks, then hold ---- */
-    for (i = 0; i < escEls.length; i++){
-      var E2 = ESCFG[i];
+    /* ---- escort fleet: converging lanes from the bottom corners, then hold ---- */
+    fleetCx.clearRect(0, 0, W, H);
+    var gx2 = W * .5, gy2 = H * .46;
+    for (i = 0; i < ESC.length; i++){
+      var E2 = ESC[i];
       var ein = sstep(ramp(p, E2.t0, E2.t1));
-      escEls[i].style.transform = 'translate3d(' + (E2.hx + E2.side * 70 * (1 - ein)).toFixed(2) + 'vw,' + E2.hy + 'vh,0)' + (E2.side > 0 ? ' scaleX(-1)' : '');
+      var q2 = 1 / (1 + E2.wH * ein * 6);
+      var ex2 = gx2 + E2.ox * W/100 * q2;
+      var ey2 = gy2 + E2.oy * H/100 * q2 + Math.sin(now/9000 + E2.fl * 2) * H * .003;
+      var eL = E2.L * W/100 * q2;
+      var eA = ramp(p, E2.t0, E2.t0 + .04) * (.6 + .4 * bgDim);
+      if (eA < .02) continue;
+      drawShip(fleetCx, E2, ex2, ey2, Math.atan2(gy2 - ey2, gx2 - ex2), eL, eA, now);
     }
 
     /* ---- the flagship: in from the right, hold off the flank, advance at the end ---- */
